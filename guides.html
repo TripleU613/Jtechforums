@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
+    <meta
+      name="description"
+      content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
+    />
+    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
+    <meta name="author" content="doniel@mesnan.com" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      img {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header-container"></div>
+
+    <!--Header-->
+    <div class="bg-white px-6 pt-24 pb-12 lg:px-8">
+      <div class="mt-16 mx-auto max-w-2xl text-center">
+        <h2 class="mt-20 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Guides</h2>
+        <p class="mt-8 text-md font-medium text-pretty text-gray-500">
+          We have compiled a comprehensive list of guides to get you started. For more information about our apps and content, check out the forum.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white">
+      <div class="mx-auto max-w-6xl px-6 sm:px-24 pb-12">
+        <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-6 shadow-2xl sm:rounded-3xl sm:px-24">
+          <h2 class="mx-auto max-w-3xl text-center text-2xl sm:text-4xl font-semibold tracking-tight text-white">
+            Do you want to add your own guides to the list?
+          </h2>
+          <p class="mx-auto mt-4 sm:max-w-lg text-center text-sm text-gray-300">
+            Private message a moderator or administrator on the forum or email us at
+            <a href="mailto:collab@jtechforums.org">collab@jtechforums.org</a> with your guide and they will be happy to put it on the site!
+          </p>
+          <div class="flex justify-center mt-6">
+            <button
+              class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <a href="https://forums.jtechforums.org/" target="_blank">Get Started</a>
+            </button>
+          </div>
+
+          <svg viewBox="0 0 1024 1024" class="absolute top-1/2 left-1/2 -z-10 size-[32rem] sm:size-[64rem] -translate-x-1/2" aria-hidden="true">
+            <circle cx="512" cy="512" r="512" fill="url(#759c1415-0410-454c-8f7c-9a820de03641)" fill-opacity="0.7" />
+            <defs>
+              <radialGradient
+                id="759c1415-0410-454c-8f7c-9a820de03641"
+                cx="0"
+                cy="0"
+                r="1"
+                gradientUnits="userSpaceOnUse"
+                gradientTransform="translate(512 512) rotate(90) scale(512)"
+              >
+                <stop stop-color="#7775D6" />
+                <stop offset="1" stop-color="#E935C1" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row">
+      <!-- Apps -->
+      <div class="bg-white">
+        <div class="p-6 lg:p-18">
+          <div id="app-container" class="mx-auto grid max-w-2xl grid-cols-1 gap-x-18 gap-y-18 lg:mx-0 lg:max-w-none lg:grid-cols-3"></div>
+        </div>
+      </div>
+      <script>
+        const apps = [
+          {
+            title: "General Guide to Flashing ROMs",
+            description:
+              "Intro Flashing a ROM means putting a new system on your phone, it could be a modified version of the original system, the original system, or a totally different system. This Guide will give you general information on flashing a ROM but keep in mind that specifics can vary from one device to another and ROMs that will work will one may not work with another. Make sure to follow instructions specifically for your device. Most of the time you will be flashing only specific parts of the system; sys",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/general-guide-to-flashing-roms/1864",
+            postedBy: {
+              name: "NotABird",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/notabird/72/1395_2.png",
+              link: "https://forums.jtechforums.org/u/NotABird",
+            },
+          },
+          {
+            title: "How to Post an Android Guide",
+            description:
+              "This category is dedicated to verified, working guides for Android. Replies will be disabled to keep the content clean and focused. To create a guide, please post it in this category, where it can be reviewed and then added here if approved.",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-post-an-android-guide/187",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "How to Get Google Play Services to Work on Your Device",
+            description:
+              "How to Get Google Play Services to Work on Your Device After noticing that many people are struggling to get Google Play Services working, and with several guides already available on the subject, I’ve gathered all the steps you need to follow in a detailed way to get the Google Play Store running on your device. Step One: Unlock the Bootloader To unlock the bootloader, follow the Rooting Guide. You have two options for proceeding: Option 1: Install Custom Recovery (TWRP) I will write about it i",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-get-google-play-services-to-work-on-your-device/194",
+            postedBy: {
+              name: "FSHLOMO",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/fshlomo/72/112_2.png",
+              link: "https://forums.jtechforums.org/u/FSHLOMO",
+            },
+          },
+          {
+            title: "Rooting Guide (with Bootloader Unlocking) for devices with MediaTek processors",
+            description:
+              "Rooting Guide (with Bootloader Unlocking) Disclaimer: Rooting your phone may void your warranty, cause data loss, or potentially brick your device. Proceed at your own risk. Make sure to back up all data before proceeding. Step One: Opening the Bootloader 1. Enable Developer Mode Go to Settings &gt; About phone (at the bottom). Tap Build number 7 times to unlock Developer options. Return to Settings, then go to System &gt; Developer options. Enable OEM Unlocking and confirm. 2. Unlock the Bootlo",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/rooting-guide-with-bootloader-unlocking-for-devices-with-mediatek-processors/193",
+            postedBy: {
+              name: "FSHLOMO",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/fshlomo/72/112_2.png",
+              link: "https://forums.jtechforums.org/u/FSHLOMO",
+            },
+          },
+          {
+            title: "What is ADB and Getting Started",
+            description:
+              "ADB is a tool that allows you to communicate from your computer to your phone without even touching it. Why is ADB useful? Uninstall Packages: Remove unwanted apps from your device. (Great for browsers) Install Apps: Easily add new apps to your device. Give Permissions: Grant permissions to apps and the device itself. How can you use ADB? Download the Package: platform-tools-latest-windows.zip (6.4 MB) Extract it. Move the Folder: Place the folder in the C:/ directory. Open the Folder: Open the ",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/what-is-adb-and-getting-started/1072",
+            postedBy: {
+              name: "sam-club",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/sam-club/72/1128_2.png",
+              link: "https://forums.jtechforums.org/u/sam-club",
+            },
+          },
+          {
+            title: "Key differences between ROM and MDM filtering",
+            description:
+              "I feel like this whole thing is confusing for many, so just thought I’ll leave this here… ROM vs MDM: Key Differences in Phone Filtering When it comes to filtering a phone, there are two main approaches (though more exist): 1. MDM (Mobile Device Management) An MDM is a security software that allows organizations to manage, monitor, and secure mobile devices. With this method, the phone retains its original software (the stock ROM) and an additional security “app” is installed to block specific a",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/key-differences-between-rom-and-mdm-filtering/546",
+            postedBy: {
+              name: "Flippy",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/flippy/72/100_2.png",
+              link: "https://forums.jtechforums.org/u/Flippy",
+            },
+          },
+          {
+            title: "Editing the build.prop File on Android: A Guide for Enhanced Functionality",
+            description:
+              "Hi Everyone! The build.prop file (short for “Build Properties”) is a configuration file in Android that defines key system properties. By editing this file, you can unlock hidden features, improve performance, and customize your device. This guide explains how to safely edit the file and includes practical tweaks for improved user experience. Requirements: Root Access: Root permissions are mandatory to edit build.prop. Backup First: Always create a backup of the build.prop file before making cha",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/editing-the-build-prop-file-on-android-a-guide-for-enhanced-functionality/426",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "A Journey Through DM-Verity and Bootloader Challenge",
+            description:
+              "I recently needed to program a certain phone—specifically, root it or at least unlock its bootloader. But here’s where the fun began: I couldn’t unlock the bootloader. Sure, I could blast it with MTK Client, but the moment I did, the phone threw a DM-Verity corruption error. Fastboot flashing or OEM unlocking? No luck—the volume up key wasn’t responding. “Just flash vbmeta!” they said. Great advice in theory, but flashing vbmeta using SP Flash Tool or MTK Client didn’t work either. “Try fastboot",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/a-journey-through-dm-verity-and-bootloader-challenge/405",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "Customize System Sounds on a Rooted Android Device [Guide]",
+            description:
+              "Permanently add, remove, or replace sounds (survives factory resets) WARNING Modifying system files can brick your device or erase data. Backup your device before proceeding. I am not responsible for data loss or device issues. This was tested on a qin f21 pro if you test it on a different device pls pm me and let me know which device so I can add it to the list of devices tested on Requirements Root Explorer App: Use any root-enabled file manager (e.g., Solid Explorer, Mixplorer). Audio Convert",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/customize-system-sounds-on-a-rooted-android-device-guide/1219",
+            postedBy: {
+              name: "sam-club",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/sam-club/72/1128_2.png",
+              link: "https://forums.jtechforums.org/u/sam-club",
+            },
+          },
+          {
+            title: "How to Change Default Language & Timezone on Rooted Android Devices",
+            description:
+              "Warning: Modifying system files can lead to data loss or a bricked device. Proceed at your own risk. Always back up critical files. Prerequisites Root access on your device. A root-enabled file explorer (e.g., Solid Explorer, ES File Explorer, Mt Manager, Root explorer, or Mixplorer). Step-by-Step Guide 1. Backup the Original build.prop File Open your root file explorer. Navigate to: /system/build.prop. Copy this file to your internal storage/SD card as a backup. 2. Edit the build.prop File Copy",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-change-default-language-timezone-on-rooted-android-devices/1242",
+            postedBy: {
+              name: "sam-club",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/sam-club/72/1128_2.png",
+              link: "https://forums.jtechforums.org/u/sam-club",
+            },
+          },
+          {
+            title: "Increasing Animation Speeds on Android Guide",
+            description:
+              "In this guide, I will explain how to control animation speeds on your Android phone. Why Adjust Animation Speeds? Animations on phones (such as opening apps, transitioning between screens, and minimizing windows) are often visually appealing, but they can slow down the overall responsiveness of the device. By adjusting these animations, you can: Speed up app transitions: Reducing animation times can make apps open and close faster. Improve overall responsiveness: Your device will feel more respo",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/increasing-animation-speeds-on-android-guide/1315",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "35 Useful ADB Commands",
+            description:
+              "This guide assumes you know what ADB is and how to use it. See this guide if you would like to learn more about ADB and how to use it: What is ADB and Getting Started 1. Install an APK adb install &lt;path_to_apk&gt; Installs an APK from a specified path onto the device. Arguments: &lt;path_to_apk&gt;: The file path to the APK on the computer (e.g., C:\\path\\to\\app.apk). Example: adb install C:\\path\\to\\app.apk 2. Uninstall an App adb uninstall &lt;package_name&gt; Uninstalls an app identified by ",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/35-useful-adb-commands/1316",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "How to access ADB on a Locked (Password) Device",
+            description:
+              "ADB requires USB Debugging to be enabled from Developer Options. However, if your phone is locked (due to forgotten passwords, screen lock restrictions, or missing options), you can still enable ADB using the following methods. Notes: Method 1 works best if your bootloader is unlocked. Method 2 only works if USB Debugging was previously enabled. Method 3 requires Fastboot access. — Method 1: Using Recovery Mode (For Unlocked Bootloaders) If your device has TWRP Recovery or a stock recovery with ",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-access-adb-on-a-locked-password-device/1321",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "How to Make Any App Work Without Google Play Services",
+            description:
+              "Some apps refuse to run without Google Play Services. Here’s how to bypass that restriction. Why Remove Google Play Services?** Privacy concerns. Running apps on de-Googled or unsupported devices. Improving battery life on low-end phones. Step 1: Install a Play Services Alternative Some apps rely on Google APIs. Install MicroG, an open-source Play Services replacement: Download MicroG from microg.org. Install GmsCore.apk and GsfProxy.apk. Grant necessary permissions using ADB: adb shell pm grant",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-make-any-app-work-without-google-play-services/1324",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "How to Disable Background Data for Specific Apps",
+            description:
+              "Prevent apps from using data in the background to save battery and bandwidth. Method 1: Disable Background Data in Android Settings Open Settings &gt; Apps. Select the app you want to restrict. Go to Mobile Data &amp; Wi-Fi. Toggle Background Data to Off. Method 2: Use ADB to Block Background Data If your phone doesn’t have an option to disable background data, use ADB: Step 1: Find the App Package Name adb shell pm list packages | grep appname Example: package:com.facebook.katana Step 2: Restri",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-disable-background-data-for-specific-apps/1325",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "How to Run WhatsApp on Unsupported Flip Phones",
+            description:
+              "Some flip phones block WhatsApp installation. Here’s how to install and run it manually. Step 1: Enable Installation from Unknown Sources If your phone doesn’t allow WhatsApp installation, enable Unknown Sources: Go to Settings &gt; Security. Enable Install unknown apps. If this option isn’t available, use ADB. Step 2: Download an Older WhatsApp APK Some flip phones do not support the latest WhatsApp version. Download an older version from: APKMirror APKPure Choose an older but stable version th",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-run-whatsapp-on-unsupported-flip-phones/1323",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "How to Use ADB Wireless Debugging Without USB",
+            description:
+              "Learn how to use ADB wirelessly to connect to your Android device without needing a USB cable. Why Use Wireless ADB? No need to connect via USB More convenient for debugging Works with both rooted and non-rooted devices Step 1: Enable Wireless ADB on Your Phone 1. Connect your phone via USB (only required for setup). 2. Run: `adb tcpip 5555` This restarts ADB in TCP mode. Step 2: Find Your Device’s IP Address On your phone, go to: Settings &gt; About Phone &gt; Status &gt; IP Address or run: adb",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-use-adb-wireless-debugging-without-usb/1322",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "How to Block MMS on Android",
+            description:
+              "How to Block MMS (Multimedia Messages) on Android Prevent your phone from sending or receiving MMS messages while keeping SMS functional. This disallows video/picture texting and other texting features. Does Blocking MMS Affect SMS? SMS (Text Messages): Will continue to work as usual. MMS (Multimedia Messages): Will be blocked, preventing images, videos, and group messages from being sent or received. Method 1: Disable MMS in APN Settings Open Settings &gt; Network &amp; Internet &gt; Mobile Net",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-block-mms-on-android/1329",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "Understanding GSI Package Names",
+            description:
+              "Hi everyone! When selecting a GSI (Generic System Image), you may encounter several packages that look quite similar, often with long and confusing names made up of codes and abbreviations. To help you quickly decode these names and pick the right version for your needs, I’ve prepared this simple guide. Start by reviewing the chart below to get a clear overview of how package names are structured and what the various components mean. Then, check out the practical examples to see how to interpret",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/understanding-gsi-package-names/321",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "Guide: Using Super Image Tool for GSI on Devices with a Super Partition",
+            description:
+              "Introduction Installing a GSI (Generic System Image) on devices like the F21 or Pixel, which feature a single super partition instead of separate system, product, and vendor partitions, can be particularly challenging. The available documentation is often limited, making troubleshooting even more difficult. Previously, tools like lpunpack or lpmake were required, but they could be complex, error-prone, and Linux-exclusive. Enter the Super Image Tool — a streamlined, efficient, and easier solutio",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/guide-using-super-image-tool-for-gsi-on-devices-with-a-super-partition/317",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "Guide: Creating and Flashing Boot Animations for Android MTK Devices",
+            description:
+              "Hi all new users Boot animations on Android devices generally consist of two parts: The initial static logo The animated boot sequence This guide will walk you through creating and flashing a custom boot animation for MediaTek (MTK) devices. Part 1: Creating the First Logo (Static Boot Logo) The static boot logo is stored in the logo.bin partition. Here’s how to edit and flash it: Download Logo Builder for Windows. This tool allows you to edit the logo.bin file. Set Up a New Project in Logo Buil",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/guide-creating-and-flashing-boot-animations-for-android-mtk-devices/300",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "How to Bypass DA Authentication, Authentication File, and Secure Boot for SP Flash Tool",
+            description:
+              "Hi everyone! Today, I’ll guide you through bypassing DA authentication, authentication files, and secure boot in SP Flash Tool using a utility called Bypass Utility. This tool, developed by a GitHub nutcase, is a helpful workaround for bypassing these protections. Steps to Bypass Authentication Download the Tool Get Bypass Utility from this link and extract it to C:/Program Files. Install USB Drivers Download and install the USBdk drivers. Install Required Dependencies Open your terminal and run",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-bypass-da-authentication-authentication-file-and-secure-boot-for-sp-flash-tool/290",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "WWR-MTK: A Guide to Creating a Full Device Backup Using SP Flash Tool",
+            description:
+              "hey there! So, you’ve always used SP Flash Tool, scatter files, and ROMs but never knew how they were created? You’ve wanted to tamper with Android devices but hesitated, thinking, “I’ll brick my device!” No worries! Here’s a guide to help you create a full device backup using SP Flash Tool and WWR-MTK. This process is not for the faint of heart—it’s challenging but rewarding. I’ll include pictures throughout to make things clearer. Note: WWR-MTK is not free. During specific steps, you’ll encoun",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/wwr-mtk-a-guide-to-creating-a-full-device-backup-using-sp-flash-tool/276",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "Signing into Gmail on Dumb Phones",
+            description:
+              "Gmail Sign-in method for any basic non-smartphone device. Create an app password - which is a 16 digit passcode that gives any device access to your Google account. You’ll only have to enter the app password once on your device, so don’t worry about memorizing it, although you can save it for future sign in attempt. Here is how to set it up: 1 visit myaccount.google.com/security Turn on two-step verification. Go back to the security home page, by clicking on the back arrow (2-step Verification) ",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/signing-into-gmail-on-dumb-phones/272",
+            postedBy: {
+              name: "Samtee-1",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/samtee-1/72/263_2.png",
+              link: "https://forums.jtechforums.org/u/Samtee-1",
+            },
+          },
+          {
+            title: "Beginner’s Guide to SP Flash Tool and ROM Flashing",
+            description:
+              "Hello dear tech geek. Even though SP Flash Tool is a fundamental program for Android flashing, it’s essential to have a clear understanding before diving in. This guide will walk you through using SP Flash Tool to flash MediaTek (MTK) devices. What is SP Flash Tool? SP Flash Tool is a software application for flashing firmware onto MTK-based devices. While it primarily supports MTK chips, there are limited ways to use it with Qualcomm devices by using a custom Download Agent (DA), though this is",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/beginner-s-guide-to-sp-flash-tool-and-rom-flashing/233",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "MTKClient Guide",
+            description:
+              "Hello everyone In this guide, I’ll walk you through how to install and use mtkclient on Windows. mtkclient is a powerful tool for unlocking bootloaders on MTK devices. Let’s get started! Steps to Install mtkclient Install Python – Ensure it’s added to your PATH during installation. Install Git – Make sure to add Git to your PATH as well. Install these Drivers – for usb detection. Setting Up mtkclient Open a command prompt and execute the following commands: git clone https://github.com/bkerler/m",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/mtkclient-guide/212",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "How to Install eGate Using an Android Enterprise QR Code",
+            description:
+              "This guide explains how to install eGate using the Android Enterprise QR code enrollment method. This setup installs eGate as the Device Owner, giving it full control to enforce system-wide restrictions (app blocking, web filtering, factory reset protection, etc.). Important Notes: This method only works on newer Android smartphones. Not compatible with flip phones. Works well on devices like CAT S22 Flip, Qin F21 Pro, etc. This process will completely wipe the device. 1. Start with a Factory Re",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/how-to-install-egate-using-an-android-enterprise-qr-code/1544",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "Guide to US LTE Bands on the Xiaomi Qin F21 Pro (Excerpt from XDA Forums)",
+            description:
+              "Based on the method by XDA Forums user CatStoleTheCrown Unlock LTE Bands 2, 4, 12, 13, 17, 66, 71 (from the US Qin F30 Kosher) I broke each step up to make it more clear. Disclaimer Proceed at your own risk. Flashing or modifying your device could result in a non-working (bricked) phone if done incorrectly. Backup everything and be cautious. Requirements Windows PC (Only works on Windows) Qin F21 Pro with: Unlocked bootloader TWRP installed Follow this thread: Unlock + TWRP Guide SP Flash Tool (",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/guide-to-us-lte-bands-on-the-xiaomi-qin-f21-pro-excerpt-from-xda-forums/1592",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/DonBot",
+            },
+          },
+          {
+            title: "Resizing Dynamic Partitions within Super A.K.A. making the System, Vendor and Product partitions larger",
+            description:
+              "You will need: 10gb free space, root and Magisk Install the termux app and install RO2RW magisk module then restart the phone. Open termux and run su and grant it superuser access with magisk. Run ro2rw then run the following 1 [make/install] chose any of the maximum expansion options (1,2,3 or 4) 1 [continue] 1 [skip] Enter any key to continue 1 [yes] 1 [break] 1 or 2 depending on if you want to make a copy of the original super (remember, you need 10gb free, so if you need the space move the c",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/resizing-dynamic-partitions-within-super-a-k-a-making-the-system-vendor-and-product-partitions-larger/1787",
+            postedBy: {
+              name: "NotABird",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/notabird/72/1395_2.png",
+              link: "https://forums.jtechforums.org/u/NotABird",
+            },
+          },
+          {
+            title: "Unpacking and repacking super (basics for ROM creation)",
+            description:
+              "How to Unpack and Repack the Super Partition on Windows Hey everyone! Buckle up because today’s guide is a tough one. I’ll teach you how to unpack and repack the Super partition on Windows, and the best part? No app installations are required—just CMD and Notepad. If you’re new to flashing and ROM customization, I highly recommend checking out my Flashing Beginners Guide before diving into this tutorial. It’ll help you understand the basics and make this process much easier to follow. So, why wo",
+            category: {
+              name: "Android Guides",
+              link: "https://forums.jtechforums.org/c/android-guides/15",
+            },
+            link: "https://forums.jtechforums.org/t/unpacking-and-repacking-super-basics-for-rom-creation/255",
+            postedBy: {
+              name: "TripleU",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/72/488_2.png",
+              link: "https://forums.jtechforums.org/u/TripleU",
+            },
+          },
+          {
+            title: "How to Install, Uninstall, and Launch Apps on Flip Phones",
+            description:
+              "This guide will teach you how to install apps on Android Flip Phones. You can see a list of apps we compiled on our apps page. We do not endorse any app or tell you any apps areokay. It is up for you to decide which apps are hashkafically right for you.",
+            category: { name: "Android Guides", link: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/10" },
+            link: "/guides/how-to-install-uninstall-launch-apps-flip-phones",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/donbot",
+            },
+          },
+          {
+            title: "What is WebADB and How to Use It",
+            description:
+              "WebADB is a browser-based tool that allows users to interact with their Android devices using ADB (Android Debug Bridge) commands. It provides an easy way to manage Android devices without needing to install ADB on your computer, making it a great option for users who want a simple, no-installation solution for debugging, sideloading, and managing apps.",
+            category: { name: "Android Guides", link: "" },
+            link: "/guides/what-is-and-how-to-use-webadb",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/donbot",
+            },
+          },
+          {
+            title: "How to Install Android Auto on a CAT S22 Flip",
+            description:
+              "This guide teaches you how to install Android Auto on a CAT S22 Flip, allowing you to bypass the issue of not being able to run it due to the device running Android Go.",
+            category: { name: "Android Guides", link: "" },
+            link: "/guides/install-android-auto-cat-s22-flip",
+            postedBy: {
+              name: "NotABird",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/notabird/96/1395_2.png",
+              link: "https://forums.jtechforums.org/u/notabird",
+            },
+          },
+          {
+            title: "Guide to US LTE Bands on the Xiaomi Qin F21 Pro",
+            description: "Based on the method by XDA Forums. Unlock LTE Bands 2, 4, 12, 13, 17, 66, 71.",
+            category: {
+              name: "US Bands",
+              link: "https://forums.jtechforums.org/t/guide-to-us-lte-bands-on-the-xiaomi-qin-f21-pro-excerpt-from-xda-forums/1592",
+            },
+            link: "https://forums.jtechforums.org/t/guide-to-us-lte-bands-on-the-xiaomi-qin-f21-pro-excerpt-from-xda-forums/1592",
+            postedBy: {
+              name: "XDA Forums",
+              icon: "https://scontent-iad3-2.xx.fbcdn.net/v/t39.30808-6/267406956_10158748840276302_556888778541067173_n.jpg",
+              link: "https://xdaforums.com/t/guide-xiaomi-qin-f21-pro-with-us-bands.4579393/",
+            },
+          },
+          {
+            title: "Choose a Cellular Carrier",
+            description: "In this post, I will be going through some of the main carriers in the USA that you may be looking into.",
+            category: { name: "Cellular Service", link: "https://forums.jtechforums.org/t/ultimate-guide-to-choosing-a-cellular-carrier-usa/1183" },
+            link: "https://forums.jtechforums.org/t/ultimate-guide-to-choosing-a-cellular-carrier-usa/1183",
+            postedBy: {
+              name: "DonBot",
+              icon: "https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/donbot/72/588_2.png",
+              link: "https://forums.jtechforums.org/u/donbot",
+            },
+          },
+        ];
+
+        function populateApps() {
+          const appContainer = document.getElementById("app-container");
+          appContainer.innerHTML = "";
+
+          apps.forEach((guide) => {
+            const appCard = document.createElement("article");
+            appCard.className = "flex max-w-xl flex-col items-start justify-between bg-gray-50/50 p-6 rounded-lg shadow-md";
+            appCard.innerHTML = `
+<div class="flex items-center justify-between gap-x-4 text-xs w-full">
+  <div class="flex items-center gap-x-2">
+    <a href="${guide.postedBy.link}" class="font-semibold text-gray-900 hover:text-indigo-600 flex items-center gap-x-2 text-lg/6">
+      <img src="${guide.postedBy.icon}" alt="${guide.postedBy.name}" class="size-8 rounded-full bg-gray-50">
+      @${guide.postedBy.name}
+    </a>
+  </div>
+</div>
+<div class="group relative mt-4">
+  <h3 class="mt-2 text-2xl/6 font-semibold text-gray-900 group-hover:text-gray-600">
+    <a href="${guide.link}">
+      <span class="absolute inset-0"></span>
+      ${guide.title}
+    </a>
+  </h3>
+  <p class="mt-5 line-clamp-3 text-sm/6 text-gray-600">${guide.description}</p>
+</div>
+
+            `;
+            appContainer.appendChild(appCard);
+          });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          populateApps();
+        });
+      </script>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script>
+      fetch("/constants/footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+        });
+
+      fetch("/constants/headerLight.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+        });
+    </script>
+
+    <style>
+      .slide-up {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+
+      .slide-up.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
+    <!-- START Formbricks Surveys -->
+    <script type="text/javascript">
+      !(function () {
+        var t = document.createElement("script");
+        (t.type = "text/javascript"),
+          (t.async = !0),
+          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
+          (t.onload = function () {
+            window.formbricks
+              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
+              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
+          });
+        var e = document.getElementsByTagName("script")[0];
+        e.parentNode.insertBefore(t, e);
+      })();
+    </script>
+    <!-- END Formbricks Surveys -->
+  </body>
+</html>

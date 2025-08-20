@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
+    <meta
+      name="description"
+      content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
+    />
+    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
+    <meta name="author" content="doniel@mesnan.com" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      img {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header-container"></div>
+
+    <!--Header-->
+    <div class="bg-white px-6 pt-24 pb-12 lg:px-8">
+      <h2 class="mt-20 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl text-center">Contact Us</h2>
+    </div>
+    <div class="mx-auto max-w-6xl px-6 sm:px-24 pb-24">
+      <div class="relative isolate overflow-hidden bg-gray-800 px-6 py-6 shadow-2xl sm:rounded-3xl sm:px-24">
+        <div data-tf-live="01JT95Z7AZPPGGQ9E1PMGASQME"></div>
+        <script src="//embed.typeform.com/next/embed.js"></script>
+      </div>
+    </div>
+
+    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script>
+
+    <div id="footer-container"></div>
+
+    <script>
+      fetch("/constants/footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+        });
+
+      fetch("/constants/headerLight.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+        });
+    </script>
+
+    <style>
+      .slide-up {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+
+      .slide-up.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
+    <!-- START Formbricks Surveys -->
+    <script type="text/javascript">
+      !(function () {
+        var t = document.createElement("script");
+        (t.type = "text/javascript"),
+          (t.async = !0),
+          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
+          (t.onload = function () {
+            window.formbricks
+              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
+              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
+          });
+        var e = document.getElementsByTagName("script")[0];
+        e.parentNode.insertBefore(t, e);
+      })();
+    </script>
+    <!-- END Formbricks Surveys -->
+  </body>
+</html>

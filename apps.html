@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
+    <meta
+      name="description"
+      content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
+    />
+    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
+    <meta name="author" content="doniel@mesnan.com" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      img {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header-container"></div>
+
+    <!--Header-->
+    <div class="bg-white">
+      <!-- Header -->
+      <div class="relative bg-gray-900 pb-32">
+        <div class="relative mx-auto max-w-7xl px-6 pb-32 pt-48 lg:px-8">
+          <h1 class="text-4xl text-center font-bold tracking-tight text-white md:text-5xl lg:text-6xl">Apps</h1>
+          <p class="mt-6 mx-auto max-w-3xl text-center text-xl text-gray-300">
+            We have compiled a comprehensive list of apps from our forum for you to use on your device. For more information about our apps and
+            content, check out our forum.
+          </p>
+        </div>
+      </div>
+
+      <!-- Overlapping cards -->
+      <section class="relative z-10 mx-auto -mt-42 max-w-7xl px-6 pb-32 lg:px-8" aria-labelledby="contact-heading">
+        <h2 class="sr-only" id="contact-heading">Contact us</h2>
+        <div class="grid grid-cols-1 gap-y-20 lg:grid-cols-2 lg: mx-[10%] lg:gap-x-8 lg:gap-y-0">
+          <div class="flex flex-col items-center text-center rounded-2xl bg-white shadow-xl">
+            <div class="relative flex-1 px-6 py-10 md:px-8 flex flex-col items-center text-center">
+              <h3 class="text-2xl font-medium text-gray-900">Please Note</h3>
+              <ul class="mt-4 text-base text-gray-500 max-w-md list-disc list-inside">
+                <li>We can not promise every app here is Kosher and browser-free. Please report any app to us that has any Kosher issues.</li>
+                <li>We can not promise every app here is safe and secure.</li>
+                <li>We are not responsible for any damage or issues any apps listed cause.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex flex-col items-center text-center rounded-2xl bg-white shadow-xl">
+            <div class="relative flex-1 px-6 py-10 md:px-8 flex flex-col items-center text-center">
+              <h3 class="text-2xl font-medium text-gray-900">Submit Your Own Apps</h3>
+              <p class="mt-4 text-base text-gray-500 max-w-md">
+                Click the button below and submit your own app that we can add to the list. Please make sure it is Kosher, browser-free and safe for
+                use. We appreciate any app that is submitted to us but please ensure you have the rights to share it.
+              </p>
+            </div>
+            <div class="rounded-br-2xl rounded-bl-2xl bg-gray-50 p-6 md:px-8 w-full flex justify-center">
+              <button id="trackButton" class="text-base cursor-pointer font-medium text-indigo-700 hover:text-indigo-600">
+                Submit your app<span aria-hidden="true"> &rarr;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      document.getElementById("trackButton").addEventListener("click", function () {
+        formbricks.track("new_app");
+      });
+    </script>
+
+    <div>
+      <div class="grid grid-cols-1 sm:hidden mx-[20%] mb-12">
+        <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
+        <select
+          onchange="setForumFilter(this.value === 'Basic Apps')"
+          aria-label="Select a tab"
+          class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
+        >
+          <option selected>Basic Apps</option>
+          <option>All Apps</option>
+        </select>
+        <svg
+          class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <!-- Tabs -->
+      <div class="hidden sm:block mx-[30%] mb-12">
+        <nav class="isolate flex divide-x divide-gray-200 rounded-lg shadow-sm" aria-label="Tabs">
+          <button
+            onclick="setForumFilter(true)"
+            class="group cursor-pointer relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium text-gray-900 hover:bg-gray-50 focus:z-10"
+            id="basic-tab"
+          >
+            <span>Basic Apps</span>
+            <span aria-hidden="true" id="basic-underline" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500"></span>
+          </button>
+          <button
+            onclick="setForumFilter(false)"
+            class="group cursor-pointer relative min-w-0 flex-1 overflow-hidden rounded-r-lg bg-white px-4 py-4 text-center text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 focus:z-10"
+            id="advanced-tab"
+          >
+            <span>All Apps</span>
+            <span aria-hidden="true" id="advanced-underline" class="absolute inset-x-0 bottom-0 h-0.5 bg-transparent"></span>
+          </button>
+        </nav>
+      </div>
+    </div>
+    <div class="flex flex-col md:flex-row">
+      <!-- Sidebar -->
+      <aside class="w-full md:w-1/3 bg-white shadow-sm rounded-xl p-6 self-start md:ml-16 mx-16 md:mx-0 max-w-[calc(100%-8rem)] mb-16 md:mb-0">
+        <h2 class="text-xl font-semibold mb-4">Filter by Type</h2>
+        <div id="filter-options" class="space-y-2"></div>
+        <br />
+
+        <h2 class="text-xl font-semibold mb-2">Filter by Phone Compatibility</h2>
+        <p class="text-sm text-gray-600 mb-4">
+          <!--Note: The phone compatibility list does not mean the listed apps are the only ones that work. It only includes apps that have been tested
+          and specifically optimized for those devices.-->
+          Coming Soon
+        </p>
+        <div id="filter-options-phone" class="space-y-2"></div>
+        <br />
+        <h2 class="text-xl font-semibold mb-4">Filter by Posters</h2>
+        <div id="filter-options-posters" class="space-y-2"></div>
+      </aside>
+      <!-- Apps -->
+      <ul id="app-list" role="list" class="mx-16 flex flex-col gap-6"></ul>
+
+      <script>
+        const apps = [
+          {
+            icon: "/img/apps/FlipLauncher.png",
+            title: "FlipLauncher",
+            description:
+              "This app launcher is great for the exalt. You can launch it using the voice command / mic button. You can turn notifications on or off.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/2",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/xFL7KgOmfyRUNICxzPOU5BrJ4G3.apk",
+            credits: "Unknown",
+            postedBy: "kosherboy",
+            postedByLink: "https://forums.jtechforums.org/u/kosherboy",
+            type: "Launcher",
+          },
+          {
+            icon: "/img/apps/SMStoPC.png",
+            title: "SMS Forwarder",
+            description:
+              "App that forwards texts to another number or email. Modified for LG and Cadence flip phones for seamless SMS forwarding. Easy setup, reliable delivery, and works in the background.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/3",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/gLoQ98lxrs04ds2qoY9M0ao7yhJ.apk",
+            credits: "@ZTEGuy (Apps4Flip)",
+            postedBy: "kosherboy",
+            postedByLink: "https://forums.jtechforums.org/u/kosherboy",
+            type: "Utilities",
+          },
+
+          {
+            icon: "/img/apps/AudioConverterSamClub.png",
+            title: "Audio Converter By SamClub ",
+            description:
+              "A simple audio converter modified by SamClub for flip phones. Easily converts files to various formats, including.ogg for ringtones. Lightweight, fast, and optimized for flip phone compatibility.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/5",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/1Aq2jvjF5wpfH18iq985bBqL2AS.apk",
+            credits: "sam-club",
+            postedBy: "sam-club",
+            postedByLink: "https://forums.jtechforums.org/u/sam-club",
+            type: "Utilities",
+          },
+          /*
+          In-App Browsers: UNKNOWN 
+          {
+            icon: "/img/apps/Minishare.png ",
+            title: "Minishare",
+            description:
+              "To download an APK on a TCL Flip 2, you usually need Bluetooth(like on the Kyocera Cadence) or ADB. With MiniShare, you can download APKs directly from your phone by accessing its APK list in the app.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/4",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/soliYPtA5DBNo6QucS3JDZtXmyA.apk",
+            credits: "Unknown",
+            postedBy: "kosherboy",
+            postedByLink: "https://forums.jtechforums.org/u/kosherboy",
+            type: "Utilities",
+          },
+          
+            {
+        icon: "/img/apps/SamClubCheckers.png",
+        title: "Checkers By SamClub",
+        description: "A classic Checkers game modified by SamClub for flip phones. Requires a mouse but runs smoothly. Play against AI or challenge a friend. Simple, fun, and optimized for flip phone use.Enjoy!",
+        forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/7",
+        fileLink: "https://forums.jtechforums.org/uploads/short-url/uX3Syx0ojGYxgvMPjz4XgEceuK3.apk",
+        credits: "sam-club",
+        postedBy: "sam-club",
+        postedByLink: "https://forums.jtechforums.org/u/sam-club",
+        type: "Entertainment",
+    },
+    */
+          {
+            icon: "/img/apps/ButtonMapper.png",
+            title: "Button Mapper",
+            description:
+              "A great app to remap buttons on your phone. Assign shortcuts to hardware keys for quick actions, making navigation faster and more efficient.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/10",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/wKgzjjYzaIMcoGOsC9BcTtoMpq3.apk",
+            credits: "flar2 (Google Play Developer)",
+            postedBy: "sam-club",
+            postedByLink: "https://forums.jtechforums.org/u/sam-club",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/KCOMouse.png",
+            title: "KCO Mouse",
+            description:
+              "A great mouse for flip phones—arguably the best one. Provides smooth, precise control, making it easier to navigate apps and settings on non-touchscreen devices.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/10",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/uxMpPyN3VGeiKHn70ICb3iECpkQ.apk",
+            credits: "Unknown",
+            postedBy: "sam-club",
+            postedByLink: "https://forums.jtechforums.org/u/sam-club",
+            type: "Utilities",
+            basic: true,
+          },
+          {
+            icon: "/img/apps/Smartlist.png",
+            title: "Smartlist",
+            description:
+              "A kosher phonebook designed for the Jewish community. Find shuls, yeshivas, kosher businesses, and contacts easily, all in a well-organized directory.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/10",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/iE7X0jNNTS1PkHrAgQoJgZRZ3nC.apk",
+            credits: "Lionscribe (Google Play Developer)",
+            postedBy: "sam-club",
+            postedByLink: "https://forums.jtechforums.org/u/sam-club",
+            type: "Communication",
+            basic: true,
+          },
+          {
+            icon: "/img/apps/GoogleTranslate.png",
+            title: "Google Translate",
+            description:
+              "Google Translate is a powerful translation app that supports text, voice, and image translations across multiple languages. This has in-app browsers removed to prevent web access.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/10",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/verMm8eBtMZU5aTPfbLEIjTNWqT.apk",
+            credits: "sam-club",
+            postedBy: "sam-club",
+            postedByLink: "https://forums.jtechforums.org/u/sam-club",
+            type: "Communication",
+            basic: true,
+          },
+          {
+            icon: "/img/apps/Uninstaller.png",
+            title: "Uninstaller",
+            description:
+              "A simple tool to remove apps quickly, including system apps (if allowed). Helps clean up unwanted apps from flip phones with minimal effort.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/10",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/rbInfN8opB4pIyXuLzrfCtJ8iyd.apk",
+            credits: "Unknown",
+            postedBy: "sam-club",
+            postedByLink: "https://forums.jtechforums.org/u/sam-club",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/KosherChat.png",
+            title: "Kosher.Chat",
+            description:
+              "Kosher.Chat is a frum, kosher AI chatbot. This community-made web app provides easy access on any device, offering a reliable, filtered AI experience for the frum community.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/8",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/t3CSYSTj60Qs58stEHu3DrhJ3KC.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Entertainment",
+            basic: true,
+          },
+          {
+            icon: "/img/apps/HiddenSettings.png",
+            title: "Hidden Settings",
+            description: "Allows you to access many settings that aren’t in the settings app of many flip phones (and other phones).",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/ifsgCzIMAXHjSOUe1hjPpklWnJ2.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/InstallBuddy.png",
+            title: "Install Buddy",
+            description:
+              "Installs split APKs (XAPK, APKS, etc.) that the default installer doesn’t support. Essential for installing apps with multiple parts on flip phones.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/xyaqaKWcSFB1TnhGhtiwW2AkU2g.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/KosheredAutomate.png",
+            title: "Koshered Automate",
+            description:
+              "An automation app (with in-app browsers removed). Hard to build automations without a touchscreen or Bluetooth mouse, but pre-made automations can be downloaded and used.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/lBkSdStZJoAluiUPAVyokr9m3Sm.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/PowerShortcuts.png",
+            title: "Power Shortcuts",
+            description:
+              "Enhances button remapping by creating shortcuts for any activity from any app. Works with Button Mapper or Buttons Remapper for advanced customization.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/w7IRMdncC4ZKB3HJR6MX6u8Y3M0.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/SystemUITuner.png",
+            title: "System UI Tuner",
+            description:
+              "Unlocks hidden system UI settings not available in Android’s default settings app. Customize your status bar, notifications, and more.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/Tmg97ve4F9gpRrqDKe9m7lokFK.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/TetherFi.png",
+            title: "TetherFi",
+            description:
+              "Bypasses carrier restrictions to use your phone’s hotspot without using hotspot data. Works even if your carrier blocks mobile tethering.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/iZEutn0QKC8S0HBFX7rV0MXZaVG.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+            basic: true,
+          },
+          {
+            icon: "/img/apps/UltraVolumeControl.png",
+            title: "Ultra Volume Control",
+            description:
+              "Allows you to customize the volume popup. Great for replacing the annoying popup that covers the entire screen when you adjust the volume on many flip phones.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/h1dnV0PN39hn4ku4vCOA177ckYY.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+            basic: true,
+          },
+          {
+            icon: "/img/apps/SMSBackupRestore.png",
+            title: "SMS Backup & Restore",
+            description:
+              "Backup text messages and call logs to restore them on another phone. Supports local and cloud backups, making phone transfers easy.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/11",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/63kvtP8qvFwEthbgOrX8xC44S5y.apk",
+            credits: "@Samtee-1 and @FliphoneBochur (JTech Forums)",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Utilities",
+          },
+          {
+            icon: "/img/apps/GoogleVoiceWebApp.png",
+            title: "Google Voice Web App",
+            description:
+              "A web-based APK of Google Voice, so it doesn’t require Google Play Services. Use Google Voice Web App for calls and texts on non Google Play Services phones.",
+            forumLink: "https://forums.jtechforums.org/t/uploaded-apps-thread/990/14",
+            fileLink: "https://forums.jtechforums.org/uploads/short-url/1gmV5SJnH3WvesuLctpOlINe1qP.apk",
+            credits: "Unknown",
+            postedBy: "dev-in-the-bm",
+            postedByLink: "https://forums.jtechforums.org/u/dev-in-the-bm",
+            type: "Communication",
+            basic: true,
+          },
+        ];
+        let showOnlyBasic = true;
+
+        function populateApps(filterTypes = [], filterPosters = [], filterPhones = []) {
+          const appList = document.getElementById("app-list");
+          appList.innerHTML = "";
+
+          const sortedApps = [...apps].sort((a, b) => a.title.localeCompare(b.title));
+
+          const filteredApps = sortedApps.filter((app) => {
+            const matchesType = filterTypes.length === 0 || filterTypes.includes(app.type);
+            const matchesPoster = filterPosters.length === 0 || filterPosters.includes(app.postedBy);
+
+            const matchesPhone =
+              filterPhones.length === 0 || (app.phoneCompatibility && app.phoneCompatibility.some((phone) => filterPhones.includes(phone)));
+            const matchesBasic = !showOnlyBasic || app.basic; // Show all apps if not filtered, otherwise only basic apps
+
+            return matchesType && matchesPoster && matchesPhone && matchesBasic;
+          });
+
+          filteredApps.forEach((app) => {
+            const li = document.createElement("li");
+            li.className = "relative flex justify-between gap-x-6 py-5 bg-white p-4 rounded-md shadow-sm";
+
+            li.innerHTML = `
+                    <div class="flex min-w-0 gap-x-4">
+                        <img class="size-24 flex-none rounded-xl bg-gray-50 self-center" src="${app.icon}" alt="${app.title}" />
+                        <div class="min-w-0 flex-auto">
+                            <p class="text-2xl font-semibold text-gray-900">${app.title}</p>
+                            <p class="mt-1 text-[14px] text-gray-500 w-[90%]">${app.description}</p>
+                            <div class="pt-1 text-sm flex">
+                                <b>Credits:&nbsp;</b>
+                                <p>${app.credits}</p>
+                            </div>
+                            <div class="pt-1 text-sm flex">
+                                <b>Posted by:&nbsp;</b>
+                                <a class="underline" href="${app.postedByLink}" target="_blank">@${app.postedBy}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex shrink-0 items-center gap-x-4">
+                        <div class="hidden sm:flex sm:flex-col sm:justify-center sm:items-center w-full max-w-[250px]">
+                            <a href="${app.forumLink}" target="_blank" class="w-full text-center rounded-md bg-white px-4 py-2 text-md font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+                                View Forum Post
+                            </a>
+                            <a href="${app.fileLink}" download class="w-full mt-2 text-center rounded-md bg-indigo-600 px-4 py-2 text-md font-semibold text-white shadow-xs hover:bg-indigo-500">
+                                Download APK
+                            </a>
+
+
+                        </div>
+                    </div>
+                  `;
+
+            appList.appendChild(li);
+          });
+        }
+
+        function setForumFilter(basic) {
+          showOnlyBasic = basic;
+          document.getElementById("basic-underline").classList.toggle("bg-indigo-500", basic);
+          document.getElementById("basic-underline").classList.toggle("bg-transparent", !basic);
+          document.getElementById("advanced-underline").classList.toggle("bg-indigo-500", !basic);
+          document.getElementById("advanced-underline").classList.toggle("bg-transparent", basic);
+
+          document.getElementById("basic-tab").classList.toggle("text-gray-900", basic);
+          document.getElementById("basic-tab").classList.toggle("text-gray-500", !basic);
+          document.getElementById("advanced-tab").classList.toggle("text-gray-900", !basic);
+          document.getElementById("advanced-tab").classList.toggle("text-gray-500", basic);
+          applyFilters();
+        }
+
+        function generateFilterOptions() {
+          const typeContainer = document.getElementById("filter-options");
+          const posterContainer = document.getElementById("filter-options-posters");
+          const phoneContainer = document.getElementById("filter-options-phone");
+
+          // Extract unique values
+          const types = [...new Set(apps.map((app) => app.type))].sort();
+          const posters = [...new Set(apps.map((app) => app.postedBy))].sort();
+
+          const phones = [
+            ...new Set(
+              apps.flatMap((app) => app.phoneCompatibility || []) // Ensure undefined values don't cause issues
+            ),
+          ].filter((phone) => phone.trim() !== ""); // Remove empty strings
+
+          types.forEach((type) => createCheckbox(type, typeContainer, "type"));
+          posters.forEach((poster) => createCheckbox(poster, posterContainer, "poster"));
+          phones.forEach((phone) => createCheckbox(phone, phoneContainer, "phone"));
+        }
+
+        function createCheckbox(value, container, category) {
+          const div = document.createElement("div");
+          div.className = "flex items-center";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = value;
+          checkbox.className = "mr-2 filter-checkbox";
+          checkbox.dataset.category = category;
+          checkbox.addEventListener("change", applyFilters);
+
+          const label = document.createElement("label");
+          label.textContent = value;
+          label.className = "text-gray-700";
+
+          div.appendChild(checkbox);
+          div.appendChild(label);
+          container.appendChild(div);
+        }
+
+        function applyFilters() {
+          const checkedTypeBoxes = [...document.querySelectorAll('.filter-checkbox[data-category="type"]:checked')];
+          const checkedPosterBoxes = [...document.querySelectorAll('.filter-checkbox[data-category="poster"]:checked')];
+          const checkedPhoneBoxes = [...document.querySelectorAll('.filter-checkbox[data-category="phone"]:checked')];
+
+          const selectedTypes = checkedTypeBoxes.map((box) => box.value);
+          const selectedPosters = checkedPosterBoxes.map((box) => box.value);
+          const selectedPhones = checkedPhoneBoxes.map((box) => box.value);
+
+          populateApps(selectedTypes, selectedPosters, selectedPhones);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          generateFilterOptions();
+          populateApps();
+        });
+      </script>
+    </div>
+
+    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script>
+
+    <div id="footer-container"></div>
+
+    <script>
+      fetch("/constants/footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+        });
+
+      fetch("/constants/headerDark.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+        });
+    </script>
+
+    <style>
+      .slide-up {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+
+      .slide-up.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
+    <!-- START Formbricks Surveys -->
+    <script type="text/javascript">
+      !(function () {
+        var t = document.createElement("script");
+        (t.type = "text/javascript"),
+          (t.async = !0),
+          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
+          (t.onload = function () {
+            window.formbricks
+              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
+              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
+          });
+        var e = document.getElementsByTagName("script")[0];
+        e.parentNode.insertBefore(t, e);
+      })();
+    </script>
+    <!-- END Formbricks Surveys -->
+  </body>
+</html>

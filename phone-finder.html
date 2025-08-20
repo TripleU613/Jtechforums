@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
+    <meta
+      name="description"
+      content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
+    />
+    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
+    <meta name="author" content="doniel@mesnan.com" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      img {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header-container"></div>
+
+    <!--Header-->
+    <div class="bg-white px-6 py-26 mt-16 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-base/7 font-semibold text-indigo-600">Community Resource</p>
+        <h2 class="mt-2 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Phone Finder</h2>
+        <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
+          We have compiled a comprehensive list of phones that may be helpful for you. For more information about our apps and content, check out our
+          forum.
+        </p>
+        <br />
+        <span class="text-gray-500 text-pretty underline text-lg">Please note the following about all the phones listed below:</span>
+        <br />
+        <ul class="text-gray-500">
+          <li>• Most phones are not Kosher and contain open internet access.</li>
+          <li>• We are not responsible for any damage or issues any phones listed cause.</li>
+          <li>• Only phones that have been able to be filtered before are on this list.</li>
+          <li>• Please verify any information on this page before relying on it for anything.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 mx-4 md:mx-16">
+      <!-- Sidebar -->
+      <aside class="w-full md:w-1/3 bg-white shadow-sm rounded-xl p-6 self-start mb-16">
+        <h2 class="text-3xl font-semibold mb-4">Filters</h2>
+        <div id="filter-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      </aside>
+
+      <!-- Phones -->
+      <div class="w-full md:flex-1">
+        <ul id="phones-list" role="list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 list-none m-0 mb-8">
+          <div id="loading-spinner" class="flex items-center justify-center ml-50 py-5">
+            <svg class="animate-spin h-12 w-12 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.372 0 0 5.373 0 12h4z"></path>
+            </svg>
+          </div>
+        </ul>
+      </div>
+    </div>
+
+    <div style="position: relative; height: 60dvh; overflow: auto">
+      <iframe
+        src="https://forms.mesnan.com/s/cmad2otbp000eqa01xlu9rfod"
+        frameborder="0"
+        style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 0"
+      >
+      </iframe>
+    </div>
+
+    <!-- Modal -->
+
+    <div id="phone-modal" class="popup-overlay fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-8 relative text-center">
+        <button id="close-modal" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-3xl leading-none font-bold cursor-pointer">
+          &times;
+        </button>
+        <div id="modal-content" class="space-y-4 p-4 max-w-full overflow-y-auto m-10 sm:m-0"></div>
+      </div>
+    </div>
+
+    <script>
+      function openFormModal(event, closeOther, phoneName) {
+        if (closeOther) {
+          const modal = document.getElementById("phone-modal");
+          if (!modal.classList.contains("hidden")) {
+            modal.classList.add("hidden");
+          }
+        }
+
+        formbricks.track("report_misinformation");
+      }
+
+      function closeFormModal() {
+        document.getElementById("form-modal").classList.add("hidden");
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbzQUjdGl3yBfaAt6zBRHd7yArNqutb1Pb481ghmc2c06Hw-qDjSRp1vMO6fJ9idG298tQ/exec")
+        .then((res) => res.json())
+        .then((phones) => {
+          const activeFilters = {};
+          let activePriceRange = [0, 1000];
+          let activeRefurbishedRange = [0, 1000];
+
+          const sortMapper = {
+            price: "New Condition Price (Max)",
+            refurbished: "Refurbished Price (Max)",
+            brand: "Brand",
+            region: "Region",
+            appsCanBeInstalled: "Apps Can Be Installed",
+            messaging: "Messaging Support",
+            adb: "Supports ADB",
+            type: "Type",
+            comesFiltered: "Comes Kosher",
+            carriers: "Cellular Carrier(s)",
+            network: "Network",
+            deviceFeatures: "Device Features",
+          };
+
+          function showModal(phone) {
+            const modal = document.getElementById("phone-modal");
+            const content = document.getElementById("modal-content");
+            content.innerHTML = `
+ <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+    <img 
+      src="${phone.image}" 
+      class="w-32 h-32 sm:w-40 sm:h-40 object-scale-down rounded mb-2 sm:mb-4" 
+      alt="${phone.name}" 
+    />
+
+    <div class="text-center">
+      <h2 class="text-2xl sm:text-4xl font-bold mb-1">${phone.name}</h2>
+      <p class="text-lg text-gray-800">${phone.type}</p>
+    </div>
+  </div>
+
+  <!-- Details Grid -->
+<div class="grid grid-cols-1 gap-x-6 gap-y-3 my-8 text-sm sm:text-base button-grid">
+    ${
+      phone.link !== "unknown"
+        ? `<a href="${phone.link}" target="_blank" class="flex items-center gap-2 justify-center cursor-pointer rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+    Product Website <i class="fa-solid fa-up-right-from-square"></i>
+  </a>`
+        : ""
+    }
+  <button onclick="openFormModal(event, true, \`${
+    phone.name
+  }\`)" class="flex items-center gap-2 justify-center cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+    Report Incorrect Information
+  </button>
+</div>
+
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3 mt-4 text-sm sm:text-base"> <p><strong>New Price:</strong> $${phone.price}</p>
+    <p><strong>Refurbished Price:</strong> $${phone.refurbished}</p>
+    <p><strong>Region(s):</strong> ${phone.region.join(", ")}</p>
+    <p><strong>Carriers:</strong> ${phone.carriers.join(", ")}</p>
+    <p><strong>Network:</strong> ${phone.network.join(", ")}</p>
+    <p><strong>Messaging:</strong> ${phone.messaging.join(", ")}</p>
+    <p><strong>Operating System:</strong> ${phone.operatingSystem}</p>
+    <p><strong>Comes Filtered:</strong> ${phone.comesFiltered ? "Yes" : "No"}</p>
+    <p><strong>Apps Can Be Installed:</strong> ${
+      phone.appsCanBeInstalled === true ? "Yes" : phone.appsCanBeInstalled === false ? "No" : phone.appsCanBeInstalled
+    }</p>
+    <p><strong>Supports ADB:</strong> ${phone.adb === true ? "Yes" : phone.adb === false ? "No" : phone.adb}</p>
+  </div>
+
+  <hr class="my-6" />
+
+  <!-- Features List -->
+  <div>
+    <h2 class="font-semibold text-lg sm:text-xl mb-2">Features:</h2>
+    <ul id="deviceFeaturesList" class="list-disc list-inside grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm sm:text-base">
+      ${Object.entries(phone.deviceFeatures)
+        .map(([key, value]) => `<li>${value}</li>`)
+        .join("")}
+    </ul>
+  </div>
+          `;
+            const list = document.getElementById("deviceFeaturesList");
+            const itemCount = list.querySelectorAll("li").length;
+
+            if (itemCount > 8) {
+              list.classList.add("md:grid-cols-3");
+            } else if (itemCount > 4) {
+              list.classList.add("md:grid-cols-2");
+            }
+
+            const buttonGrid = document.querySelector("#modal-content .button-grid");
+            if (buttonGrid) {
+              const buttons = buttonGrid.querySelectorAll("a, button"); // include both <a> and <button>
+              if (buttons.length === 1) {
+                buttonGrid.classList.remove("sm:grid-cols-2");
+                buttons[0].classList.add("w-1/2", "mx-auto");
+              } else {
+                buttonGrid.classList.add("sm:grid-cols-2");
+                buttons.forEach((btn) => btn.classList.remove("w-1/2", "mx-auto"));
+              }
+            }
+
+            modal.classList.remove("hidden");
+          }
+
+          document.getElementById("close-modal").addEventListener("click", () => {
+            document.getElementById("phone-modal").classList.add("hidden");
+          });
+
+          document.getElementById("phone-modal").addEventListener("click", (e) => {
+            if (e.target.id === "phone-modal") {
+              document.getElementById("phone-modal").classList.add("hidden");
+            }
+          });
+
+          document.getElementById("modal-content").addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent clicks from bubbling up to the modal overlay
+          });
+
+          document.getElementById("phone-modal").addEventListener("mousedown", (e) => {
+            // If clicking directly on the overlay background, not on content
+            if (e.target.id === "phone-modal") {
+              document.getElementById("phone-modal").classList.add("hidden");
+            } else {
+              e.stopPropagation(); // Prevent closing when starting selection inside content
+            }
+          });
+
+          document.getElementById("loading-spinner").classList.add("hidden");
+
+          function populatePhones() {
+            const phonesList = document.getElementById("phones-list");
+            phonesList.innerHTML = "";
+
+            const filtered = phones.filter((phone) => {
+              if (phone.price < activePriceRange[0] || phone.price > activePriceRange[1]) return false;
+              if (phone.refurbished < activeRefurbishedRange[0] || phone.refurbished > activeRefurbishedRange[1]) return false;
+
+              return Object.entries(activeFilters).every(([key, values]) => {
+                if (!values.length) return true;
+
+                const phoneValue = key.startsWith("supports.") ? phone.supports?.[key.split(".")[1]] : phone[key];
+
+                if (Array.isArray(phoneValue)) {
+                  return values.some((val) => phoneValue.includes(val));
+                } else if (typeof phoneValue === "boolean") {
+                  return values.includes(phoneValue.toString());
+                } else {
+                  return values.includes(String(phoneValue));
+                }
+              });
+            });
+
+            filtered.forEach((phone) => {
+              const li = document.createElement("li");
+              li.className = "relative flex justify-between gap-x-6 py-5 bg-white p-4 rounded-md shadow-xs border border-gray-200 cursor-pointer";
+              li.addEventListener("click", (e) => {
+                const selection = window.getSelection();
+                if (selection.toString().length > 0) {
+                  return; // Do nothing if text is being selected
+                }
+
+                const isButton = e.target.closest("button") || e.target.closest("a");
+                if (!isButton) {
+                  showModal(phone);
+                }
+              });
+              li.innerHTML = `
+       <!-- Info Button -->
+     <div class="absolute bottom-2 right-2 flex gap-2 z-20">
+  ${
+    phone.link !== "unknown"
+      ? `<a
+    href="${phone.link}"
+    target="_blank"
+    class="text-white bg-blue-600 hover:bg-blue-700 rounded-full cursor-pointer w-6 h-6 text-xs font-bold flex items-center justify-center"
+    title="Open Link"
+  >
+    <i class="fa-solid fa-link"></i>
+  </a>`
+      : ""
+  }
+  <button
+    onclick="openFormModal(event, false, \`${phone.name}\`)"
+    class="text-white bg-red-600 hover:bg-red-700 rounded-full cursor-pointer w-6 h-6 text-xs font-bold flex items-center justify-center"
+    title="Report or Suggest Edit"
+  >
+    !
+  </button>
+</div>
+          <div class="flex min-w-0 gap-x-4">
+            <img class="size-24 flex-none rounded-xl self-center object-scale-down" src="${phone.image}" alt="${phone.name}" />
+            <div class="min-w-0 flex-auto">
+<p class="text-2xl font-semibold text-gray-900 cursor-text break-words">${phone.name}</p>
+<p class="mt-1 text-[18px] text-gray-800 cursor-text max-w-[90%] break-words">${phone.type}</p>
+<p class="mt-1 text-[14px] text-gray-600 cursor-text max-w-[90%] break-words">New: $${phone.price}</p>
+<p class="text-[14px] text-gray-600 cursor-text max-w-[90%] break-words">Refurbished: $${phone.refurbished}</p>
+            </div>
+          </div>
+
+            `;
+
+              phonesList.appendChild(li);
+            });
+          }
+
+          function generateFilterOptions() {
+            const container = document.getElementById("filter-options-container");
+
+            function addCheckbox(category, value, label, groupLabel) {
+              if (category === "price") return;
+              if (category === "refurbished") return;
+
+              let group = document.getElementById("group-" + category);
+              let checkboxWrapper;
+
+              if (!group) {
+                group = document.createElement("div");
+                group.id = "group-" + category;
+                group.className = `p-2 border border-gray-200 rounded-md mb-4 ${
+                  category === "deviceFeatures" || category === "brand" ? "md:col-span-2" : ""
+                }`;
+
+                const title = document.createElement("h4");
+                title.className = "font-semibold text-gray-800 mb-2";
+                title.textContent = groupLabel;
+                group.appendChild(title);
+
+                checkboxWrapper = document.createElement("div");
+                checkboxWrapper.className = category === "deviceFeatures" || category === "brand" ? "grid grid-cols-2 gap-2" : "";
+                checkboxWrapper.id = `wrapper-${category}`;
+
+                group.appendChild(checkboxWrapper);
+                container.appendChild(group);
+              } else {
+                checkboxWrapper = group.querySelector(`#wrapper-${category}`);
+                if (!checkboxWrapper) {
+                  checkboxWrapper = document.createElement("div");
+                  checkboxWrapper.className = category === "deviceFeatures" || category === "brand" ? "grid grid-cols-2 gap-2" : "";
+                  checkboxWrapper.id = `wrapper-${category}`;
+                  group.appendChild(checkboxWrapper);
+                }
+              }
+
+              const div = document.createElement("div");
+              div.className = "flex items-center gap-2 mb-1";
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.value = value;
+              checkbox.dataset.category = category;
+              checkbox.addEventListener("change", handleFilterChange);
+
+              const labelEl = document.createElement("label");
+              labelEl.textContent = value === "true" ? "Yes" : value === "false" ? "No" : value;
+
+              div.appendChild(checkbox);
+              div.appendChild(labelEl);
+              checkboxWrapper.appendChild(div);
+            }
+
+            for (const [key, label] of Object.entries(sortMapper)) {
+              if (key === "price") {
+                const group = document.createElement("div");
+                group.id = "group-price";
+                group.className = "p-2 border border-gray-200 rounded-md mb-4";
+
+                const title = document.createElement("h4");
+                title.className = "font-semibold text-gray-800 mb-2";
+                title.textContent = label;
+
+                const description = document.createElement("p");
+                description.className = "text-xs text-gray-500 mb-2";
+                description.textContent = "Prices are estimated based on market values (of the time this list was updated). Actual prices may vary.";
+
+                const rangeWrapper = document.createElement("div");
+                rangeWrapper.className = "flex flex-col gap-2";
+
+                const rangeLabel = document.createElement("div");
+                rangeLabel.id = "price-range-label";
+                rangeLabel.className = "text-sm text-gray-700 font-medium";
+                rangeLabel.textContent = `$${activePriceRange[0]} - $${activePriceRange[1]}`;
+
+                const maxInput = document.createElement("input");
+                maxInput.type = "range";
+                maxInput.min = 0;
+                maxInput.max = 1000;
+                maxInput.step = 25;
+                maxInput.value = activePriceRange[1];
+                maxInput.addEventListener("input", (e) => {
+                  activePriceRange[1] = Math.max(parseInt(e.target.value), activePriceRange[0]);
+                  rangeLabel.textContent = `$${activePriceRange[0]} - $${activePriceRange[1]}`;
+                  populatePhones();
+                });
+
+                group.appendChild(title);
+                group.appendChild(description);
+                rangeWrapper.appendChild(rangeLabel);
+                rangeWrapper.appendChild(maxInput);
+                group.appendChild(rangeWrapper);
+                container.appendChild(group);
+                continue;
+              }
+
+              if (key === "refurbished") {
+                const group = document.createElement("div");
+                group.id = "group-refurbished";
+                group.className = "p-2 border border-gray-200 rounded-md mb-4";
+
+                const title = document.createElement("h4");
+                title.className = "font-semibold text-gray-800 mb-2";
+                title.textContent = label;
+
+                const description = document.createElement("p");
+                description.className = "text-xs text-gray-500 mb-2";
+                description.textContent = "Prices are estimated based on market values (of the time this list was updated). Actual prices may vary.";
+
+                const rangeWrapper = document.createElement("div");
+                rangeWrapper.className = "flex flex-col gap-2";
+
+                const rangeLabel = document.createElement("div");
+                rangeLabel.id = "refurbished-range-label";
+                rangeLabel.className = "text-sm text-gray-700 font-medium";
+                rangeLabel.textContent = `$${activeRefurbishedRange[0]} - $${activeRefurbishedRange[1]}`;
+
+                const maxInput = document.createElement("input");
+                maxInput.type = "range";
+                maxInput.min = 0;
+                maxInput.max = 1000;
+                maxInput.step = 25;
+                maxInput.value = activeRefurbishedRange[1];
+                maxInput.addEventListener("input", (e) => {
+                  activeRefurbishedRange[1] = Math.max(parseInt(e.target.value), activeRefurbishedRange[0]);
+                  rangeLabel.textContent = `$${activeRefurbishedRange[0]} - $${activeRefurbishedRange[1]}`;
+                  populatePhones();
+                });
+
+                group.appendChild(title);
+                group.appendChild(description);
+                rangeWrapper.appendChild(rangeLabel);
+                rangeWrapper.appendChild(maxInput);
+                group.appendChild(rangeWrapper);
+                container.appendChild(group);
+                continue;
+              }
+
+              if (typeof label === "object") {
+                for (const [subKey, subLabel] of Object.entries(label)) {
+                  const fullKey = `supports.${subKey}`;
+                  const values = [...new Set(phones.map((p) => p.supports?.[subKey]).filter((v) => v !== undefined))];
+                  values.forEach((val) => addCheckbox(fullKey, val.toString(), val.toString(), subLabel));
+                }
+              } else {
+                const values = [...new Set(phones.map((p) => p[key]).flat())].filter((v) => v !== undefined);
+                const valueCounts = values.map((val) => {
+                  const count = phones.filter((p) => {
+                    const phoneVal = key.startsWith("supports.") ? p.supports?.[key.split(".")[1]] : p[key];
+
+                    if (Array.isArray(phoneVal)) return phoneVal.includes(val);
+                    return phoneVal === val;
+                  }).length;
+
+                  return { val, count };
+                });
+
+                valueCounts.sort((a, b) => b.count - a.count).forEach(({ val }) => addCheckbox(key, val.toString(), val.toString(), label));
+              }
+            }
+          }
+
+          function handleFilterChange(e) {
+            const cat = e.target.dataset.category;
+            const val = e.target.value;
+            const checked = e.target.checked;
+
+            activeFilters[cat] = activeFilters[cat] || [];
+
+            if (checked) {
+              activeFilters[cat].push(val);
+            } else {
+              activeFilters[cat] = activeFilters[cat].filter((v) => v !== val);
+            }
+
+            populatePhones();
+          }
+
+          generateFilterOptions();
+          populatePhones();
+        });
+    </script>
+
+    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script>
+
+    <div id="footer-container"></div>
+
+    <script>
+      fetch("/constants/footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+        });
+
+      fetch("/constants/headerLight.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+        });
+    </script>
+
+    <style>
+      .slide-up {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+
+      .slide-up.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
+    <!-- START Formbricks Surveys -->
+    <script type="text/javascript">
+      !(function () {
+        var t = document.createElement("script");
+        (t.type = "text/javascript"),
+          (t.async = !0),
+          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
+          (t.onload = function () {
+            window.formbricks
+              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
+              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
+          });
+        var e = document.getElementsByTagName("script")[0];
+        e.parentNode.insertBefore(t, e);
+      })();
+    </script>
+    <!-- END Formbricks Surveys -->
+  </body>
+</html>
