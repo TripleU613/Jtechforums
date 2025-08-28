@@ -24,6 +24,16 @@
       img {
         pointer-events: none;
       }
+      .slide-up {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+
+      .slide-up.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
     </style>
   </head>
   <body class="min-h-screen flex flex-col">
@@ -59,19 +69,6 @@
           document.getElementById("header-container").innerHTML = data;
         });
     </script>
-
-    <style>
-      .slide-up {
-        transform: translateY(100%);
-        opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s ease;
-      }
-
-      .slide-up.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    </style>
     <!-- START Formbricks Surveys -->
     <script type="text/javascript">
       !(function () {

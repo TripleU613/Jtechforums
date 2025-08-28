@@ -26,22 +26,22 @@
       }
     </style>
   </head>
-  <body>
+  <body class="bg-black">
     <div id="header-container"></div>
 
     <!--Header-->
-    <div class="bg-white px-6 py-26 mt-16 lg:px-8">
+    <div class="bg-black px-6 py-26 mt-16 lg:px-8">
       <div class="mx-auto max-w-2xl text-center">
-        <p class="text-base/7 font-semibold text-indigo-600">Community Resource</p>
-        <h2 class="mt-2 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Phone Finder</h2>
-        <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
+        <p class="text-base/7 font-semibold text-blue-400">Community Resource</p>
+        <h2 class="mt-2 text-5xl font-semibold tracking-tight text-white sm:text-7xl">Phone Finder</h2>
+        <p class="mt-8 text-lg font-medium text-pretty text-gray-400 sm:text-xl/8">
           We have compiled a comprehensive list of phones that may be helpful for you. For more information about our apps and content, check out our
           forum.
         </p>
         <br />
-        <span class="text-gray-500 text-pretty underline text-lg">Please note the following about all the phones listed below:</span>
+        <span class="text-gray-400 text-pretty underline text-lg">Please note the following about all the phones listed below:</span>
         <br />
-        <ul class="text-gray-500">
+        <ul class="text-gray-400">
           <li>• Most phones are not Kosher and contain open internet access.</li>
           <li>• We are not responsible for any damage or issues any phones listed cause.</li>
           <li>• Only phones that have been able to be filtered before are on this list.</li>
@@ -52,8 +52,8 @@
 
     <div class="flex flex-col md:flex-row gap-6 mx-4 md:mx-16">
       <!-- Sidebar -->
-      <aside class="w-full md:w-1/3 bg-white shadow-sm rounded-xl p-6 self-start mb-16">
-        <h2 class="text-3xl font-semibold mb-4">Filters</h2>
+      <aside class="w-full md:w-1/3 bg-gray-800/50 shadow-sm rounded-xl p-6 self-start mb-16">
+        <h2 class="text-3xl font-semibold mb-4 text-white">Filters</h2>
         <div id="filter-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
       </aside>
 
@@ -61,7 +61,7 @@
       <div class="w-full md:flex-1">
         <ul id="phones-list" role="list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 list-none m-0 mb-8">
           <div id="loading-spinner" class="flex items-center justify-center ml-50 py-5">
-            <svg class="animate-spin h-12 w-12 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="animate-spin h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.372 0 0 5.373 0 12h4z"></path>
             </svg>
@@ -82,8 +82,8 @@
     <!-- Modal -->
 
     <div id="phone-modal" class="popup-overlay fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50 hidden">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-8 relative text-center">
-        <button id="close-modal" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-3xl leading-none font-bold cursor-pointer">
+      <div class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-xl p-8 relative text-center">
+        <button id="close-modal" class="absolute top-3 right-4 text-gray-400 hover:text-gray-200 text-3xl leading-none font-bold cursor-pointer">
           &times;
         </button>
         <div id="modal-content" class="space-y-4 p-4 max-w-full overflow-y-auto m-10 sm:m-0"></div>
@@ -140,28 +140,28 @@
     />
 
     <div class="text-center">
-      <h2 class="text-2xl sm:text-4xl font-bold mb-1">${phone.name}</h2>
-      <p class="text-lg text-gray-800">${phone.type}</p>
+      <h2 class="text-2xl sm:text-4xl font-bold mb-1 text-white">${phone.name}</h2>
+      <p class="text-lg text-gray-300">${phone.type}</p>
     </div>
   </div>
 
   <!-- Details Grid -->
 <div class="grid grid-cols-1 gap-x-6 gap-y-3 my-8 text-sm sm:text-base button-grid">
-    ${
+    ${ 
       phone.link !== "unknown"
         ? `<a href="${phone.link}" target="_blank" class="flex items-center gap-2 justify-center cursor-pointer rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
     Product Website <i class="fa-solid fa-up-right-from-square"></i>
   </a>`
         : ""
     }
-  <button onclick="openFormModal(event, true, \`${
-    phone.name
-  }\`)" class="flex items-center gap-2 justify-center cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+  <button onclick="openFormModal(event, true, 
+    ${phone.name}
+  )" class="flex items-center gap-2 justify-center cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
     Report Incorrect Information
   </button>
 </div>
 
-     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3 mt-4 text-sm sm:text-base"> <p><strong>New Price:</strong> $${phone.price}</p>
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3 mt-4 text-sm sm:text-base text-gray-300"> <p><strong>New Price:</strong> $${phone.price}</p>
     <p><strong>Refurbished Price:</strong> $${phone.refurbished}</p>
     <p><strong>Region(s):</strong> ${phone.region.join(", ")}</p>
     <p><strong>Carriers:</strong> ${phone.carriers.join(", ")}</p>
@@ -169,18 +169,18 @@
     <p><strong>Messaging:</strong> ${phone.messaging.join(", ")}</p>
     <p><strong>Operating System:</strong> ${phone.operatingSystem}</p>
     <p><strong>Comes Filtered:</strong> ${phone.comesFiltered ? "Yes" : "No"}</p>
-    <p><strong>Apps Can Be Installed:</strong> ${
+    <p><strong>Apps Can Be Installed:</strong> ${ 
       phone.appsCanBeInstalled === true ? "Yes" : phone.appsCanBeInstalled === false ? "No" : phone.appsCanBeInstalled
     }</p>
     <p><strong>Supports ADB:</strong> ${phone.adb === true ? "Yes" : phone.adb === false ? "No" : phone.adb}</p>
   </div>
 
-  <hr class="my-6" />
+  <hr class="my-6 border-gray-700" />
 
   <!-- Features List -->
   <div>
-    <h2 class="font-semibold text-lg sm:text-xl mb-2">Features:</h2>
-    <ul id="deviceFeaturesList" class="list-disc list-inside grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm sm:text-base">
+    <h2 class="font-semibold text-lg sm:text-xl mb-2 text-white">Features:</h2>
+    <ul id="deviceFeaturesList" class="list-disc list-inside grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm sm:text-base text-gray-300">
       ${Object.entries(phone.deviceFeatures)
         .map(([key, value]) => `<li>${value}</li>`)
         .join("")}
@@ -261,7 +261,7 @@
 
             filtered.forEach((phone) => {
               const li = document.createElement("li");
-              li.className = "relative flex justify-between gap-x-6 py-5 bg-white p-4 rounded-md shadow-xs border border-gray-200 cursor-pointer";
+              li.className = "relative flex justify-between gap-x-6 py-5 bg-gray-800/50 p-4 rounded-md shadow-xs border border-gray-700 cursor-pointer";
               li.addEventListener("click", (e) => {
                 const selection = window.getSelection();
                 if (selection.toString().length > 0) {
@@ -276,7 +276,7 @@
               li.innerHTML = `
        <!-- Info Button -->
      <div class="absolute bottom-2 right-2 flex gap-2 z-20">
-  ${
+  ${ 
     phone.link !== "unknown"
       ? `<a
     href="${phone.link}"
@@ -289,7 +289,9 @@
       : ""
   }
   <button
-    onclick="openFormModal(event, false, \`${phone.name}\`)"
+    onclick="openFormModal(event, false, 
+    ${phone.name}
+  )"
     class="text-white bg-red-600 hover:bg-red-700 rounded-full cursor-pointer w-6 h-6 text-xs font-bold flex items-center justify-center"
     title="Report or Suggest Edit"
   >
@@ -299,10 +301,10 @@
           <div class="flex min-w-0 gap-x-4">
             <img class="size-24 flex-none rounded-xl self-center object-scale-down" src="${phone.image}" alt="${phone.name}" />
             <div class="min-w-0 flex-auto">
-<p class="text-2xl font-semibold text-gray-900 cursor-text break-words">${phone.name}</p>
-<p class="mt-1 text-[18px] text-gray-800 cursor-text max-w-[90%] break-words">${phone.type}</p>
-<p class="mt-1 text-[14px] text-gray-600 cursor-text max-w-[90%] break-words">New: $${phone.price}</p>
-<p class="text-[14px] text-gray-600 cursor-text max-w-[90%] break-words">Refurbished: $${phone.refurbished}</p>
+<p class="text-2xl font-semibold text-white cursor-text break-words">${phone.name}</p>
+<p class="mt-1 text-[18px] text-gray-300 cursor-text max-w-[90%] break-words">${phone.type}</p>
+<p class="mt-1 text-[14px] text-gray-400 cursor-text max-w-[90%] break-words">New: $${phone.price}</p>
+<p class="text-[14px] text-gray-400 cursor-text max-w-[90%] break-words">Refurbished: $${phone.refurbished}</p>
             </div>
           </div>
 
@@ -325,12 +327,12 @@
               if (!group) {
                 group = document.createElement("div");
                 group.id = "group-" + category;
-                group.className = `p-2 border border-gray-200 rounded-md mb-4 ${
-                  category === "deviceFeatures" || category === "brand" ? "md:col-span-2" : ""
+                group.className = `p-2 border border-gray-700 rounded-md mb-4 ${ 
+                  category === "deviceFeatures" || category === "brand" ? "md:col-span-2" : "" 
                 }`;
 
                 const title = document.createElement("h4");
-                title.className = "font-semibold text-gray-800 mb-2";
+                title.className = "font-semibold text-white mb-2";
                 title.textContent = groupLabel;
                 group.appendChild(title);
 
@@ -361,6 +363,7 @@
 
               const labelEl = document.createElement("label");
               labelEl.textContent = value === "true" ? "Yes" : value === "false" ? "No" : value;
+              labelEl.className = "text-gray-300";
 
               div.appendChild(checkbox);
               div.appendChild(labelEl);
@@ -371,14 +374,14 @@
               if (key === "price") {
                 const group = document.createElement("div");
                 group.id = "group-price";
-                group.className = "p-2 border border-gray-200 rounded-md mb-4";
+                group.className = "p-2 border border-gray-700 rounded-md mb-4";
 
                 const title = document.createElement("h4");
-                title.className = "font-semibold text-gray-800 mb-2";
+                title.className = "font-semibold text-white mb-2";
                 title.textContent = label;
 
                 const description = document.createElement("p");
-                description.className = "text-xs text-gray-500 mb-2";
+                description.className = "text-xs text-gray-400 mb-2";
                 description.textContent = "Prices are estimated based on market values (of the time this list was updated). Actual prices may vary.";
 
                 const rangeWrapper = document.createElement("div");
@@ -386,7 +389,7 @@
 
                 const rangeLabel = document.createElement("div");
                 rangeLabel.id = "price-range-label";
-                rangeLabel.className = "text-sm text-gray-700 font-medium";
+                rangeLabel.className = "text-sm text-gray-300 font-medium";
                 rangeLabel.textContent = `$${activePriceRange[0]} - $${activePriceRange[1]}`;
 
                 const maxInput = document.createElement("input");
@@ -413,14 +416,14 @@
               if (key === "refurbished") {
                 const group = document.createElement("div");
                 group.id = "group-refurbished";
-                group.className = "p-2 border border-gray-200 rounded-md mb-4";
+                group.className = "p-2 border border-gray-700 rounded-md mb-4";
 
                 const title = document.createElement("h4");
-                title.className = "font-semibold text-gray-800 mb-2";
+                title.className = "font-semibold text-white mb-2";
                 title.textContent = label;
 
                 const description = document.createElement("p");
-                description.className = "text-xs text-gray-500 mb-2";
+                description.className = "text-xs text-gray-400 mb-2";
                 description.textContent = "Prices are estimated based on market values (of the time this list was updated). Actual prices may vary.";
 
                 const rangeWrapper = document.createElement("div");
@@ -428,7 +431,7 @@
 
                 const rangeLabel = document.createElement("div");
                 rangeLabel.id = "refurbished-range-label";
-                rangeLabel.className = "text-sm text-gray-700 font-medium";
+                rangeLabel.className = "text-sm text-gray-300 font-medium";
                 rangeLabel.textContent = `$${activeRefurbishedRange[0]} - $${activeRefurbishedRange[1]}`;
 
                 const maxInput = document.createElement("input");
@@ -508,7 +511,7 @@
           document.getElementById("footer-container").innerHTML = data;
         });
 
-      fetch("/constants/headerLight.html")
+      fetch("/constants/headerDark.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;

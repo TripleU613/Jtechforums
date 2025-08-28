@@ -26,20 +26,20 @@
       }
     </style>
   </head>
-  <body>
+  <body class="bg-black">
     <div id="header-container"></div>
 
     <!--Header-->
-    <div class="bg-white px-6 pt-24 pb-12 lg:px-8">
+    <div class="bg-black px-6 pt-24 pb-12 lg:px-8">
       <div class="mt-16 mx-auto max-w-2xl text-center">
-        <h2 class="mt-20 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Guides</h2>
-        <p class="mt-8 text-md font-medium text-pretty text-gray-500">
+        <h2 class="mt-20 text-5xl font-semibold tracking-tight text-white sm:text-7xl">Guides</h2>
+        <p class="mt-8 text-md font-medium text-pretty text-gray-400">
           We have compiled a comprehensive list of guides to get you started. For more information about our apps and content, check out the forum.
         </p>
       </div>
     </div>
 
-    <div class="bg-white">
+    <div class="bg-black">
       <div class="mx-auto max-w-6xl px-6 sm:px-24 pb-12">
         <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-6 shadow-2xl sm:rounded-3xl sm:px-24">
           <h2 class="mx-auto max-w-3xl text-center text-2xl sm:text-4xl font-semibold tracking-tight text-white">
@@ -79,7 +79,7 @@
 
     <div class="flex flex-col md:flex-row">
       <!-- Apps -->
-      <div class="bg-white">
+      <div class="bg-black">
         <div class="p-6 lg:p-18">
           <div id="app-container" class="mx-auto grid max-w-2xl grid-cols-1 gap-x-18 gap-y-18 lg:mx-0 lg:max-w-none lg:grid-cols-3"></div>
         </div>
@@ -254,7 +254,7 @@
           {
             title: "35 Useful ADB Commands",
             description:
-              "This guide assumes you know what ADB is and how to use it. See this guide if you would like to learn more about ADB and how to use it: What is ADB and Getting Started 1. Install an APK adb install &lt;path_to_apk&gt; Installs an APK from a specified path onto the device. Arguments: &lt;path_to_apk&gt;: The file path to the APK on the computer (e.g., C:\\path\\to\\app.apk). Example: adb install C:\\path\\to\\app.apk 2. Uninstall an App adb uninstall &lt;package_name&gt; Uninstalls an app identified by ",
+              "This guide assumes you know what ADB is and how to use it. See this guide if you would like to learn more about ADB and how to use it: What is ADB and Getting Started 1. Install an APK adb install <path_to_apk> Installs an APK from a specified path onto the device. Arguments: <path_to_apk>: The file path to the APK on the computer (e.g., C:\path\to\app.apk). Example: adb install C:\path\to\app.apk 2. Uninstall an App adb uninstall <package_name> Uninstalls an app identified by ",
             category: {
               name: "Android Guides",
               link: "https://forums.jtechforums.org/c/android-guides/15",
@@ -605,24 +605,24 @@
 
           apps.forEach((guide) => {
             const appCard = document.createElement("article");
-            appCard.className = "flex max-w-xl flex-col items-start justify-between bg-gray-50/50 p-6 rounded-lg shadow-md";
+            appCard.className = "flex max-w-xl flex-col items-start justify-between bg-gray-800/50 p-6 rounded-lg shadow-md";
             appCard.innerHTML = `
 <div class="flex items-center justify-between gap-x-4 text-xs w-full">
   <div class="flex items-center gap-x-2">
-    <a href="${guide.postedBy.link}" class="font-semibold text-gray-900 hover:text-indigo-600 flex items-center gap-x-2 text-lg/6">
+    <a href="${guide.postedBy.link}" class="font-semibold text-white hover:text-blue-400 flex items-center gap-x-2 text-lg/6">
       <img src="${guide.postedBy.icon}" alt="${guide.postedBy.name}" class="size-8 rounded-full bg-gray-50">
       @${guide.postedBy.name}
     </a>
   </div>
 </div>
 <div class="group relative mt-4">
-  <h3 class="mt-2 text-2xl/6 font-semibold text-gray-900 group-hover:text-gray-600">
+  <h3 class="mt-2 text-2xl/6 font-semibold text-white group-hover:text-gray-300">
     <a href="${guide.link}">
       <span class="absolute inset-0"></span>
       ${guide.title}
     </a>
   </h3>
-  <p class="mt-5 line-clamp-3 text-sm/6 text-gray-600">${guide.description}</p>
+  <p class="mt-5 line-clamp-3 text-sm/6 text-gray-300">${guide.description}</p>
 </div>
 
             `;
@@ -645,7 +645,7 @@
           document.getElementById("footer-container").innerHTML = data;
         });
 
-      fetch("/constants/headerLight.html")
+      fetch("/constants/headerDark.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;

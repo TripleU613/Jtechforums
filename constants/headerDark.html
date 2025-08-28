@@ -1,4 +1,9 @@
 <header class="absolute inset-x-0 top-0 z-20 bg-transparent">
+  <style>
+    .text-glow {
+      text-shadow: 0 0 5px rgba(0, 173, 238, 0.8), 0 0 10px rgba(0, 173, 238, 0.5);
+    }
+  </style>
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       <a href="#" class="-m-1 p-1">
@@ -23,10 +28,10 @@
 
     <!-- Desktop Menu -->
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="/" class="text-md/6 font-semibold text-white hover:text-blue-200">Home</a>
+      <a href="/" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Home</a>
       <div class="relative group">
-        <a href="/community-resources" class="text-md/6 font-semibold text-white hover:text-blue-200 cursor-pointer flex items-center gap-1">
-          Community Resources
+        <a href="#" class="text-md/6 font-semibold text-white hover:text-blue-200 cursor-pointer flex items-center gap-1 text-glow">
+          Resources
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
@@ -39,8 +44,6 @@
                 <ul class="space-y-2">
                   <li><a href="/apps" class="block text-md/6 font-semibold text-black hover:text-blue-600">Apps</a></li>
                   <li><a href="/guides" class="block text-md/6 font-semibold text-black hover:text-blue-600">Guides</a></li>
-                  <li><a href="/roms" class="block text-md/6 font-semibold text-black hover:text-blue-600">ROMs</a></li>
-                  <li><a href="/resources" class="block text-md/6 font-semibold text-black hover:text-blue-600">Resources</a></li>
                   <li><a href="/phone-finder" class="block text-md/6 font-semibold text-black hover:text-blue-600">Phone Finder</a></li>
                 </ul>
               </div>
@@ -48,26 +51,26 @@
           </div>
         </div>
       </div>
-      <a href="https://forums.jtechforums.org" target="_blank" class="text-md/6 font-semibold text-white hover:text-blue-200">Forum</a>
-      <a href="/classifieds" class="text-md/6 font-semibold text-white hover:text-blue-200">Classifieds</a>
-      <a href="/contact-us" class="text-md/6 font-semibold text-white hover:text-blue-200">Contact Us</a>
+      <a href="https://forums.jtechforums.org" target="_blank" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Forum</a>
+      <a href="/contact-us" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Contact Us</a>
+      <a href="https://mdminstaller.com" target="_blank" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">MDM Installer</a>
     </div>
 
     <!-- Desktop Search Bar -->
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <form id="search-form-desktop" action="https://forums.jtechforums.org/search" method="get">
         <div
-          class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-gray-300"
+          class="flex rounded-md bg-white/10 outline-1 -outline-offset-1 outline-blue-400 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-400 shadow-lg"
         >
           <input
             id="search-input-desktop"
             type="search"
             name="q"
             placeholder="Search the Forum..."
-            class="block min-w-0 grow px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+            class="block min-w-0 grow px-3 py-1.5 text-base text-white placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
           />
           <div class="flex py-1.5 pr-1.5">
-            <kbd class="inline-flex items-center rounded-sm border border-gray-200 px-1 font-sans text-xs text-gray-400">enter</kbd>
+            <kbd class="inline-flex items-center rounded-sm border border-gray-500 px-1 font-sans text-xs text-gray-300">enter</kbd>
           </div>
         </div>
         <p id="error-message-desktop" class="mt-2 text-sm text-red-500 hidden">Minimum character count is 4.</p>
@@ -92,36 +95,35 @@
     <div class="mt-6 flow-root">
       <div class="-my-6 divide-y divide-gray-500/25">
         <div class="space-y-2 py-6">
-          <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Home</a>
-          <a href="/apps" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Apps</a>
-          <a href="/guides" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Guides</a>
-          <a href="/roms" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">ROMs</a>
-          <a href="/resources" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Resources</a>
-          <a href="/egate" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">eGate</a>
-          <a href="/phone-finder" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Phone Finder</a>
+          <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Home</a>
+          <a href="/apps" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Apps</a>
+          <a href="/guides" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Guides</a>
+          <a href="/egate" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">eGate</a>
+          <a href="https://mdminstaller.com" target="_blank" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">MDM Installer</a>
+          <a href="/phone-finder" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Phone Finder</a>
           <a
             href="https://forums.jtechforums.org"
             target="_blank"
-            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800"
+            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
             >Forum</a
-          ><a href="/contact-us" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Contact Us</a>
+          ><a href="/contact-us" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Contact Us</a>
         </div>
 
         <!-- Mobile Search Bar -->
         <div class="py-6">
           <form id="search-form-mobile" action="https://forums.jtechforums.org/search" method="get">
             <div
-              class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-gray-300"
+              class="flex rounded-md bg-white/10 outline-1 -outline-offset-1 outline-blue-400 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-400 shadow-lg"
             >
               <input
                 id="search-input-mobile"
                 type="search"
                 name="q"
                 placeholder="Search the Forum..."
-                class="block min-w-0 grow px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                class="block min-w-0 grow px-3 py-1.5 text-base text-white placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
               />
               <div class="flex py-1.5 pr-1.5">
-                <kbd class="inline-flex items-center rounded-sm border border-gray-200 px-1 font-sans text-xs text-gray-400">enter</kbd>
+                <kbd class="inline-flex items-center rounded-sm border border-gray-500 px-1 font-sans text-xs text-gray-300">enter</kbd>
               </div>
             </div>
             <p id="error-message-mobile" class="mt-2 text-sm text-red-500 hidden">Minimum character count is 4.</p>
