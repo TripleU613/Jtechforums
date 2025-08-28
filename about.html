@@ -35,19 +35,57 @@
         opacity: 0.9;
       }
       .about-section {
-        background-color: #1f2937; /* Dark gray */
-        border: 1px solid #374151; /* Slightly lighter gray border */
+        background-color: #1f2937;
+        border: 1px solid #374151;
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        margin-bottom: 1.5rem; /* Slightly increased margin from before */
+        padding: 1.5rem; /* Standard padding */
       }
       .about-section:hover {
         transform: translateY(-5px);
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
       }
       .about-title {
-        color: #ffffff; /* White */
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #ffffff;
       }
       .about-description {
-        color: #9ca3af; /* Light gray */
+        color: #9ca3af;
+        margin-bottom: 0.75rem;
+      }
+      .resource-card-description {
+         margin-bottom: 0.5rem;
+      }
+      .resource-card a {
+          margin-top: 0.5rem;
+      }
+      .about-section h2 {
+        margin-bottom: 1rem;
+      }
+      .about-section p {
+        margin-bottom: 0.75rem;
+      }
+      .grid-cols-1, .sm\:grid-cols-2, .lg\:grid-cols-3 {
+        gap: 1rem;
+      }
+      .lg\:gap-6 {
+          gap: 1rem;
+      }
+      .py-16, .sm\:py-20 {
+          padding-top: 2rem; /* Approx 32px */
+          padding-bottom: 2rem; /* Approx 32px */
+      }
+      .py-32, .sm\:py-48, .lg\:py-56 {
+          padding-top: 2rem; /* Approx 32px */
+          padding-bottom: 2rem; /* Approx 32px */
+      }
+      .pb-48, .pt-12 {
+          padding-top: 1.5rem; /* Approx 24px */
+          padding-bottom: 1.5rem; /* Approx 24px */
+      }
+      .md\:pt-24, .lg\:pt-0 {
+          padding-top: 1rem; /* Approx 16px */
       }
     </style>
   </head>
@@ -65,7 +103,7 @@
               <h1 class="text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl text-glow">
                 About JTech
               </h1>
-              <p class="mt-8 text-lg font-medium text-pretty text-gray-400 sm:text-xl/8">
+              <p class="mt-6 text-lg/8 text-pretty text-gray-400 sm:text-xl/8">
                 Empowering the Jewish community with cutting-edge technology and filtering solutions.
               </p>
             </div>
@@ -74,78 +112,78 @@
       </div>
 
       <!-- Mission Section -->
-      <section class="bg-black py-24 sm:py-32">
+      <section class="bg-black py-16 sm:py-20">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
           <div class="mx-auto max-w-4xl">
-            <h2 class="text-4xl font-semibold tracking-tight text-center text-white sm:text-5xl text-glow">Our Mission</h2>
-            <p class="mt-8 text-lg/8 text-pretty text-gray-300 text-center">
+            <h2 class="text-4xl font-semibold tracking-tight text-center text-white sm:text-5xl text-glow about-title">Our Mission</h2>
+            <p class="mt-6 text-lg/8 text-pretty text-gray-300 text-center about-description">
               JTech's mission is to empower the Jewish community by providing the most precise, accurate, and up-to-date technology and filtering information. We strive to be a central hub for reliable resources, community support, and discussion on topics relevant to modern Jewish life and technology.
             </p>
-            <div class="section-divider mx-auto w-40 mt-16 mb-10"></div>
+            <div class="section-divider mx-auto w-40 mt-12 mb-8"></div>
           </div>
         </div>
       </section>
 
       <!-- What We Offer Section -->
-      <section class="bg-black py-24 sm:py-32">
+      <section class="bg-black py-16 sm:py-20">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 class="text-4xl font-semibold tracking-tight text-center text-white sm:text-5xl text-glow">What We Offer</h2>
-          <div class="mt-16 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          <h2 class="text-4xl font-semibold tracking-tight text-center text-white sm:text-5xl text-glow about-title">What We Offer</h2>
+          <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <!-- Resource Card 1: Forum -->
-            <div class="resource-card flex max-w-xl flex-col items-start justify-between p-6 rounded-lg shadow-lg">
+            <div class="resource-card flex max-w-xl flex-col items-start justify-between p-4 rounded-lg shadow-lg about-section">
               <div class="flex items-center justify-between gap-x-4 text-xs w-full">
                 <div class="flex items-center gap-x-2">
                   <div class="size-10 rounded-lg resource-card-icon-bg flex items-center justify-center">
                     <i class="fa-regular fa-comments text-white resource-card-icon"></i>
                   </div>
-                  <h3 class="text-lg/6 font-semibold text-white resource-card-title">Community Forum</h3>
+                  <h3 class="text-lg/6 font-semibold text-white resource-card-title about-title">Community Forum</h3>
                 </div>
               </div>
-              <div class="group relative mt-4">
-                <p class="mt-5 line-clamp-3 text-sm/6 text-gray-300 resource-card-description">
+              <div class="group relative mt-3">
+                <p class="mt-4 line-clamp-3 text-sm/6 text-gray-300 resource-card-description about-description">
                   Join our forum for discussions, Q&A, and community support on all things tech and filtering.
                 </p>
-                <a href="https://forums.jtechforums.org" target="_blank" class="mt-4 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300 primary-cta-glow">
+                <a href="https://forums.jtechforums.org" target="_blank" class="mt-3 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300 primary-cta-glow">
                   Visit Forum <span aria-hidden="true">&rarr;</span>
                 </a>
               </div>
             </div>
 
             <!-- Resource Card 2: Apps -->
-            <div class="resource-card flex max-w-xl flex-col items-start justify-between p-6 rounded-lg shadow-lg">
+            <div class="resource-card flex max-w-xl flex-col items-start justify-between p-4 rounded-lg shadow-lg about-section">
               <div class="flex items-center justify-between gap-x-4 text-xs w-full">
                 <div class="flex items-center gap-x-2">
                   <div class="size-10 rounded-lg resource-card-icon-bg flex items-center justify-center">
                     <i class="fa-brands fa-android text-white resource-card-icon"></i>
                   </div>
-                  <h3 class="text-lg/6 font-semibold text-white resource-card-title">Apps List</h3>
+                  <h3 class="text-lg/6 font-semibold text-white resource-card-title about-title">Apps List</h3>
                 </div>
               </div>
-              <div class="group relative mt-4">
-                <p class="mt-5 line-clamp-3 text-sm/6 text-gray-300 resource-card-description">
+              <div class="group relative mt-3">
+                <p class="mt-4 line-clamp-3 text-sm/6 text-gray-300 resource-card-description about-description">
                   Discover a curated list of apps optimized for kosher phones and community-approved.
                 </p>
-                <a href="/apps" class="mt-4 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300 primary-cta-glow">
+                <a href="/apps" class="mt-3 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300 primary-cta-glow">
                   View Apps <span aria-hidden="true">&rarr;</span>
                 </a>
               </div>
             </div>
 
             <!-- Resource Card 3: Guides -->
-            <div class="resource-card flex max-w-xl flex-col items-start justify-between p-6 rounded-lg shadow-lg">
+            <div class="resource-card flex max-w-xl flex-col items-start justify-between p-4 rounded-lg shadow-lg about-section">
               <div class="flex items-center justify-between gap-x-4 text-xs w-full">
                 <div class="flex items-center gap-x-2">
                   <div class="size-10 rounded-lg resource-card-icon-bg flex items-center justify-center">
                     <i class="fa-solid fa-book text-white resource-card-icon"></i>
                   </div>
-                  <h3 class="text-lg/6 font-semibold text-white resource-card-title">Guides</h3>
+                  <h3 class="text-lg/6 font-semibold text-white resource-card-title about-title">Guides</h3>
                 </div>
               </div>
-              <div class="group relative mt-4">
-                <p class="mt-5 line-clamp-3 text-sm/6 text-gray-300 resource-card-description">
+              <div class="group relative mt-3">
+                <p class="mt-4 line-clamp-3 text-sm/6 text-gray-300 resource-card-description about-description">
                   Step-by-step guides and tutorials to help you navigate the world of tech and filtering.
                 </p>
-                <a href="/guides" class="mt-4 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300 primary-cta-glow">
+                <a href="/guides" class="mt-3 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300 primary-cta-glow">
                   Read Guides <span aria-hidden="true">&rarr;</span>
                 </a>
               </div>
@@ -155,15 +193,15 @@
       </section>
 
       <!-- Our Team Section (Placeholder) -->
-      <section class="bg-black py-24 sm:py-32">
+      <section class="bg-black py-16 sm:py-20">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
           <div class="mx-auto max-w-4xl">
-            <h2 class="text-4xl font-semibold tracking-tight text-center text-white sm:text-5xl text-glow">Our Team</h2>
-            <p class="mt-8 text-lg/8 text-pretty text-gray-300 text-center">
+            <h2 class="text-4xl font-semibold tracking-tight text-center text-white sm:text-5xl text-glow about-title">Our Team</h2>
+            <p class="mt-6 text-lg/8 text-pretty text-gray-300 text-center about-description">
               JTech is driven by a passionate community dedicated to providing valuable resources and support. While we are community-driven, core
               contributors and moderators work tirelessly to maintain the quality and relevance of our offerings.
             </p>
-            <div class="section-divider mx-auto w-40 mt-16 mb-10"></div>
+            <div class="section-divider mx-auto w-40 mt-10 mb-8"></div>
           </div>
         </div>
       </section>
