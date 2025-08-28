@@ -24,17 +24,20 @@
       img {
         pointer-events: none;
       }
+      .text-glow {
+        text-shadow: 0 0 8px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5);
+      }
     </style>
   </head>
-  <body>
+  <body class="bg-black">
     <div id="header-container"></div>
 
     <!--Header-->
-    <div class="bg-white px-6 pt-24 pb-12 lg:px-8">
-      <h2 class="mt-20 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl text-center">Contact Us</h2>
+    <div class="bg-black px-6 pt-24 pb-12 lg:px-8">
+      <h2 class="mt-20 text-5xl font-semibold tracking-tight text-white sm:text-7xl text-center text-glow">Contact Us</h2>
     </div>
     <div class="mx-auto max-w-6xl px-6 sm:px-24 pb-24">
-      <div class="relative isolate overflow-hidden bg-gray-800 px-6 py-6 shadow-2xl sm:rounded-3xl sm:px-24">
+      <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-6 shadow-2xl sm:rounded-3xl sm:px-24">
         <div data-tf-live="01JT95Z7AZPPGGQ9E1PMGASQME"></div>
         <script src="//embed.typeform.com/next/embed.js"></script>
       </div>
@@ -51,7 +54,7 @@
           document.getElementById("footer-container").innerHTML = data;
         });
 
-      fetch("/constants/headerLight.html")
+      fetch("/constants/headerDark.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;
