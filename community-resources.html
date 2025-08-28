@@ -70,19 +70,58 @@
             </div>
             <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10 max-lg:rounded-t-[2rem]"></div>
           </a>
-          <a href="/egate" class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-            <div class="absolute inset-px rounded-lg bg-gray-900"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-              <div class="px-8 pt-8 sm:px-10 sm:pt-10">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">MDM Installer</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center">
-                  MDM Installer is a webUSB website to install all Jewish MDMs. It's a display of amazing craftsmanship and talent, while still being extremely user-friendly. MDM Installer is your go-to portal for effortlessly installing and enrolling devices into your organization’s Mobile Device Management (MDM) system. Whether you're setting up a new device or reconfiguring an existing one, this tool streamlines the process for IT and tech-savvy users alike.
-                </p>
-              </div>
-              
-            </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10"></div>
-          </a>
+          <!-- MDM Installer (refined + centered + subtle SVG) -->
+<a href="https://mdminstaller.com" target="_blank" class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
+  <!-- card background -->
+  <div class="absolute inset-px rounded-lg bg-gray-900"></div>
+
+  <!-- subtle decorative pattern -->
+  <svg aria-hidden="true" class="pointer-events-none absolute -inset-px rounded-[calc(var(--radius-lg)+1px)] opacity-20"
+       viewBox="0 0 400 200" preserveAspectRatio="none">
+    <defs>
+      <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+        <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor"></circle>
+      </pattern>
+      <radialGradient id="glow" cx="50%" cy="40%" r="70%">
+        <stop offset="0%" stop-color="white" stop-opacity="0.12"/>
+        <stop offset="60%" stop-color="white" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#dots)" class="text-white"></rect>
+    <rect width="100%" height="100%" fill="url(#glow)"></rect>
+  </svg>
+
+  <!-- content -->
+  <div class="relative flex h-full flex-col items-center justify-center overflow-hidden rounded-[calc(var(--radius-lg)+1px)] px-10 py-12 text-center">
+    <!-- tiny badge -->
+    <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-200">
+      <span class="i-lucide-usb w-3.5 h-3.5"></span>
+      WebUSB • No installs
+    </div>
+
+    <!-- title -->
+    <p class="mt-4 text-xl font-semibold tracking-tight text-white">MDM Installer</p>
+
+    <!-- description -->
+    <p class="mt-3 max-w-md text-sm leading-6 text-gray-300">
+      One-click, browser-based installer for trusted Jewish MDMs. Designed for technicians and families:
+      secure flows, device checks, and clear step-by-step guidance—no guesswork.
+    </p>
+
+    <!-- quick highlights -->
+    <ul class="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-gray-300">
+      <li class="rounded-md bg-white/5 px-2.5 py-1">Works on Chrome</li>
+      <li class="rounded-md bg-white/5 px-2.5 py-1">Cable + WebUSB</li>
+      <li class="rounded-md bg-white/5 px-2.5 py-1">Guided Prompts</li>
+      <li class="rounded-md bg-white/5 px-2.5 py-1">Zero Download</li>
+    </ul>
+  </div>
+
+  <!-- ring -->
+  <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10"></div>
+</a>
+
           <a href="/guides" class="relative lg:row-span-2">
             <div class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
             <div
