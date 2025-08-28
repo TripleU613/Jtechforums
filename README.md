@@ -1,5 +1,4 @@
 
-
 # JTech Website
 
 Welcome to the **JTech Website** repository — the official open-source project for [JTech Forums](https://jtechforums.org).
