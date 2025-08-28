@@ -12,7 +12,9 @@
       </a>
     </div>
 
+    
     <!-- Mobile Menu Button -->
+    <!--
     <div class="flex lg:hidden">
       <button
         id="mobile-menu-button"
@@ -57,7 +59,9 @@
     </div>
   </nav>
 
+
   <!-- Mobile Menu -->
+  <!--
   <div id="mobile-menu" class="hidden fixed inset-0 z-10 bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
     <div class="flex items-center justify-between">
       <a href="#" class="-m-1.5 p-1.5">
@@ -113,8 +117,10 @@
   </div>
 </header>
 
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    /*
     const mobileMenu = document.getElementById("mobile-menu");
     const openButton = document.getElementById("mobile-menu-button");
     const closeButton = document.getElementById("mobile-menu-close");
@@ -128,6 +134,7 @@
     closeButton.addEventListener("click", function () {
       mobileMenu.classList.add("hidden");
     });
+    */
 
     // Search validation for Desktop
     document.getElementById("search-form-desktop").addEventListener("submit", function (event) {
@@ -143,6 +150,7 @@
     });
 
     // Search validation for Mobile
+    /*
     document.getElementById("search-form-mobile").addEventListener("submit", function (event) {
       const input = document.getElementById("search-input-mobile");
       const errorMessage = document.getElementById("error-message-mobile");
@@ -155,4 +163,5 @@
       }
     });
   });
+  */
 </script>
