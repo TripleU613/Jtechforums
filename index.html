@@ -69,10 +69,55 @@
         mix-blend-mode: screen;
         opacity: 0.8;
       }
+      /* Loading screen styles */
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #loading-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #loading-screen .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #loading-screen img {
+        height: 6rem;
+        margin-bottom: 1.5rem;
+      }
+      #loading-screen .loader {
+        width: 5rem;
+        height: 5rem;
+        border: 6px solid #0ea5e9;
+        border-top-color: transparent;
+        border-radius: 9999px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
 
   <body class="bg-black">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="content">
+        <img src="/img/whitelogo.png" alt="JTech logo" />
+        <div class="loader"></div>
+      </div>
+    </div>
+
     <header class="absolute inset-x-0 top-0 z-20 bg-transparent">
       <style>
         .text-glow {
@@ -301,6 +346,7 @@
       <!-- Hero -->
       <div class="relative isolate overflow-hidden py-24">
         <img
+          id="hero-phonegrid"
           src="/img/phonegrid.png"
           alt=""
           class="opacity-20 absolute inset-0 -z-10 size-full object-cover"
@@ -2023,6 +2069,27 @@
         CHAMPIONS.slice(3, 5).forEach((p, i) =>
           top5El.appendChild(miniCard(p, i + 4)),
         );
+      });
+
+      // Hide loading screen once hero image has loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        var loader = document.getElementById("loading-screen");
+        if (!loader) return;
+        var heroImg = document.getElementById("hero-phonegrid");
+
+        function hide() {
+          loader.classList.add("fade-out");
+          setTimeout(function () {
+            loader.parentNode && loader.parentNode.removeChild(loader);
+          }, 300);
+        }
+
+        if (!heroImg || heroImg.complete) {
+          hide();
+        } else {
+          heroImg.addEventListener("load", hide);
+          heroImg.addEventListener("error", hide);
+        }
       });
 
       (function () {
