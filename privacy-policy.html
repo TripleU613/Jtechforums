@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta name="title" content="JTech - Privacy Policy" />
@@ -6,14 +6,17 @@
       name="description"
       content="Read JTech's Privacy Policy to understand how we collect, use, and protect your information."
     />
-    <meta name="keywords" content="jtech,privacy,policy,data,security,information,terms" />
+    <meta
+      name="keywords"
+      content="jtech,privacy,policy,data,security,information,terms"
+    />
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="language" content="English" />
     <meta name="author" content="doniel@mesnan.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JTech Privacy Policy</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4" defer></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -22,64 +25,141 @@
       referrerpolicy="no-referrer"
     />
     <style>
-      img { pointer-events: none; }
-      .text-glow { text-shadow: 0 0 8px rgba(59,130,246,.8), 0 0 20px rgba(59,130,246,.5); }
+      img {
+        pointer-events: none;
+      }
+      .text-glow {
+        text-shadow:
+          0 0 8px rgba(59, 130, 246, 0.8),
+          0 0 20px rgba(59, 130, 246, 0.5);
+      }
 
-      .policy-wrap { direction: ltr; }
-      .policy-section { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #1f2937; }
-      .policy-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+      .policy-wrap {
+        direction: ltr;
+      }
+      .policy-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #1f2937;
+      }
+      .policy-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
 
-      .page-title { font-size: 2.5rem; font-weight: 700; color: #fff; }
-      .policy-h2 { font-size: 1.5rem; font-weight: 700; color: #fff; text-align: left; margin-bottom: .75rem; }
-      .policy-h3 { font-size: 1.125rem; font-weight: 600; color: #e5e7eb; text-align: left; margin-top: 1rem; margin-bottom: .5rem; }
+      .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .policy-h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        text-align: left;
+        margin-bottom: 0.75rem;
+      }
+      .policy-h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #e5e7eb;
+        text-align: left;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+      }
 
-      .policy-content p, .policy-content li { color: #9ca3af; line-height: 1.85; margin-bottom: .75rem; }
-      .policy-content ul { list-style: disc; padding-left: 1.25rem; margin-bottom: .75rem; }
-      .policy-content ol { list-style: decimal; padding-left: 1.25rem; margin-bottom: .75rem; }
-      .policy-content a { color: #60a5fa; text-decoration: underline; }
-      .policy-content a:hover { color: #3b82f6; }
+      .policy-content p,
+      .policy-content li {
+        color: #9ca3af;
+        line-height: 1.85;
+        margin-bottom: 0.75rem;
+      }
+      .policy-content ul {
+        list-style: disc;
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+      .policy-content ol {
+        list-style: decimal;
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+      .policy-content a {
+        color: #60a5fa;
+        text-decoration: underline;
+      }
+      .policy-content a:hover {
+        color: #3b82f6;
+      }
 
-      .chip { border: 1px solid #1f2937; background: #0b1220; border-radius: 9999px; padding: .4rem .9rem; color: #cbd5e1; white-space: nowrap; }
-      .chip:hover { border-color: #334155; color: #fff; }
+      .chip {
+        border: 1px solid #1f2937;
+        background: #0b1220;
+        border-radius: 9999px;
+        padding: 0.4rem 0.9rem;
+        color: #cbd5e1;
+        white-space: nowrap;
+      }
+      .chip:hover {
+        border-color: #334155;
+        color: #fff;
+      }
 
       .bg-grid::before {
         content: "";
-        position: absolute; inset: 0;
-        background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-                          linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-        background-size: 24px 24px, 24px 24px;
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size:
+          24px 24px,
+          24px 24px;
         pointer-events: none;
       }
 
-      .hero { padding-top: 10rem; padding-bottom: 8rem; }
+      .hero {
+        padding-top: 10rem;
+        padding-bottom: 8rem;
+      }
 
       /* Transparent, auto-hiding scrollbar */
       /* WebKit (Chrome/Edge/Safari) */
-      body::-webkit-scrollbar { width: 8px; }
-      body::-webkit-scrollbar-track { background: transparent; }
+      body::-webkit-scrollbar {
+        width: 8px;
+      }
+      body::-webkit-scrollbar-track {
+        background: transparent;
+      }
       body::-webkit-scrollbar-thumb {
-        background-color: transparent;              /* hidden by default */
+        background-color: transparent; /* hidden by default */
         border-radius: 10px;
         border: 2px solid transparent;
         background-clip: padding-box;
         backdrop-filter: blur(4px);
-        transition: background-color .18s ease;
+        transition: background-color 0.18s ease;
       }
       body.show-scrollbar::-webkit-scrollbar-thumb {
-        background-color: rgba(120,120,120,0.32);   /* visible while scrolling */
+        background-color: rgba(
+          120,
+          120,
+          120,
+          0.32
+        ); /* visible while scrolling */
       }
       body.show-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(120,120,120,0.5);
+        background-color: rgba(120, 120, 120, 0.5);
       }
 
       /* Firefox */
       body {
-        scrollbar-width: thin;                      /* slim */
-        scrollbar-color: transparent transparent;   /* hidden by default */
-        transition: scrollbar-color .18s ease;
+        scrollbar-width: thin; /* slim */
+        scrollbar-color: transparent transparent; /* hidden by default */
+        transition: scrollbar-color 0.18s ease;
       }
       body.show-scrollbar {
-        scrollbar-color: rgba(120,120,120,0.4) transparent; /* visible while scrolling */
+        scrollbar-color: rgba(120, 120, 120, 0.4) transparent; /* visible while scrolling */
       }
     </style>
   </head>
@@ -88,21 +168,32 @@
 
     <!-- Hero -->
     <section class="relative isolate overflow-hidden hero">
-      <img src="/img/phonegrid.png" alt="" class="opacity-20 absolute inset-0 -z-10 w-full h-full object-cover" />
+      <img
+        loading="lazy"
+        src="/img/phonegrid.png"
+        alt=""
+        class="opacity-20 absolute inset-0 -z-10 w-full h-full object-cover"
+      />
       <div class="bg-grid absolute inset-0 -z-10"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
           <div class="text-center">
             <h1 class="page-title text-glow">Privacy Policy</h1>
-            <p class="mt-3 text-base text-gray-400">How JTech handles your information.</p>
-            <p class="mt-1 text-sm text-gray-500">Last Updated: August 28, 2025</p>
+            <p class="mt-3 text-base text-gray-400">
+              How JTech handles your information.
+            </p>
+            <p class="mt-1 text-sm text-gray-500">
+              Last Updated: August 28, 2025
+            </p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Sticky nav -->
-    <nav class="sticky top-0 z-20 backdrop-blur bg-black/60 border-b border-slate-800">
+    <nav
+      class="sticky top-0 z-20 backdrop-blur bg-black/60 border-b border-slate-800"
+    >
       <div class="mx-auto max-w-7xl px-6 lg:px-8 py-3 overflow-x-auto">
         <div class="flex gap-2">
           <a href="#scope" class="chip">Scope</a>
@@ -126,13 +217,14 @@
     <!-- Policy Content -->
     <main class="bg-black py-10 sm:py-12">
       <div class="mx-auto max-w-5xl px-6 lg:px-8 policy-wrap">
-
         <section id="scope" class="policy-section">
           <h2 class="policy-h2">1. Scope and Who We Are</h2>
           <div class="policy-content">
             <p>
-              JTech Forums (“JTech”, “we”, “us”, “our”) operates <span dir="ltr">jtechforums.org</span> and related services.
-              This Privacy Policy explains how we collect, use, share, and protect personal information when you use the site and community.
+              JTech Forums (“JTech”, “we”, “us”, “our”) operates
+              <span dir="ltr">jtechforums.org</span> and related services. This
+              Privacy Policy explains how we collect, use, share, and protect
+              personal information when you use the site and community.
             </p>
           </div>
         </section>
@@ -142,19 +234,28 @@
           <div class="policy-content">
             <h3 class="policy-h3">a. Information You Provide</h3>
             <ul>
-              <li>Account details: username, email, encrypted password, profile picture, bio.</li>
-              <li>Community content: posts, comments, attachments, votes, reports.</li>
+              <li>
+                Account details: username, email, encrypted password, profile
+                picture, bio.
+              </li>
+              <li>
+                Community content: posts, comments, attachments, votes, reports.
+              </li>
               <li>Contact: support requests and communication preferences.</li>
             </ul>
             <h3 class="policy-h3">b. Information Collected Automatically</h3>
             <ul>
               <li>Logs: IP, browser type, OS, referrer, timestamps.</li>
-              <li>Site usage: page views, clicks, session duration, technical metrics.</li>
+              <li>
+                Site usage: page views, clicks, session duration, technical
+                metrics.
+              </li>
               <li>Cookies & similar technologies.</li>
             </ul>
             <h3 class="policy-h3">c. Third-Party Sources</h3>
             <p>
-              If you connect social or external accounts, we may receive minimal data necessary to operate the integration.
+              If you connect social or external accounts, we may receive minimal
+              data necessary to operate the integration.
             </p>
           </div>
         </section>
@@ -178,7 +279,10 @@
           <div class="policy-content">
             <ul>
               <li>Contractual necessity – operate your account.</li>
-              <li>Legitimate interests – site security, prevention of abuse, improvement.</li>
+              <li>
+                Legitimate interests – site security, prevention of abuse,
+                improvement.
+              </li>
               <li>Consent – cookies, optional marketing.</li>
               <li>Legal obligations – keeping required records.</li>
             </ul>
@@ -201,7 +305,9 @@
           <h2 class="policy-h2">6. Cookies & Tracking</h2>
           <div class="policy-content">
             <p>
-              We use cookies for login, security, performance, and analytics. You can manage cookies in browser settings; disabling may affect site functions.
+              We use cookies for login, security, performance, and analytics.
+              You can manage cookies in browser settings; disabling may affect
+              site functions.
             </p>
           </div>
         </section>
@@ -210,7 +316,9 @@
           <h2 class="policy-h2">7. Data Retention</h2>
           <div class="policy-content">
             <p>
-              We retain data as long as necessary for stated purposes and legal requirements. You may request deletion; some records may remain for compliance.
+              We retain data as long as necessary for stated purposes and legal
+              requirements. You may request deletion; some records may remain
+              for compliance.
             </p>
           </div>
         </section>
@@ -219,7 +327,8 @@
           <h2 class="policy-h2">8. Security</h2>
           <div class="policy-content">
             <p>
-              We use reasonable security measures (encryption, access controls, backups). However, no online system is 100% secure.
+              We use reasonable security measures (encryption, access controls,
+              backups). However, no online system is 100% secure.
             </p>
           </div>
         </section>
@@ -231,9 +340,16 @@
               <li>Access, portability, correction, deletion, restriction.</li>
               <li>Withdraw consent where applicable.</li>
               <li>No discrimination (CCPA/CPRA).</li>
-              <li>Request disclosure of categories/sources of data (CCPA/CPRA).</li>
+              <li>
+                Request disclosure of categories/sources of data (CCPA/CPRA).
+              </li>
             </ul>
-            <p>Email requests to: <a href="mailto:privacy@jtechforums.org">privacy@jtechforums.org</a></p>
+            <p>
+              Email requests to:
+              <a href="mailto:privacy@jtechforums.org"
+                >privacy@jtechforums.org</a
+              >
+            </p>
           </div>
         </section>
 
@@ -241,7 +357,8 @@
           <h2 class="policy-h2">10. Children’s Privacy</h2>
           <div class="policy-content">
             <p>
-              JTech is not directed at children under 13. We do not knowingly collect such data. If found, it will be deleted promptly.
+              JTech is not directed at children under 13. We do not knowingly
+              collect such data. If found, it will be deleted promptly.
             </p>
           </div>
         </section>
@@ -250,7 +367,8 @@
           <h2 class="policy-h2">11. International Transfers</h2>
           <div class="policy-content">
             <p>
-              Data may be processed outside your country. Safeguards like EU SCCs are applied to ensure adequate protection.
+              Data may be processed outside your country. Safeguards like EU
+              SCCs are applied to ensure adequate protection.
             </p>
           </div>
         </section>
@@ -259,7 +377,8 @@
           <h2 class="policy-h2">12. Do Not Track</h2>
           <div class="policy-content">
             <p>
-              We do not respond to all DNT signals at this time, as standards are not uniform. We will review if binding standards are adopted.
+              We do not respond to all DNT signals at this time, as standards
+              are not uniform. We will review if binding standards are adopted.
             </p>
           </div>
         </section>
@@ -268,7 +387,8 @@
           <h2 class="policy-h2">13. Changes</h2>
           <div class="policy-content">
             <p>
-              We may update this policy. Significant changes will be posted here with updated “Last Updated” date.
+              We may update this policy. Significant changes will be posted here
+              with updated “Last Updated” date.
             </p>
           </div>
         </section>
@@ -277,11 +397,13 @@
           <h2 class="policy-h2">14. Contact</h2>
           <div class="policy-content">
             <p>
-              Questions or requests? Contact us at <a href="mailto:privacy@jtechforums.org">privacy@jtechforums.org</a>.
+              Questions or requests? Contact us at
+              <a href="mailto:privacy@jtechforums.org"
+                >privacy@jtechforums.org</a
+              >.
             </p>
           </div>
         </section>
-
       </div>
     </main>
 
@@ -291,11 +413,11 @@
       document.addEventListener("DOMContentLoaded", () => {
         /* Header/Footer */
         fetch("/constants/headerDark.html")
-          .then(r => r.text())
-          .then(html => { 
-            const el = document.getElementById("header-container"); 
+          .then((r) => r.text())
+          .then((html) => {
+            const el = document.getElementById("header-container");
             if (el) {
-              el.innerHTML = html; 
+              el.innerHTML = html;
               const mobileMenu = document.getElementById("mobile-menu");
               const openButton = document.getElementById("mobile-menu-button");
               const closeButton = document.getElementById("mobile-menu-close");
@@ -311,43 +433,53 @@
           })
           .catch(() => {});
         fetch("/constants/footer.html")
-          .then(r => r.text())
-          .then(html => { const el = document.getElementById("footer-container"); if (el) el.innerHTML = html; })
+          .then((r) => r.text())
+          .then((html) => {
+            const el = document.getElementById("footer-container");
+            if (el) el.innerHTML = html;
+          })
           .catch(() => {});
 
         /* Smooth scroll for chips */
         const links = document.querySelectorAll('nav a[href^="#"]');
-        links.forEach(a => {
-          a.addEventListener("click", e => {
+        links.forEach((a) => {
+          a.addEventListener("click", (e) => {
             e.preventDefault();
             const id = a.getAttribute("href").slice(1);
             const el = document.getElementById(id);
             if (!el) return;
-            window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+            window.scrollTo({
+              top: el.getBoundingClientRect().top + window.scrollY - 80,
+              behavior: "smooth",
+            });
           });
         });
 
         /* Auto-hide scrollbar logic (adds/removes .show-scrollbar on <body>) */
         let scrollHideTimer;
         const showBar = () => {
-          document.body.classList.add('show-scrollbar');
+          document.body.classList.add("show-scrollbar");
           clearTimeout(scrollHideTimer);
           scrollHideTimer = setTimeout(() => {
-            document.body.classList.remove('show-scrollbar');
+            document.body.classList.remove("show-scrollbar");
           }, 800); // visible for 0.8s after last scroll/move
         };
 
         // Show on scroll
-        window.addEventListener('scroll', showBar, { passive: true });
+        window.addEventListener("scroll", showBar, { passive: true });
 
         // Show when mouse nears the right edge (user likely reaching for scrollbar)
-        window.addEventListener('mousemove', (e) => {
-          if (e.clientX > window.innerWidth - 24) showBar();
-        }, { passive: true });
+        window.addEventListener(
+          "mousemove",
+          (e) => {
+            if (e.clientX > window.innerWidth - 24) showBar();
+          },
+          { passive: true },
+        );
 
         // Show on touch interaction
-        window.addEventListener('touchstart', showBar, { passive: true });
-        window.addEventListener('touchmove', showBar, { passive: true });
+        window.addEventListener("touchstart", showBar, { passive: true });
+        window.addEventListener("touchmove", showBar, { passive: true });
 
         // Initial brief show so users discover it
         showBar();
