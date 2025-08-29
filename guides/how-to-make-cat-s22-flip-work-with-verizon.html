@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
@@ -6,13 +6,16 @@
       name="description"
       content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
     />
-    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta
+      name="keywords"
+      content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher"
+    />
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="language" content="English" />
     <meta name="author" content="doniel@mesnan.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4" defer></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -32,10 +35,16 @@
     <div class="bg-gray-900 px-6 py-32 lg:px-8">
       <div class="mx-auto max-w-3xl text-base/7 text-gray-300">
         <p class="text-base/7 font-semibold text-blue-400">Guide</p>
-        <h1 class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-white sm:text-5xl">How to Make a CAT S22 Flip Work with Verizon</h1>
+        <h1
+          class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-white sm:text-5xl"
+        >
+          How to Make a CAT S22 Flip Work with Verizon
+        </h1>
         <p class="mt-6 text-xl/8">
-          This guide will walk you through each step, including how to install the necessary software and properly configure your phone. Be warned:
-          this is an advanced process that may risk damaging your device. Proceed at your own risk! This guide is exported from
+          This guide will walk you through each step, including how to install
+          the necessary software and properly configure your phone. Be warned:
+          this is an advanced process that may risk damaging your device.
+          Proceed at your own risk! This guide is exported from
           <a
             href="https://www.reddit.com/r/dumbphones/comments/1i081bc/working_verizon_volte_on_the_cat_s22_guide/"
             target="_blank"
@@ -46,16 +55,31 @@
         <br />
         <p class="text-lg/8">
           Need help? Join our
-          <a href="https://forums.jtechforums.org" target="_blank" class="text-blue-400 underline">forums</a>, where our amazing community members
-          can assist you with any questions!
+          <a
+            href="https://forums.jtechforums.org"
+            target="_blank"
+            class="text-blue-400 underline"
+            >forums</a
+          >, where our amazing community members can assist you with any
+          questions!
         </p>
 
-        <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Requirements</h3>
+        <h3
+          class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white"
+        >
+          Requirements
+        </h3>
         <div class="mt-4 ml-4 max-w-2xl">
-          <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside">
+          <ul
+            role="list"
+            class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside"
+          >
             <li>
               <strong class="font-semibold text-white">Software:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>QPST v2.7.496.1 (Qualcomm Product Support Tools)</li>
                 <li>Qualcomm USB Drivers</li>
                 <li>Verizon MBN file (<code>mcfg_sw.mbn</code>)</li>
@@ -63,8 +87,13 @@
             </li>
             <li>
               <strong class="font-semibold text-white">Hardware:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
-                <li>CAT S22 with stock Android 11 (must be network unlocked)</li>
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
+                <li>
+                  CAT S22 with stock Android 11 (must be network unlocked)
+                </li>
                 <li>Windows PC</li>
                 <li>Data-capable USB-C cable</li>
               </ol>
@@ -72,64 +101,114 @@
           </ul>
         </div>
 
-        <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Step-by-Step Instructions</h3>
+        <h3
+          class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white"
+        >
+          Step-by-Step Instructions
+        </h3>
         <div class="mt-4 ml-4 max-w-2xl">
-          <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside">
+          <ul
+            role="list"
+            class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside"
+          >
             <li>
-              <strong class="font-semibold text-white">Install Qualcomm USB Drivers:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Install Qualcomm USB Drivers:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Download and run <code>setup.exe</code></li>
                 <li>Reboot your computer after installation</li>
               </ol>
             </li>
             <li>
               <strong class="font-semibold text-white">Install QPST:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Install QPST v2.7.496.1</li>
-                <li>Verify installation of <code>QPSTConfig.exe</code> and <code>PDC.exe</code> in the QPST bin folder</li>
+                <li>
+                  Verify installation of <code>QPSTConfig.exe</code> and
+                  <code>PDC.exe</code> in the QPST bin folder
+                </li>
               </ol>
             </li>
             <li>
-              <strong class="font-semibold text-white">Enable DIAG Mode on CAT S22:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Enable DIAG Mode on CAT S22:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Open Phone app and dial <code>##3424#</code></li>
                 <li>Tap “Open Port” on the DiagView screen</li>
                 <li>Connect your phone to the PC using USB-C cable</li>
               </ol>
             </li>
             <li>
-              <strong class="font-semibold text-white">Check Device Detection:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Check Device Detection:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Open Device Manager</li>
                 <li>Look under “Modems” for “Qualcomm HS-USB Modem XXXX”</li>
               </ol>
             </li>
             <li>
-              <strong class="font-semibold text-white">Configure in QPST:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Configure in QPST:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Open <code>QPSTConfig.exe</code></li>
-                <li>Go to “Ports” tab and ensure phone appears (or add manually)</li>
+                <li>
+                  Go to “Ports” tab and ensure phone appears (or add manually)
+                </li>
               </ol>
             </li>
             <li>
-              <strong class="font-semibold text-white">Load Verizon MBN in PDC:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Load Verizon MBN in PDC:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Open <code>PDC.exe</code></li>
                 <li>Select your Qualcomm device from the dropdown</li>
                 <li>Click “Load” and select <code>mcfg_sw.mbn</code></li>
               </ol>
             </li>
             <li>
-              <strong class="font-semibold text-white">Activate CDMAless-Verizon:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Activate CDMAless-Verizon:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Right-click CDMAless-Verizon → SetSelectedConfig → Sub0</li>
                 <li>Click “Activate” once it says “pending”</li>
                 <li>Ignore errors – verify it shows “Active”</li>
               </ol>
             </li>
             <li>
-              <strong class="font-semibold text-white">Reboot and Verify:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Reboot and Verify:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Restart your CAT S22</li>
                 <li>Close the DIAG port</li>
                 <li>Check that VoLTE is working</li>
@@ -138,12 +217,24 @@
           </ul>
         </div>
 
-        <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Optional Fixes</h3>
+        <h3
+          class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white"
+        >
+          Optional Fixes
+        </h3>
         <div class="mt-4 ml-4 max-w-2xl">
-          <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside">
+          <ul
+            role="list"
+            class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside"
+          >
             <li>
-              <strong class="font-semibold text-white">Set Preferred Network to LTE Only:</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <strong class="font-semibold text-white"
+                >Set Preferred Network to LTE Only:</strong
+              >
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Dial <code>*#*#4636#*#*</code></li>
                 <li>Select “Phone Information”</li>
                 <li>Change preferred network to <strong>LTE only</strong></li>
@@ -153,9 +244,14 @@
             </li>
             <li>
               <strong class="font-semibold text-white">SMS Not Working?</strong>
-              <ol role="list" class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white">
+              <ol
+                role="list"
+                class="ml-8 mt-2 list-decimal list-inside text-gray-400 marker:!text-white"
+              >
                 <li>Call Verizon</li>
-                <li>Ask them to configure your line as <strong>CDMAless</strong></li>
+                <li>
+                  Ask them to configure your line as <strong>CDMAless</strong>
+                </li>
                 <li>
                   More info:
                   <a
@@ -170,17 +266,29 @@
         </div>
 
         <div class="mt-8 max-w-2xl">
-          <h2 class="text-3xl font-semibold tracking-tight text-pretty text-white">Go Further</h2>
+          <h2
+            class="text-3xl font-semibold tracking-tight text-pretty text-white"
+          >
+            Go Further
+          </h2>
           <p class="mt-3 ml-4">
             For more information and to learn how to do more, see our
-            <a class="text-blue-400 underline" href="https://forums.jtechforums.org/c/android-guides/15" target="_blank">Android Guides</a> category
-            on the community forum.
+            <a
+              class="text-blue-400 underline"
+              href="https://forums.jtechforums.org/c/android-guides/15"
+              target="_blank"
+              >Android Guides</a
+            >
+            category on the community forum.
           </p>
         </div>
       </div>
     </div>
 
-    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"
+    ></script>
 
     <div id="footer-container"></div>
 
@@ -215,7 +323,9 @@
       .slide-up {
         transform: translateY(100%);
         opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s ease;
+        transition:
+          transform 0.5s ease,
+          opacity 0.5s ease;
       }
 
       .slide-up.show {
@@ -227,14 +337,19 @@
     <script type="text/javascript">
       !(function () {
         var t = document.createElement("script");
-        (t.type = "text/javascript"),
+        ((t.type = "text/javascript"),
           (t.async = !0),
           (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
           (t.onload = function () {
             window.formbricks
-              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
-              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
-          });
+              ? window.formbricks.setup({
+                  environmentId: "cmad2of5l0009qa015j0l7n8y",
+                  appUrl: "https://forms.mesnan.com",
+                })
+              : console.error(
+                  "Formbricks library failed to load properly. The formbricks object is not available.",
+                );
+          }));
         var e = document.getElementsByTagName("script")[0];
         e.parentNode.insertBefore(t, e);
       })();
