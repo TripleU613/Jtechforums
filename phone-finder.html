@@ -169,8 +169,6 @@
             modal.classList.add("hidden");
           }
         }
-
-        formbricks.track("report_misinformation");
       }
 
       function closeFormModal() {
@@ -689,27 +687,5 @@
         opacity: 1;
       }
     </style>
-    <!-- START Formbricks Surveys -->
-    <script type="text/javascript">
-      !(function () {
-        var t = document.createElement("script");
-        ((t.type = "text/javascript"),
-          (t.async = !0),
-          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
-          (t.onload = function () {
-            window.formbricks
-              ? window.formbricks.setup({
-                  environmentId: "cmad2of5l0009qa015j0l7n8y",
-                  appUrl: "https://forms.mesnan.com",
-                })
-              : console.error(
-                  "Formbricks library failed to load properly. The formbricks object is not available.",
-                );
-          }));
-        var e = document.getElementsByTagName("script")[0];
-        e.parentNode.insertBefore(t, e);
-      })();
-    </script>
-    <!-- END Formbricks Surveys -->
   </body>
 </html>

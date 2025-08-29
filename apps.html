@@ -125,14 +125,6 @@
       </section>
     </div>
 
-    <script>
-      document
-        .getElementById("trackButton")
-        .addEventListener("click", function () {
-          formbricks.track("new_app");
-        });
-    </script>
-
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="grid grid-cols-1 sm:hidden mb-12">
         <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
@@ -738,27 +730,5 @@
         opacity: 1;
       }
     </style>
-    <!-- START Formbricks Surveys -->
-    <script type="text/javascript">
-      !(function () {
-        var t = document.createElement("script");
-        ((t.type = "text/javascript"),
-          (t.async = !0),
-          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
-          (t.onload = function () {
-            window.formbricks
-              ? window.formbricks.setup({
-                  environmentId: "cmad2of5l0009qa015j0l7n8y",
-                  appUrl: "https://forms.mesnan.com",
-                })
-              : console.error(
-                  "Formbricks library failed to load properly. The formbricks object is not available.",
-                );
-          }));
-        var e = document.getElementsByTagName("script")[0];
-        e.parentNode.insertBefore(t, e);
-      })();
-    </script>
-    <!-- END Formbricks Surveys -->
   </body>
 </html>
