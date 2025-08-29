@@ -84,10 +84,19 @@
         opacity: 0;
         pointer-events: none;
       }
+      #loading-screen .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #loading-screen img {
+        height: 6rem;
+        margin-bottom: 1.5rem;
+      }
       #loading-screen .loader {
-        width: 3rem;
-        height: 3rem;
-        border: 4px solid #0ea5e9;
+        width: 5rem;
+        height: 5rem;
+        border: 6px solid #0ea5e9;
         border-top-color: transparent;
         border-radius: 9999px;
         animation: spin 1s linear infinite;
@@ -103,8 +112,8 @@
   <body class="bg-black">
     <!-- Loading Screen -->
     <div id="loading-screen">
-      <div style="text-align: center">
-        <img src="/img/whitelogo.png" alt="JTech logo" style="height: 80px; margin-bottom: 1rem" />
+      <div class="content">
+        <img src="/img/whitelogo.png" alt="JTech logo" />
         <div class="loader"></div>
       </div>
     </div>
@@ -337,6 +346,7 @@
       <!-- Hero -->
       <div class="relative isolate overflow-hidden py-24">
         <img
+          id="hero-phonegrid"
           src="/img/phonegrid.png"
           alt=""
           class="opacity-20 absolute inset-0 -z-10 size-full object-cover"
@@ -2061,14 +2071,25 @@
         );
       });
 
-      // Hide loading screen once page is fully loaded
-      window.addEventListener("load", function () {
+      // Hide loading screen once hero image has loaded
+      document.addEventListener("DOMContentLoaded", function () {
         var loader = document.getElementById("loading-screen");
         if (!loader) return;
-        loader.classList.add("fade-out");
-        setTimeout(function () {
-          loader.parentNode && loader.parentNode.removeChild(loader);
-        }, 300);
+        var heroImg = document.getElementById("hero-phonegrid");
+
+        function hide() {
+          loader.classList.add("fade-out");
+          setTimeout(function () {
+            loader.parentNode && loader.parentNode.removeChild(loader);
+          }, 300);
+        }
+
+        if (!heroImg || heroImg.complete) {
+          hide();
+        } else {
+          heroImg.addEventListener("load", hide);
+          heroImg.addEventListener("error", hide);
+        }
       });
 
       (function () {
