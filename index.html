@@ -69,10 +69,46 @@
         mix-blend-mode: screen;
         opacity: 0.8;
       }
+      /* Loading screen styles */
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #loading-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #loading-screen .loader {
+        width: 3rem;
+        height: 3rem;
+        border: 4px solid #0ea5e9;
+        border-top-color: transparent;
+        border-radius: 9999px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
 
   <body class="bg-black">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div style="text-align: center">
+        <img src="/img/whitelogo.png" alt="JTech logo" style="height: 80px; margin-bottom: 1rem" />
+        <div class="loader"></div>
+      </div>
+    </div>
+
     <header class="absolute inset-x-0 top-0 z-20 bg-transparent">
       <style>
         .text-glow {
@@ -2023,6 +2059,16 @@
         CHAMPIONS.slice(3, 5).forEach((p, i) =>
           top5El.appendChild(miniCard(p, i + 4)),
         );
+      });
+
+      // Hide loading screen once page is fully loaded
+      window.addEventListener("load", function () {
+        var loader = document.getElementById("loading-screen");
+        if (!loader) return;
+        loader.classList.add("fade-out");
+        setTimeout(function () {
+          loader.parentNode && loader.parentNode.removeChild(loader);
+        }, 300);
       });
 
       (function () {
