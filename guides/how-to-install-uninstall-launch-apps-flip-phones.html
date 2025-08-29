@@ -51,7 +51,7 @@
         </p>
         <h2 class="mt-8 text-3xl font-semibold tracking-tight text-pretty text-white text-glow">Installing Apps</h2>
         <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Step 1: Enable USB Debugging</h3>
-        <div class="mt-4 ml-12 max-w-2xl">
+        <div class="mt-4 ml-4 max-w-2xl">
           <p>Enabling USB debugging varies by device:</p>
           <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-300 marker:text-blue-400 list-disc list-inside">
             <li>
@@ -109,7 +109,7 @@
           </ul>
         </div>
         <h3 class="mt-8 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Advanced Users: Install via ADB Command</h3>
-        <div class="mt-4 ml-12 max-w-2xl">
+        <div class="mt-4 ml-4 max-w-2xl">
           <p class="mt-4 mb-6">
             For those using ADB on a computer: <code class="bg-gray-800 text-gray-200 rounded-lg p-2">adb install -g appname.apk </code>
           </p>
@@ -124,7 +124,7 @@
         </div>
 
         <h2 class="mt-8 text-3xl font-semibold tracking-tight text-pretty text-white text-glow">Uninstalling Apps</h2>
-        <div class="mt-4 ml-6 max-w-2xl">
+        <div class="mt-4 ml-4 max-w-2xl">
           <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-300 marker:text-blue-400 list-disc list-inside">
             <li>
               <strong>LG Exalt:</strong>
@@ -185,17 +185,30 @@
     <div id="footer-container"></div>
 
     <script>
-      fetch("/constants/footer.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("footer-container").innerHTML = data;
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/constants/footer.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("footer-container").innerHTML = data;
+          });
 
-      fetch("/constants/headerDark.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-container").innerHTML = data;
-        });
+        fetch("/constants/headerDark.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header-container").innerHTML = data;
+            const mobileMenu = document.getElementById("mobile-menu");
+            const openButton = document.getElementById("mobile-menu-button");
+            const closeButton = document.getElementById("mobile-menu-close");
+
+            openButton.addEventListener("click", function () {
+              mobileMenu.classList.remove("hidden");
+            });
+
+            closeButton.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+            });
+          });
+      });
     </script>
 
     <style>

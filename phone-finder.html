@@ -86,7 +86,7 @@
         <button id="close-modal" class="absolute top-3 right-4 text-gray-400 hover:text-gray-200 text-3xl leading-none font-bold cursor-pointer">
           &times;
         </button>
-        <div id="modal-content" class="space-y-4 p-4 max-w-full overflow-y-auto m-10 sm:m-0"></div>
+        <div id="modal-content" class="space-y-4 p-4 max-w-full overflow-y-auto px-4 sm:m-0"></div>
       </div>
     </div>
 
@@ -154,7 +154,7 @@
   </a>`
         : ""
     }
-  <button onclick="openFormModal(event, true, 
+  <button onclick="openFormModal(event, false, 
     ${phone.name}
   )" class="flex items-center gap-2 justify-center cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
     Report Incorrect Information
@@ -505,17 +505,30 @@
     <div id="footer-container"></div>
 
     <script>
-      fetch("/constants/footer.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("footer-container").innerHTML = data;
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/constants/footer.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("footer-container").innerHTML = data;
+          });
 
-      fetch("/constants/headerDark.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-container").innerHTML = data;
-        });
+        fetch("/constants/headerDark.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header-container").innerHTML = data;
+            const mobileMenu = document.getElementById("mobile-menu");
+            const openButton = document.getElementById("mobile-menu-button");
+            const closeButton = document.getElementById("mobile-menu-close");
+
+            openButton.addEventListener("click", function () {
+              mobileMenu.classList.remove("hidden");
+            });
+
+            closeButton.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+            });
+          });
+      });
     </script>
 
     <style>

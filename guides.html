@@ -509,7 +509,7 @@
           {
             title: "Guide to US LTE Bands on the Xiaomi Qin F21 Pro (Excerpt from XDA Forums)",
             description:
-              "Based on the method by XDA Forums user CatStoleTheCrown Unlock LTE Bands 2, 4, 12, 13, 17, 66, 71 (from the US Qin F30 Kosher) I broke each step up to make it more clear. Disclaimer Proceed at your own risk. Flashing or modifying your device could result in a non-working (bricked) phone if done incorrectly. Backup everything and be cautious. Requirements Windows PC (Only works on Windows) Qin F21 Pro with: Unlocked bootloader TWRP installed Follow this thread: Unlock + TWRP Guide SP Flash Tool (",
+              "Based on the method by XDA Forums user CatStoleTheCrown Unlock LTE Bands 2, 4, 12, 13, 17, 66, 71 (from the US Qin F30 Kosher) I broke each step up to make it more clear. Disclaimer Proceed at your own risk. Flashing or modifying your device could result in a non-working (bricked) phone. Backup everything and be cautious. Requirements Windows PC (Only works on Windows) Qin F21 Pro with: Unlocked bootloader TWRP installed Follow this thread: Unlock + TWRP Guide SP Flash Tool (",
             category: {
               name: "Android Guides",
               link: "https://forums.jtechforums.org/c/android-guides/15",
@@ -654,17 +654,30 @@
     <div id="footer-container"></div>
 
     <script>
-      fetch("/constants/footer.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("footer-container").innerHTML = data;
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/constants/footer.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("footer-container").innerHTML = data;
+          });
 
-      fetch("/constants/headerDark.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-container").innerHTML = data;
-        });
+        fetch("/constants/headerDark.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header-container").innerHTML = data;
+            const mobileMenu = document.getElementById("mobile-menu");
+            const openButton = document.getElementById("mobile-menu-button");
+            const closeButton = document.getElementById("mobile-menu-close");
+
+            openButton.addEventListener("click", function () {
+              mobileMenu.classList.remove("hidden");
+            });
+
+            closeButton.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+            });
+          });
+      });
     </script>
 
     <style>

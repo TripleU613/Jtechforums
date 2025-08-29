@@ -51,7 +51,7 @@
         </p>
 
         <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Requirements</h3>
-        <div class="mt-4 ml-12 max-w-2xl">
+        <div class="mt-4 ml-4 max-w-2xl">
           <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside">
             <li>
               <strong class="font-semibold text-white">Software:</strong>
@@ -73,7 +73,7 @@
         </div>
 
         <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Step-by-Step Instructions</h3>
-        <div class="mt-4 ml-12 max-w-2xl">
+        <div class="mt-4 ml-4 max-w-2xl">
           <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside">
             <li>
               <strong class="font-semibold text-white">Install Qualcomm USB Drivers:</strong>
@@ -139,7 +139,7 @@
         </div>
 
         <h3 class="mt-4 ml-4 text-2xl font-semibold tracking-tight text-pretty text-white">Optional Fixes</h3>
-        <div class="mt-4 ml-12 max-w-2xl">
+        <div class="mt-4 ml-4 max-w-2xl">
           <ul role="list" class="mt-2 ml-8 max-w-xl space-y-4 text-gray-400 marker:text-blue-400 list-disc list-inside">
             <li>
               <strong class="font-semibold text-white">Set Preferred Network to LTE Only:</strong>
@@ -185,17 +185,30 @@
     <div id="footer-container"></div>
 
     <script>
-      fetch("/constants/footer.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("footer-container").innerHTML = data;
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/constants/footer.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("footer-container").innerHTML = data;
+          });
 
-      fetch("/constants/headerDark.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-container").innerHTML = data;
-        });
+        fetch("/constants/headerDark.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header-container").innerHTML = data;
+            const mobileMenu = document.getElementById("mobile-menu");
+            const openButton = document.getElementById("mobile-menu-button");
+            const closeButton = document.getElementById("mobile-menu-close");
+
+            openButton.addEventListener("click", function () {
+              mobileMenu.classList.remove("hidden");
+            });
+
+            closeButton.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+            });
+          });
+      });
     </script>
 
     <style>
