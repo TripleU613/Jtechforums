@@ -264,7 +264,23 @@
         /* ---------------- Header & Footer ---------------- */
         fetch("/constants/headerDark.html")
           .then(r => r.text())
-          .then(html => { const el = document.getElementById("header-container"); if (el) el.innerHTML = html; })
+          .then(html => { 
+            const el = document.getElementById("header-container"); 
+            if (el) {
+              el.innerHTML = html; 
+              const mobileMenu = document.getElementById("mobile-menu");
+              const openButton = document.getElementById("mobile-menu-button");
+              const closeButton = document.getElementById("mobile-menu-close");
+
+              openButton.addEventListener("click", function () {
+                mobileMenu.classList.remove("hidden");
+              });
+
+              closeButton.addEventListener("click", function () {
+                mobileMenu.classList.add("hidden");
+              });
+            }
+          })
           .catch(() => {});
 
         fetch("/constants/footer.html")

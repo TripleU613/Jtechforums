@@ -148,7 +148,7 @@
         <div id="filter-options-posters" class="space-y-2"></div>
       </aside>
       <!-- Apps -->
-      <ul id="app-list" role="list" class="mx-16 flex flex-col gap-6"></ul>
+      <ul id="app-list" role="list" class="px-4 sm:mx-16 flex flex-col gap-6"></ul>
 
       <script>
         const apps = [
@@ -424,14 +424,14 @@
 
           filteredApps.forEach((app) => {
             const li = document.createElement("li");
-            li.className = "relative flex justify-between gap-x-6 py-5 bg-gray-900 p-4 rounded-md shadow-sm";
+            li.className = "relative flex flex-col sm:flex-row justify-between gap-x-6 py-5 bg-gray-900 p-4 rounded-md shadow-sm";
 
             li.innerHTML = `
-                    <div class="flex min-w-0 gap-x-4">
+                    <div class="flex flex-col sm:flex-row min-w-0 gap-x-4">
                         <img class="size-24 flex-none rounded-xl bg-gray-800 self-center" src="${app.icon}" alt="${app.title}" />
                         <div class="min-w-0 flex-auto">
                             <p class="text-2xl font-semibold text-white text-glow">${app.title}</p>
-                            <p class="mt-1 text-[14px] text-gray-300 w-[90%]">${app.description}</p>
+                            <p class="mt-1 text-[14px] text-gray-300">${app.description}</p>
                             <div class="pt-1 text-sm flex text-gray-300">
                                 <b>Credits:&nbsp;</b>
                                 <p>${app.credits}</p>
@@ -442,8 +442,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex shrink-0 items-center gap-x-4">
-                        <div class="hidden sm:flex sm:flex-col sm:justify-center sm:items-center w-full max-w-[250px]">
+                    <div class="flex shrink-0 items-center gap-x-4 mt-4 sm:mt-0">
+                        <div class="flex flex-col justify-center items-center w-full sm:w-auto">
                             <a href="${app.forumLink}" target="_blank" class="w-full text-center rounded-md bg-gray-800 px-4 py-2 text-md font-semibold text-white ring-1 shadow-xs ring-gray-700 ring-inset hover:bg-gray-700">
                                 View Forum Post
                             </a>
@@ -538,17 +538,30 @@
     <div id="footer-container"></div>
 
     <script>
-      fetch("/constants/headerDark.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-container").innerHTML = data;
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/constants/headerDark.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header-container").innerHTML = data;
+            const mobileMenu = document.getElementById("mobile-menu");
+            const openButton = document.getElementById("mobile-menu-button");
+            const closeButton = document.getElementById("mobile-menu-close");
 
-      fetch("/constants/footer.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("footer-container").innerHTML = data;
-        });
+            openButton.addEventListener("click", function () {
+              mobileMenu.classList.remove("hidden");
+            });
+
+            closeButton.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+            });
+          });
+
+        fetch("/constants/footer.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("footer-container").innerHTML = data;
+          });
+      });
     </script>
 
     <style>

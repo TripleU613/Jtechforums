@@ -104,7 +104,7 @@
 
                 <!-- Navigation and Keypad Buttons -->
                 <g fill="#575757">
-                  <!-- Navigation Button (Middle Circle) -->
+                  <!-- Middle Circle -->
                   <circle cx="140" cy="410" r="35" />
                   <circle fill="#232323" cx="140" cy="410" r="30" />
                   <circle fill="#575757" cx="140" cy="410" r="28" />
@@ -587,18 +587,30 @@
         <div id="footer-container"></div>
 
     <script>
-      fetch("/constants/footer.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("footer-container").innerHTML = data;
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/constants/footer.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("footer-container").innerHTML = data;
+          });
 
-     
-      fetch("/constants/headerDark.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-container").innerHTML = data;
-        });
+        fetch("/constants/headerDark.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header-container").innerHTML = data;
+            const mobileMenu = document.getElementById("mobile-menu");
+            const openButton = document.getElementById("mobile-menu-button");
+            const closeButton = document.getElementById("mobile-menu-close");
+
+            openButton.addEventListener("click", function () {
+              mobileMenu.classList.remove("hidden");
+            });
+
+            closeButton.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+            });
+          });
+      });
     </script>
    <!-- START Formbricks Surveys -->
     <script type="text/javascript">
