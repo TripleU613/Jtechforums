@@ -16,12 +16,23 @@
 
     <!-- Font Awesome -->
     <link
-      rel="stylesheet"
+      rel="preload"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
       integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      />
+    </noscript>
 
     <style>
       img { pointer-events: none; }
@@ -38,12 +49,125 @@
   </head>
 
   <body class="bg-black">
-    <div id="header-container"></div>
+    <header class="absolute inset-x-0 top-0 z-20 bg-transparent">
+  <style>
+    .text-glow {
+      text-shadow: 0 0 5px rgba(0, 173, 238, 0.8), 0 0 10px rgba(0, 173, 238, 0.5);
+    }
+  </style>
+  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <div class="flex lg:flex-1">
+      <a href="#" class="-m-1 p-1">
+        <span class="sr-only">JTech Forums</span>
+        <img class="h-16 w-auto" src="/img/whitelogo.png" alt="" />
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="flex lg:hidden">
+      <button
+        id="mobile-menu-button"
+        type="button"
+        class="cursor-pointer -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden lg:flex lg:gap-x-12">
+      <a href="/" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Home</a>
+      <a href="/community-resources.html" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Resources</a>
+      <a href="https://forums.jtechforums.org" target="_blank" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Forum</a>
+      <a href="/contact-us" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Contact Us</a>
+      <a href="https://mdminstaller.com" target="_blank" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">MDM Installer</a>
+    </div>
+
+    <!-- Desktop Search Bar -->
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+      <form id="search-form-desktop" action="https://forums.jtechforums.org/search" method="get">
+        <div
+          class="flex rounded-md bg-white/10 outline-1 -outline-offset-1 outline-blue-400 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-400 shadow-lg"
+        >
+          <input
+            id="search-input-desktop"
+            type="search"
+            name="q"
+            placeholder="Search the Forum..."
+            class="block min-w-0 grow px-3 py-1.5 text-base text-white placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+          />
+          <div class="flex py-1.5 pr-1.5">
+            <kbd class="inline-flex items-center rounded-sm border border-gray-500 px-1 font-sans text-xs text-gray-300">enter</kbd>
+          </div>
+        </div>
+        <p id="error-message-desktop" class="mt-2 text-sm text-red-500 hidden">Minimum character count is 4.</p>
+      </form>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden fixed inset-0 z-10 bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
+    <div class="flex items-center justify-between">
+      <a href="#" class="-m-1.5 p-1.5">
+        <span class="sr-only">JTech Forums</span>
+        <img class="h-8 w-auto" src="/img/whitelogo.png" alt="" />
+      </a>
+      <button id="mobile-menu-close" type="button" class="cursor-pointer -m-2.5 rounded-md p-2.5 text-gray-400">
+        <span class="sr-only">Close menu</span>
+        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="mt-6 flow-root">
+      <div class="-my-6 divide-y divide-gray-500/25">
+        <div class="space-y-2 py-6">
+          <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Home</a>
+          <a href="/apps" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Apps</a>
+          <a href="/guides" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Guides</a>
+          <a href="/egate" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">eGate</a>
+          <a href="https://mdminstaller.com" target="_blank" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">MDM Installer</a>
+          <a href="/phone-finder" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Phone Finder</a>
+          <a
+            href="https://forums.jtechforums.org"
+            target="_blank"
+            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+            >Forum</a
+          ><a href="/contact-us" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Contact Us</a>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="py-6">
+          <form id="search-form-mobile" action="https://forums.jtechforums.org/search" method="get">
+            <div
+              class="flex rounded-md bg-white/10 outline-1 -outline-offset-1 outline-blue-400 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-400 shadow-lg"
+            >
+              <input
+                id="search-input-mobile"
+                type="search"
+                name="q"
+                placeholder="Search the Forum..."
+                class="block min-w-0 grow px-3 py-1.5 text-base text-white placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+              />
+              <div class="flex py-1.5 pr-1.5">
+                <kbd class="inline-flex items-center rounded-sm border border-gray-500 px-1 font-sans text-xs text-gray-300">enter</kbd>
+              </div>
+            </div>
+            <p id="error-message-mobile" class="mt-2 text-sm text-red-500 hidden">Minimum character count is 4.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
 
     <div class="bg-gray-900">
       <!-- Hero -->
       <div class="relative isolate overflow-hidden py-24">
-        <img src="/img/phonegrid.png" alt="" class="opacity-20 absolute inset-0 -z-10 size-full object-cover" />
+        <img src="/img/phonegrid.png" alt="" class="opacity-20 absolute inset-0 -z-10 size-full object-cover" loading="lazy" />
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
           <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
             <div class="hidden sm:mb-8 sm:flex sm:justify-center">
@@ -164,7 +288,7 @@
             </div>
 
             <div class="relative mt-16 h-80 lg:mt-8">
-              <img class="absolute top-0 left-0 w-full max-w-full rounded-md bg-white/5 ring-1 ring-white/10" src="/img/forum.png" alt="Forum preview" />
+              <img class="absolute top-0 left-0 w-full max-w-full rounded-md bg-white/5 ring-1 ring-white/10" src="/img/forum.png" alt="Forum preview" loading="lazy" />
             </div>
           </div>
         </div>
@@ -180,7 +304,7 @@
             <a href="https://forums.jtechforums.org/t/what-is-adb-and-getting-started/1072" target="_blank" class="relative lg:col-span-3">
               <div class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]"></div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-tl-[calc(2rem+1px)]">
-                <img class="h-80 object-cover object-left" src="/img/home/android.png" alt="Android guide" />
+                <img class="h-80 object-cover object-left" src="/img/home/android.png" alt="Android guide" loading="lazy" />
                 <div class="p-10 pt-4 flex flex-col flex-grow">
                   <h3 class="text-sm/4 my-2 font-semibold text-blue-400 text-glow">Android Guide</h3>
                   <p class="mt-4 text-2xl font-medium tracking-tight text-white">What is ADB and Getting Started</p>
@@ -206,7 +330,7 @@
             <a href="/egate" target="_blank" class="relative lg:col-span-2">
               <div class="absolute inset-px rounded-lg bg-gray-900 lg:rounded-bl-[2rem]"></div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
-                <img class="h-100 object-cover object-left" src="/img/home/egatesquare.png" alt="eGate" />
+                <img class="h-100 object-cover object-left" src="/img/home/egatesquare.png" alt="eGate" loading="lazy" />
                 <div class="p-10 pt-4">
                   <h3 class="text-sm/4 my-2 font-semibold text-blue-400 text-glow">Android Filter</h3>
                   <p class="mt-2 text-lg font-medium tracking-tight text-white">What is the eGate filter?</p>
@@ -232,7 +356,7 @@
             <a href="https://forums.jtechforums.org/t/how-to-make-any-app-work-without-google-play-services/1324" target="_blank" class="relative lg:col-span-2">
               <div class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-b-[2rem] lg:rounded-br-[2rem]"></div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-br-[calc(2rem+1px)]">
-                <img class="h-100 object-cover" src="/img/home/gps.webp" alt="Google Play Services guide" />
+                <img class="h-100 object-cover" src="/img/home/gps.webp" alt="Google Play Services guide" loading="lazy" />
                 <div class="p-10 pt-4">
                   <h3 class="text-sm/4 my-2 font-semibold text-blue-400 text-glow">Android Guide</h3>
                   <p class="mt-2 text-lg font-medium tracking-tight text-white">How to Make Any App Work Without Google Play Services</p>
@@ -666,42 +790,47 @@
       </div>
     </div>
     <!-- Footer mount point: keep this near the end of <body>, not inside a max-width wrapper -->
-    <div id="footer-container"></div>
+    <!--Footer-->
+<footer class="bg-black border-t border-gray-800/50 py-8">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
+    <!-- Logo and Site Name -->
+    <div class="flex items-center mb-4 md:mb-0">
+      <a href="/" class="flex items-center -m-1.5 p-1.5">
+        <span class="sr-only">JTech Forums</span>
+        <img class="h-12 w-auto mr-3" src="/img/whitelogo.png" alt="JTech Logo" />
+      </a>
+      <p class="text-sm/6 text-gray-400">&copy; 2025 JTech Forums</p>
+    </div>
+
+    <!-- Footer Links -->
+    <nav class="flex flex-wrap justify-center md:justify-end space-x-6 text-sm font-medium">
+      <a href="/about" class="text-gray-400 hover:text-blue-300 transition-colors duration-200">About</a>
+      <a href="/contact-us" class="text-gray-400 hover:text-blue-300 transition-colors duration-200">Contact</a>
+      <a href="https://forums.jtechforums.org" target="_blank" class="text-gray-400 hover:text-blue-300 transition-colors duration-200">Forum</a>
+      <a href="/privacy-policy" class="text-gray-400 hover:text-blue-300 transition-colors duration-200">Privacy Policy</a>
+    </nav>
+  </div>
+</footer>
 
     <!-- Unified scripts (one listener, no duplicates). Add 'defer' on this script tag if you prefer. -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        /* ---------------- Header & Footer ---------------- */
-        // Make sure #header-container and #footer-container are at the <body> level
-        fetch("/constants/headerDark.html")
-          .then(r => r.text())
-          .then(html => {
-            const el = document.getElementById("header-container");
-            if (el) {
-              el.innerHTML = html;
-              const mobileMenuButton = document.getElementById("mobile-menu-button");
-              const mobileMenu = document.getElementById("mobile-menu");
-              const mobileMenuClose = document.getElementById("mobile-menu-close");
+        /* ---------------- Mobile Menu Toggle ---------------- */
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const mobileMenuClose = document.getElementById("mobile-menu-close");
 
-              if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener("click", () => {
-                  mobileMenu.classList.toggle("hidden");
-                });
-              }
+        if (mobileMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+          });
+        }
 
-              if (mobileMenuClose && mobileMenu) {
-                mobileMenuClose.addEventListener("click", () => {
-                  mobileMenu.classList.add("hidden");
-                });
-              }
-            }
-          })
-          .catch(() => {});
-    
-        fetch("/constants/footer.html")
-          .then(r => r.text())
-          .then(html => { const el = document.getElementById("footer-container"); if (el) el.innerHTML = html; })
-          .catch(() => {});
+        if (mobileMenuClose && mobileMenu) {
+          mobileMenuClose.addEventListener("click", () => {
+            mobileMenu.classList.add("hidden");
+          });
+        }
     
         /* ---------------- FAQ: per-item expand/collapse ---------------- */
         // Use event delegation (works even if items are injected later)
