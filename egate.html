@@ -12,7 +12,7 @@
     <meta name="language" content="English" />
     <meta name="author" content="doniel@mesnan.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4" defer></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -20,15 +20,17 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-  <style>
-  img {
-    pointer-events: none;
-  }
-  .text-glow {
-    text-shadow: 0 0 8px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5);
-  }
-</style>
-</head>
+    <link rel="stylesheet" href="/constants/loader.css" />
+    <script src="/constants/loader.js"></script>
+    <style>
+      img {
+        pointer-events: none;
+      }
+      .text-glow {
+        text-shadow: 0 0 8px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5);
+      }
+    </style>
+  </head>
   <body class="bg-black">
     <div id="header-container"></div>
 
@@ -311,7 +313,7 @@
                   </p>
                 </div>
                 <div class="@container flex flex-1 items-center max-lg:py-6 lg:pb-2">
-                  <img class="h-[min(152px,40cqw)] object-cover" src="/img/home/pwd.png" alt="" />
+                  <img loading="lazy" class="h-[min(152px,40cqw)] object-cover" src="/img/home/pwd.png" alt="" />
                 </div>
               </div>
               <div class="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-white/10 max-lg:rounded-t-[2rem]"></div>
@@ -326,7 +328,7 @@
                   </p>
                 </div>
                 <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
-                  <img class="w-full max-lg:max-w-xs" src="/img/home/lines.png" alt="" />
+                  <img loading="lazy" class="w-full max-lg:max-w-xs" src="/img/home/lines.png" alt="" />
                 </div>
               </div>
               <div class="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-white/10"></div>
@@ -344,7 +346,7 @@
                 </div>
                 <div class="relative min-h-[30rem] w-full grow">
                   <div class="absolute top-10 right-0 bottom-0 left-10 overflow-hidden rounded-tl-xl bg-gray-900 shadow-2xl">
-                    <img class="size-full object-cover object-left" src="/img/home/reseller.png" />
+                    <img loading="lazy" class="size-full object-cover object-left" src="/img/home/reseller.png" />
                   </div>
                 </div>
               </div>
@@ -573,7 +575,7 @@
               </div>
             </div>
             <div class="relative mt-16 h-80 lg:mt-8">
-              <img
+              <img loading="lazy"
                 class="absolute top-0 left-0 w-full max-w-full rounded-md bg-white/5 ring-1 ring-white/10"
                 src="/img/forum.png"
                 alt="App screenshot"
@@ -609,22 +611,5 @@
             });
           });
       });
-    </script>
-   <!-- START Formbricks Surveys -->
-    <script type="text/javascript">
-      !(function () {
-        var t = document.createElement("script");
-        (t.type = "text/javascript"),
-          (t.async = !0),
-          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
-          (t.onload = function () {
-            window.formbricks
-              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
-              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
-          });
-        var e = document.getElementsByTagName("script")[0];
-        e.parentNode.insertBefore(t, e);
-      })();
-    </script>
-    <!-- END Formbricks Surveys --></body>
+    </script></body>
 </html>

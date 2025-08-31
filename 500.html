@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
@@ -6,13 +6,16 @@
       name="description"
       content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
     />
-    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta
+      name="keywords"
+      content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher"
+    />
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="language" content="English" />
     <meta name="author" content="doniel@mesnan.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4" defer></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -20,207 +23,369 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="stylesheet" href="/constants/loader.css" />
+    <script src="/constants/loader.js"></script>
     <style>
       img {
         pointer-events: none;
       }
       .text-glow {
-        text-shadow: 0 0 8px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5);
+        text-shadow:
+          0 0 8px rgba(59, 130, 246, 0.8),
+          0 0 20px rgba(59, 130, 246, 0.5);
       }
     </style>
   </head>
   <body class="min-h-screen flex flex-col bg-black">
     <div id="header-container">
-<header class="absolute inset-x-0 top-0 z-20 bg-transparent">
-  <style>
-    .text-glow {
-      text-shadow: 0 0 5px rgba(0, 173, 238, 0.8), 0 0 10px rgba(0, 173, 238, 0.5);
-    }
-  </style>
-  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-    <div class="flex lg:flex-1">
-      <a href="#" class="-m-1 p-1">
-        <span class="sr-only">JTech Forums</span>
-        <img class="h-16 w-auto" src="/img/whitelogo.png" alt="" />
-      </a>
-    </div>
-
-    <!-- Mobile Menu Button -->
-    <div class="flex lg:hidden">
-      <button
-        id="mobile-menu-button"
-        type="button"
-        class="cursor-pointer -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400"
-      >
-        <span class="sr-only">Open main menu</span>
-        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Desktop Menu -->
-    <div class="hidden lg:flex lg:gap-x-12">
-      <a href="/" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Home</a>
-      <div class="relative group">
-        <a href="#" class="text-md/6 font-semibold text-white hover:text-blue-200 cursor-pointer flex items-center gap-1 text-glow">
-          Resources
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </a>
-
-        <div class="absolute left-0 top-full z-50 hidden max-w-5xl group-hover:block">
-          <div class="bg-white shadow-xl rounded-xl">
-            <div class="grid grid-cols-1 gap-8 px-8 py-5">
-              <div>
-                <ul class="space-y-2">
-                  <li><a href="/apps" class="block text-md/6 font-semibold text-black hover:text-blue-600">Apps</a></li>
-                  <li><a href="/guides" class="block text-md/6 font-semibold text-black hover:text-blue-600">Guides</a></li>
-                  <li><a href="/phone-finder" class="block text-md/6 font-semibold text-black hover:text-blue-600">Phone Finder</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a href="https://forums.jtechforums.org" target="_blank" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Forum</a>
-      <a href="/contact-us" class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow">Contact Us</a>
-    </div>
-
-    <!-- Desktop Search Bar -->
-    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-      <form id="search-form-desktop" action="https://forums.jtechforums.org/search" method="get">
-        <div
-          class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-gray-300"
+      <header class="absolute inset-x-0 top-0 z-20 bg-transparent">
+        <style>
+          .text-glow {
+            text-shadow:
+              0 0 5px rgba(0, 173, 238, 0.8),
+              0 0 10px rgba(0, 173, 238, 0.5);
+          }
+        </style>
+        <nav
+          class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+          aria-label="Global"
         >
-          <input
-            id="search-input-desktop"
-            type="search"
-            name="q"
-            placeholder="Search the Forum..."
-            class="block min-w-0 grow px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
-          />
-          <div class="flex py-1.5 pr-1.5">
-            <kbd class="inline-flex items-center rounded-sm border border-gray-200 px-1 font-sans text-xs text-gray-400">enter</kbd>
+          <div class="flex lg:flex-1">
+            <a href="#" class="-m-1 p-1">
+              <span class="sr-only">JTech Forums</span>
+              <img class="h-16 w-auto" src="/img/whitelogo.png" alt="" />
+            </a>
           </div>
-        </div>
-        <p id="error-message-desktop" class="mt-2 text-sm text-red-500 hidden">Minimum character count is 4.</p>
-      </form>
-    </div>
-  </nav>
 
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden fixed inset-0 z-10 bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
-    <div class="flex items-center justify-between">
-      <a href="#" class="-m-1.5 p-1.5">
-        <span class="sr-only">JTech Forums</span>
-        <img class="h-8 w-auto" src="/img/whitelogo.png" alt="" />
-      </a>
-      <button id="mobile-menu-close" type="button" class="cursor-pointer -m-2.5 rounded-md p-2.5 text-gray-400">
-        <span class="sr-only">Close menu</span>
-        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    <div class="mt-6 flow-root">
-      <div class="-my-6 divide-y divide-gray-500/25">
-        <div class="space-y-2 py-6">
-          <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Home</a>
-          <a href="/apps" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Apps</a>
-          <a href="/guides" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Guides</a>
-          <a href="/egate" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">eGate</a>
-          <a href="/phone-finder" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Phone Finder</a>
-          <a
-            href="https://forums.jtechforums.org"
-            target="_blank"
-            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
-            >Forum</a
-          ><a href="/contact-us" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow">Contact Us</a>
-        </div>
-
-        <!-- Mobile Search Bar -->
-        <div class="py-6">
-          <form id="search-form-mobile" action="https://forums.jtechforums.org/search" method="get">
-            <div
-              class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-gray-300"
+          <!-- Mobile Menu Button -->
+          <div class="flex lg:hidden">
+            <button
+              id="mobile-menu-button"
+              type="button"
+              class="cursor-pointer -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400"
             >
-              <input
-                id="search-input-mobile"
-                type="search"
-                name="q"
-                placeholder="Search the Forum..."
-                class="block min-w-0 grow px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
-              />
-              <div class="flex py-1.5 pr-1.5">
-                <kbd class="inline-flex items-center rounded-sm border border-gray-200 px-1 font-sans text-xs text-gray-400">enter</kbd>
+              <span class="sr-only">Open main menu</span>
+              <svg
+                class="size-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Desktop Menu -->
+          <div class="hidden lg:flex lg:gap-x-12">
+            <a
+              href="/"
+              class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow"
+              >Home</a
+            >
+            <div class="relative group">
+              <a
+                href="#"
+                class="text-md/6 font-semibold text-white hover:text-blue-200 cursor-pointer flex items-center gap-1 text-glow"
+              >
+                Resources
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </a>
+
+              <div
+                class="absolute left-0 top-full z-50 hidden max-w-5xl group-hover:block"
+              >
+                <div class="bg-white shadow-xl rounded-xl">
+                  <div class="grid grid-cols-1 gap-8 px-8 py-5">
+                    <div>
+                      <ul class="space-y-2">
+                        <li>
+                          <a
+                            href="/apps"
+                            class="block text-md/6 font-semibold text-black hover:text-blue-600"
+                            >Apps</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="/guides"
+                            class="block text-md/6 font-semibold text-black hover:text-blue-600"
+                            >Guides</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="/phone-finder"
+                            class="block text-md/6 font-semibold text-black hover:text-blue-600"
+                            >Phone Finder</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <p id="error-message-mobile" class="mt-2 text-sm text-red-500 hidden">Minimum character count is 4.</p>
-          </form>
+            <a
+              href="https://forums.jtechforums.org"
+              target="_blank"
+              class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow"
+              >Forum</a
+            >
+            <a
+              href="/contact-us"
+              class="text-md/6 font-semibold text-white hover:text-blue-200 text-glow"
+              >Contact Us</a
+            >
+          </div>
+
+          <!-- Desktop Search Bar -->
+          <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+            <form
+              id="search-form-desktop"
+              action="https://forums.jtechforums.org/search"
+              method="get"
+            >
+              <div
+                class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-gray-300"
+              >
+                <input
+                  id="search-input-desktop"
+                  type="search"
+                  name="q"
+                  placeholder="Search the Forum..."
+                  class="block min-w-0 grow px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                />
+                <div class="flex py-1.5 pr-1.5">
+                  <kbd
+                    class="inline-flex items-center rounded-sm border border-gray-200 px-1 font-sans text-xs text-gray-400"
+                    >enter</kbd
+                  >
+                </div>
+              </div>
+              <p
+                id="error-message-desktop"
+                class="mt-2 text-sm text-red-500 hidden"
+              >
+                Minimum character count is 4.
+              </p>
+            </form>
+          </div>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="hidden fixed inset-0 z-10 bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10"
+        >
+          <div class="flex items-center justify-between">
+            <a href="#" class="-m-1.5 p-1.5">
+              <span class="sr-only">JTech Forums</span>
+              <img class="h-8 w-auto" src="/img/whitelogo.png" alt="" />
+            </a>
+            <button
+              id="mobile-menu-close"
+              type="button"
+              class="cursor-pointer -m-2.5 rounded-md p-2.5 text-gray-400"
+            >
+              <span class="sr-only">Close menu</span>
+              <svg
+                class="size-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="mt-6 flow-root">
+            <div class="-my-6 divide-y divide-gray-500/25">
+              <div class="space-y-2 py-6">
+                <a
+                  href="/"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >Home</a
+                >
+                <a
+                  href="/apps"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >Apps</a
+                >
+                <a
+                  href="/guides"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >Guides</a
+                >
+                <a
+                  href="/egate"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >eGate</a
+                >
+                <a
+                  href="/phone-finder"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >Phone Finder</a
+                >
+                <a
+                  href="https://forums.jtechforums.org"
+                  target="_blank"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >Forum</a
+                ><a
+                  href="/contact-us"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800 text-glow"
+                  >Contact Us</a
+                >
+              </div>
+
+              <!-- Mobile Search Bar -->
+              <div class="py-6">
+                <form
+                  id="search-form-mobile"
+                  action="https://forums.jtechforums.org/search"
+                  method="get"
+                >
+                  <div
+                    class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-gray-300"
+                  >
+                    <input
+                      id="search-input-mobile"
+                      type="search"
+                      name="q"
+                      placeholder="Search the Forum..."
+                      class="block min-w-0 grow px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                    />
+                    <div class="flex py-1.5 pr-1.5">
+                      <kbd
+                        class="inline-flex items-center rounded-sm border border-gray-200 px-1 font-sans text-xs text-gray-400"
+                        >enter</kbd
+                      >
+                    </div>
+                  </div>
+                  <p
+                    id="error-message-mobile"
+                    class="mt-2 text-sm text-red-500 hidden"
+                  >
+                    Minimum character count is 4.
+                  </p>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const mobileMenu = document.getElementById("mobile-menu");
+          const openButton = document.getElementById("mobile-menu-button");
+          const closeButton = document.getElementById("mobile-menu-close");
+
+          // Open menu
+          openButton.addEventListener("click", function () {
+            mobileMenu.classList.remove("hidden");
+          });
+
+          // Close menu
+          closeButton.addEventListener("click", function () {
+            mobileMenu.classList.add("hidden");
+          });
+
+          // Search validation for Desktop
+          document
+            .getElementById("search-form-desktop")
+            .addEventListener("submit", function (event) {
+              const input = document.getElementById("search-input-desktop");
+              const errorMessage = document.getElementById(
+                "error-message-desktop",
+              );
+
+              if (input.value.length < 4) {
+                event.preventDefault();
+                errorMessage.classList.remove("hidden");
+              } else {
+                errorMessage.classList.add("hidden");
+              }
+            });
+
+          // Search validation for Mobile
+          document
+            .getElementById("search-form-mobile")
+            .addEventListener("submit", function (event) {
+              const input = document.getElementById("search-input-mobile");
+              const errorMessage = document.getElementById(
+                "error-message-mobile",
+              );
+
+              if (input.value.length < 4) {
+                event.preventDefault();
+                errorMessage.classList.remove("hidden");
+              } else {
+                errorMessage.classList.add("hidden");
+              }
+            });
+        });
+      </script>
     </div>
-  </div>
-</header>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const mobileMenu = document.getElementById("mobile-menu");
-    const openButton = document.getElementById("mobile-menu-button");
-    const closeButton = document.getElementById("mobile-menu-close");
-
-    // Open menu
-    openButton.addEventListener("click", function () {
-      mobileMenu.classList.remove("hidden");
-    });
-
-    // Close menu
-    closeButton.addEventListener("click", function () {
-      mobileMenu.classList.add("hidden");
-    });
-
-    // Search validation for Desktop
-    document.getElementById("search-form-desktop").addEventListener("submit", function (event) {
-      const input = document.getElementById("search-input-desktop");
-      const errorMessage = document.getElementById("error-message-desktop");
-
-      if (input.value.length < 4) {
-        event.preventDefault();
-        errorMessage.classList.remove("hidden");
-      } else {
-        errorMessage.classList.add("hidden");
-      }
-    });
-
-    // Search validation for Mobile
-    document.getElementById("search-form-mobile").addEventListener("submit", function (event) {
-      const input = document.getElementById("search-input-mobile");
-      const errorMessage = document.getElementById("error-message-mobile");
-
-      if (input.value.length < 4) {
-        event.preventDefault();
-        errorMessage.classList.remove("hidden");
-      } else {
-        errorMessage.classList.add("hidden");
-      }
-    });
-  });
-</script>
-</div>
-    <main class="flex-grow relative isolate flex items-center justify-center bg-gray-900">
-      <img src="/img/phonegrid.png" alt="" class="opacity-20 absolute inset-0 -z-10 size-full object-cover object-top" />
-      <div class="absolute inset-x-0 -top-60 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true"></div>
+    <main
+      class="flex-grow relative isolate flex items-center justify-center bg-gray-900"
+    >
+      <img
+        loading="lazy"
+        src="/img/phonegrid.png"
+        alt=""
+        class="opacity-20 absolute inset-0 -z-10 size-full object-cover object-top"
+      />
+      <div
+        class="absolute inset-x-0 -top-60 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+        aria-hidden="true"
+      ></div>
       <div class="mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8">
         <p class="text-base/8 font-semibold text-white">500</p>
-        <h1 class="mt-4 text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl text-glow">Site Error</h1>
-        <p class="mt-6 text-lg font-medium text-pretty text-white/70 sm:text-xl/8">
-          There has been an error with the site. Please try your request again. If you think this is a mistake or would like to report an issue, you
+        <h1
+          class="mt-4 text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl text-glow"
+        >
+          Site Error
+        </h1>
+        <p
+          class="mt-6 text-lg font-medium text-pretty text-white/70 sm:text-xl/8"
+        >
+          There has been an error with the site. Please try your request again.
+          If you think this is a mistake or would like to report an issue, you
           can report it to us by email. Click the link below to email us.
         </p>
         <div class="mt-10 flex justify-center">
-          <a href="mailto:donbot@jtechforums.org" class="text-sm/7 font-semibold text-blue-400 text-glow">Email Us <span aria-hidden="true">&rarr;</span></a>
+          <a
+            href="mailto:donbot@jtechforums.org"
+            class="text-sm/7 font-semibold text-blue-400 text-glow"
+            >Email Us <span aria-hidden="true">&rarr;</span></a
+          >
         </div>
       </div>
     </main>
@@ -245,7 +410,9 @@
       .slide-up {
         transform: translateY(100%);
         opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s ease;
+        transition:
+          transform 0.5s ease,
+          opacity 0.5s ease;
       }
 
       .slide-up.show {
@@ -253,22 +420,5 @@
         opacity: 1;
       }
     </style>
-    <!-- START Formbricks Surveys -->
-    <script type="text/javascript">
-      !(function () {
-        var t = document.createElement("script");
-        (t.type = "text/javascript"),
-          (t.async = !0),
-          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
-          (t.onload = function () {
-            window.formbricks
-              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
-              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
-          });
-        var e = document.getElementsByTagName("script")[0];
-        e.parentNode.insertBefore(t, e);
-      })();
-    </script>
-    <!-- END Formbricks Surveys -->
   </body>
 </html>

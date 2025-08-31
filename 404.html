@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
@@ -6,13 +6,16 @@
       name="description"
       content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
     />
-    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta
+      name="keywords"
+      content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher"
+    />
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="language" content="English" />
     <meta name="author" content="doniel@mesnan.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4" defer></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -20,6 +23,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="stylesheet" href="/constants/loader.css" />
+    <script src="/constants/loader.js"></script>
     <style>
       img {
         pointer-events: none;
@@ -28,15 +33,37 @@
   </head>
   <body class="min-h-screen flex flex-col">
     <div id="header-container"></div>
-    <main class="flex-grow relative isolate flex items-center justify-center bg-gray-900">
-      <img src="/img/phonegrid.png" alt="" class="opacity-20 absolute inset-0 -z-10 size-full object-cover object-top" />
-      <div class="absolute inset-x-0 -top-60 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true"></div>
+    <main
+      class="flex-grow relative isolate flex items-center justify-center bg-gray-900"
+    >
+      <img
+        loading="lazy"
+        src="/img/phonegrid.png"
+        alt=""
+        class="opacity-20 absolute inset-0 -z-10 size-full object-cover object-top"
+      />
+      <div
+        class="absolute inset-x-0 -top-60 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+        aria-hidden="true"
+      ></div>
       <div class="mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8">
         <p class="text-base/8 font-semibold text-white">404</p>
-        <h1 class="mt-4 text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl">Page Not Found</h1>
-        <p class="mt-6 text-lg font-medium text-pretty text-white/70 sm:text-xl/8">Sorry, we couldn’t find the page you’re looking for.</p>
+        <h1
+          class="mt-4 text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl"
+        >
+          Page Not Found
+        </h1>
+        <p
+          class="mt-6 text-lg font-medium text-pretty text-white/70 sm:text-xl/8"
+        >
+          Sorry, we couldn’t find the page you’re looking for.
+        </p>
         <div class="mt-10 flex justify-center">
-          <a href="https://jtechforums.org" class="text-sm/7 font-semibold text-white"><span aria-hidden="true">&larr;</span> Back to Home</a>
+          <a
+            href="https://jtechforums.org"
+            class="text-sm/7 font-semibold text-white"
+            ><span aria-hidden="true">&larr;</span> Back to Home</a
+          >
         </div>
       </div>
     </main>
@@ -61,7 +88,9 @@
       .slide-up {
         transform: translateY(100%);
         opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s ease;
+        transition:
+          transform 0.5s ease,
+          opacity 0.5s ease;
       }
 
       .slide-up.show {
@@ -69,6 +98,5 @@
         opacity: 1;
       }
     </style>
-    <!-- START Formbricks Surveys -->
   </body>
 </html>

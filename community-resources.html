@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta name="title" content="JTech - Jewish Tech & Filtering Forum" />
@@ -6,13 +6,16 @@
       name="description"
       content="JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information."
     />
-    <meta name="keywords" content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher" />
+    <meta
+      name="keywords"
+      content="jtech,jewish,tech,filter,egate,forum,apps4flip,flip phone,flip,phone,qin,f21,kosher"
+    />
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="language" content="English" />
     <meta name="author" content="doniel@mesnan.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4" defer></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -20,6 +23,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="stylesheet" href="/constants/loader.css" />
+    <script src="/constants/loader.js"></script>
     <style>
       img {
         pointer-events: none;
@@ -31,111 +36,214 @@
 
     <div class="bg-black py-24 sm:py-32 mt-16">
       <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-        <p class="mx-auto mt-2 max-w-xl text-center text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl">
+        <p
+          class="mx-auto mt-2 max-w-xl text-center text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl"
+        >
           Community Resources
         </p>
-        <p class="mx-auto mt-2 max-w-xl text-center text-lg tracking-tight text-balance text-gray-300">
+        <p
+          class="mx-auto mt-2 max-w-xl text-center text-lg tracking-tight text-balance text-gray-300"
+        >
           Click on a resource to be taken to it's dedicated page.
         </p>
         <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
           <a href="/phone-finder" class="relative lg:row-span-2">
-            <div class="absolute inset-px bg-gray-900 lg:rounded-l-[2rem]"></div>
-            <div class="relative flex h-full flex-col overflow-hidden lg:rounded-l-[calc(2rem+1px)]">
+            <div
+              class="absolute inset-px bg-gray-900 lg:rounded-l-[2rem]"
+            ></div>
+            <div
+              class="relative flex h-full flex-col overflow-hidden lg:rounded-l-[calc(2rem+1px)]"
+            >
               <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">Phone Finder</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center">
-                  Not sure what phone fits your needs? Filter through the different configuration options and find what works best for you!
+                <p
+                  class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center"
+                >
+                  Phone Finder
+                </p>
+                <p
+                  class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center"
+                >
+                  Not sure what phone fits your needs? Filter through the
+                  different configuration options and find what works best for
+                  you!
                 </p>
               </div>
               <div class="relative min-h-[30rem] w-full grow">
-                <div class="absolute top-10 right-0 bottom-0 left-7 overflow-hidden rounded-tl-xl bg-gray-800 shadow-2xl">
-                  <img class="absolute inset-0 h-full w-full object-cover object-left" src="/img/phonefinder.png" />
+                <div
+                  class="absolute top-10 right-0 bottom-0 left-7 overflow-hidden rounded-tl-xl bg-gray-800 shadow-2xl"
+                >
+                  <img
+                    loading="lazy"
+                    class="absolute inset-0 h-full w-full object-cover object-left"
+                    src="/img/phonefinder.png"
+                  />
                 </div>
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10 lg:rounded-l-[2rem]"></div>
+            <div
+              class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10 lg:rounded-l-[2rem]"
+            ></div>
           </a>
           <a href="/apps" class="relative max-lg:row-start-1">
-            <div class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-t-[2rem]"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
+            <div
+              class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-t-[2rem]"
+            ></div>
+            <div
+              class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]"
+            >
               <div class="px-8 pt-8 sm:px-10 sm:pt-10">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">Apps List</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center">
-                  Enjoy a list of apps specifically designed for kosher phones and optimized to perform on a dumb phone.
+                <p
+                  class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center"
+                >
+                  Apps List
+                </p>
+                <p
+                  class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center"
+                >
+                  Enjoy a list of apps specifically designed for kosher phones
+                  and optimized to perform on a dumb phone.
                 </p>
               </div>
-              <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
-                <img class="w-full max-lg:max-w-xs" src="img/appslist.png" alt="" />
+              <div
+                class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2"
+              >
+                <img
+                  loading="lazy"
+                  class="w-full max-lg:max-w-xs"
+                  src="img/appslist.png"
+                  alt=""
+                />
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10 max-lg:rounded-t-[2rem]"></div>
+            <div
+              class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10 max-lg:rounded-t-[2rem]"
+            ></div>
           </a>
           <!-- MDM Installer (refined + centered + subtle SVG) -->
-<a href="https://mdminstaller.com" target="_blank" class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-  <!-- card background -->
-  <div class="absolute inset-px rounded-lg bg-gray-900"></div>
+          <a
+            href="https://mdminstaller.com"
+            target="_blank"
+            class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2"
+          >
+            <!-- card background -->
+            <div class="absolute inset-px rounded-lg bg-gray-900"></div>
 
-  <!-- subtle decorative pattern -->
-  <svg aria-hidden="true" class="pointer-events-none absolute -inset-px rounded-[calc(var(--radius-lg)+1px)] opacity-20"
-       viewBox="0 0 400 200" preserveAspectRatio="none">
-    <defs>
-      <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
-        <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor"></circle>
-      </pattern>
-      <radialGradient id="glow" cx="50%" cy="40%" r="70%">
-        <stop offset="0%" stop-color="white" stop-opacity="0.12"/>
-        <stop offset="60%" stop-color="white" stop-opacity="0.04"/>
-        <stop offset="100%" stop-color="white" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#dots)" class="text-white"></rect>
-    <rect width="100%" height="100%" fill="url(#glow)"></rect>
-  </svg>
+            <!-- subtle decorative pattern -->
+            <svg
+              aria-hidden="true"
+              class="pointer-events-none absolute -inset-px rounded-[calc(var(--radius-lg)+1px)] opacity-20"
+              viewBox="0 0 400 200"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <pattern
+                  id="dots"
+                  width="16"
+                  height="16"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <circle
+                    cx="1.5"
+                    cy="1.5"
+                    r="1.5"
+                    fill="currentColor"
+                  ></circle>
+                </pattern>
+                <radialGradient id="glow" cx="50%" cy="40%" r="70%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.12" />
+                  <stop offset="60%" stop-color="white" stop-opacity="0.04" />
+                  <stop offset="100%" stop-color="white" stop-opacity="0" />
+                </radialGradient>
+              </defs>
+              <rect
+                width="100%"
+                height="100%"
+                fill="url(#dots)"
+                class="text-white"
+              ></rect>
+              <rect width="100%" height="100%" fill="url(#glow)"></rect>
+            </svg>
 
-  <!-- content -->
-  <div class="relative flex h-full flex-col items-center justify-center overflow-hidden rounded-[calc(var(--radius-lg)+1px)] px-10 py-12 text-center">
-    <!-- tiny badge -->
-    <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-200">
-      <span class="i-lucide-usb w-3.5 h-3.5"></span>
-      WebUSB • No installs
-    </div>
+            <!-- content -->
+            <div
+              class="relative flex h-full flex-col items-center justify-center overflow-hidden rounded-[calc(var(--radius-lg)+1px)] px-10 py-12 text-center"
+            >
+              <!-- tiny badge -->
+              <div
+                class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-200"
+              >
+                <span class="i-lucide-usb w-3.5 h-3.5"></span>
+                WebUSB • No installs
+              </div>
 
-    <!-- title -->
-    <p class="mt-4 text-xl font-semibold tracking-tight text-white">MDM Installer</p>
+              <!-- title -->
+              <p class="mt-4 text-xl font-semibold tracking-tight text-white">
+                MDM Installer
+              </p>
 
-    <!-- description -->
-    <p class="mt-3 max-w-md text-sm leading-6 text-gray-300">
-      One-click, browser-based installer for trusted Jewish MDMs. Designed for technicians and families:
-      secure flows, device checks, and clear step-by-step guidance—no guesswork.
-    </p>
+              <!-- description -->
+              <p class="mt-3 max-w-md text-sm leading-6 text-gray-300">
+                One-click, browser-based installer for trusted Jewish MDMs.
+                Designed for technicians and families: secure flows, device
+                checks, and clear step-by-step guidance—no guesswork.
+              </p>
 
-    <!-- quick highlights -->
-    <ul class="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-gray-300">
-      <li class="rounded-md bg-white/5 px-2.5 py-1">Works on Chrome</li>
-      <li class="rounded-md bg-white/5 px-2.5 py-1">Cable + WebUSB</li>
-      <li class="rounded-md bg-white/5 px-2.5 py-1">Guided Prompts</li>
-      <li class="rounded-md bg-white/5 px-2.5 py-1">Zero Download</li>
-    </ul>
-  </div>
+              <!-- quick highlights -->
+              <ul
+                class="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-gray-300"
+              >
+                <li class="rounded-md bg-white/5 px-2.5 py-1">
+                  Works on Chrome
+                </li>
+                <li class="rounded-md bg-white/5 px-2.5 py-1">
+                  Cable + WebUSB
+                </li>
+                <li class="rounded-md bg-white/5 px-2.5 py-1">
+                  Guided Prompts
+                </li>
+                <li class="rounded-md bg-white/5 px-2.5 py-1">Zero Download</li>
+              </ul>
+            </div>
 
-  <!-- ring -->
-  <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10"></div>
-</a>
+            <!-- ring -->
+            <div
+              class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-white/10"
+            ></div>
+          </a>
 
           <a href="/guides" class="relative lg:row-span-2">
-            <div class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
+            <div
+              class="absolute inset-px rounded-lg bg-gray-900 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"
+            ></div>
             <div
               class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]"
             >
               <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">Guides List</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center">
-                  We have compiled a list of guides directly from our forum and made them into an easy-to-view list. Learn something new today!
+                <p
+                  class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center"
+                >
+                  Guides List
+                </p>
+                <p
+                  class="mt-2 max-w-lg text-sm/6 text-gray-300 max-lg:text-center"
+                >
+                  We have compiled a list of guides directly from our forum and
+                  made them into an easy-to-view list. Learn something new
+                  today!
                 </p>
               </div>
-              <div class="@container relative min-h-[30rem] w-full grow max-lg:mx-auto max-lg:max-w-sm">
-                <div class="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] shadow-2xl">
-                  <img class="size-full object-cover object-top" src="img/guides.png" alt="" />
+              <div
+                class="@container relative min-h-[30rem] w-full grow max-lg:mx-auto max-lg:max-w-sm"
+              >
+                <div
+                  class="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] shadow-2xl"
+                >
+                  <img
+                    loading="lazy"
+                    class="size-full object-cover object-top"
+                    src="img/guides.png"
+                    alt=""
+                  />
                 </div>
               </div>
             </div>
@@ -147,7 +255,10 @@
       </div>
     </div>
 
-    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"
+    ></script>
 
     <div id="footer-container"></div>
 
@@ -182,7 +293,9 @@
       .slide-up {
         transform: translateY(100%);
         opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s ease;
+        transition:
+          transform 0.5s ease,
+          opacity 0.5s ease;
       }
 
       .slide-up.show {
@@ -190,22 +303,5 @@
         opacity: 1;
       }
     </style>
-    <!-- START Formbricks Surveys -->
-    <script type="text/javascript">
-      !(function () {
-        var t = document.createElement("script");
-        (t.type = "text/javascript"),
-          (t.async = !0),
-          (t.src = "https://forms.mesnan.com/js/formbricks.umd.cjs"),
-          (t.onload = function () {
-            window.formbricks
-              ? window.formbricks.setup({ environmentId: "cmad2of5l0009qa015j0l7n8y", appUrl: "https://forms.mesnan.com" })
-              : console.error("Formbricks library failed to load properly. The formbricks object is not available.");
-          });
-        var e = document.getElementsByTagName("script")[0];
-        e.parentNode.insertBefore(t, e);
-      })();
-    </script>
-    <!-- END Formbricks Surveys -->
   </body>
 </html>

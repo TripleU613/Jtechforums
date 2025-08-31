@@ -1,0 +1,27 @@
+#loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(to right, #3b82f6, #06b6d4);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+  transition: width 0.3s ease, opacity 0.3s ease;
+  z-index: 9999;
+}
+
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  z-index: 9998;
+}
+
+#loading-overlay img {
+  width: 120px;
+  height: auto;
+}
