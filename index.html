@@ -1684,61 +1684,7 @@
                 </dd>
               </div>
 
-              <!-- All other FAQ items from your file go here unchanged -->
-              <!-- They will be hidden initially by the script beyond the first 3 -->
-              <div class="faq-item py-6 first:pt-0 last:pb-0">
-                <dt>
-                  <button
-                    type="button"
-                    class="faq-toggle flex w-full cursor-pointer items-start justify-between text-left text-white"
-                    aria-controls="faq-3"
-                    aria-expanded="false"
-                    data-faq-index="3"
-                  >
-                    <span class="text-base/7 cursor-pointer font-semibold"
-                      >What is this forum about?</span
-                    >
-                    <span class="ml-6 cursor-pointer flex h-7 items-center">
-                      <svg
-                        class="size-6 expand-icon"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="white"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M12 6v12m6-6H6"
-                        />
-                      </svg>
-                      <svg
-                        class="hidden size-6 collapse-icon"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="white"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M18 12H6"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                </dt>
-                <dd class="faq-answer mt-2 pr-12 hidden" id="faq-3">
-                  <p class="text-base/7 text-gray-300">
-                    This is a respectful, kosher place to discuss Jewish
-                    technology, filtering, phones, ROMs, and related issues...
-                  </p>
-                </dd>
-              </div>
-
-              <!-- Add all your other FAQ items here as usual -->
-              <!-- They will be hidden after the first 3 until Show More is clicked -->
-            </dl>
+              </dl>
 
             <!-- Show more / less button -->
             <div class="mt-6 flex justify-center">
@@ -1812,6 +1758,144 @@
       </div>
     </footer>
 
-    <!-- Unified scripts (one listener, no duplicates). Add 'defer' on this script tag if you prefer. -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        /* ---------------- Mobile menu ---------------- */
+        const mobileMenu = document.getElementById("mobile-menu");
+        const openButton = document.getElementById("mobile-menu-button");
+        const closeButton = document.getElementById("mobile-menu-close");
+        if (mobileMenu && openButton && closeButton) {
+          openButton.addEventListener("click", () =>
+            mobileMenu.classList.remove("hidden"),
+          );
+          closeButton.addEventListener("click", () =>
+            mobileMenu.classList.add("hidden"),
+          );
+        }
+
+        /* ---------------- FAQ ---------------- */
+        const faqItems = document.querySelectorAll("#faq-list .faq-item");
+        faqItems.forEach((item, index) => {
+          const toggle = item.querySelector(".faq-toggle");
+          const answer = item.querySelector(".faq-answer");
+          const expandIcon = item.querySelector(".expand-icon");
+          const collapseIcon = item.querySelector(".collapse-icon");
+          if (index >= 2) item.classList.add("hidden");
+          if (toggle && answer && expandIcon && collapseIcon) {
+            toggle.addEventListener("click", () => {
+              const hidden = answer.classList.contains("hidden");
+              answer.classList.toggle("hidden");
+              expandIcon.classList.toggle("hidden", !hidden);
+              collapseIcon.classList.toggle("hidden", hidden);
+            });
+          }
+        });
+
+        const faqToggleBtn = document.getElementById("faq-toggle-more");
+        if (faqToggleBtn) {
+          faqToggleBtn.addEventListener("click", () => {
+            const hiddenItems = Array.from(faqItems).slice(2);
+            const areHidden = hiddenItems[0]?.classList.contains("hidden");
+            hiddenItems.forEach((el) => el.classList.toggle("hidden", !areHidden));
+            const label = faqToggleBtn.querySelector("span");
+            const icon = faqToggleBtn.querySelector("svg");
+            if (areHidden) {
+              if (label) label.textContent = "Show less";
+              if (icon) icon.classList.add("rotate-180");
+            } else {
+              if (label) label.textContent = "Show more";
+              if (icon) icon.classList.remove("rotate-180");
+            }
+          });
+        }
+
+        /* ---------------- Champions ---------------- */
+        const podiumEl = document.getElementById("podium-champions");
+        const top5El = document.getElementById("top5-champions");
+
+        const crownPath =
+          "M3 7l4.5 3 4.5-6 4.5 6L21 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z";
+        const mkSvg = (vb, d) => {
+          const el = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          );
+          el.setAttribute("viewBox", vb);
+          el.setAttribute("fill", "currentColor");
+          el.innerHTML = `<path d="${d}"></path>`;
+          return el;
+        };
+
+        function podiumCard(item, index) {
+          const ringClass =
+            index === 0
+              ? "outline-yellow-500"
+              : index === 1
+                ? "outline-gray-400"
+                : "outline-amber-700";
+          const card = document.createElement("div");
+          card.className =
+            "relative bg-gray-900 rounded-xl shadow-lg outline outline-1 outline-gray-700 p-4 flex flex-col items-center text-center";
+          card.innerHTML = `
+            <div class="w-24 h-24 rounded-full overflow-hidden outline outline-2 ${ringClass} mb-3">
+              ${
+                item.avatar
+                  ? `<img src="${item.avatar}" alt="${item.name}" onerror="this.remove()">`
+                  : ""
+              }
+            </div>
+            <div class="font-bold text-white">${item.name}</div>
+            <div class="text-blue-300 font-bold flex items-center gap-1">${item.score.toLocaleString()} ${mkSvg(
+              "0 0 24 24",
+              crownPath,
+            ).outerHTML}</div>`;
+          return card;
+        }
+
+        function miniCard(item, rank) {
+          const el = document.createElement("div");
+          el.className =
+            "flex items-center gap-3 bg-gray-900 p-3 rounded-lg shadow-md outline outline-1 outline-gray-700";
+          el.innerHTML = `
+            <div class="w-8 h-8 rounded-md flex items-center justify-center font-extrabold bg-gray-800 text-white outline outline-2 outline-gray-700">${rank}</div>
+            <div class="w-14 h-14 rounded-md overflow-hidden bg-gray-800">
+              ${
+                item.avatar
+                  ? `<img src="${item.avatar}" alt="${item.name}" onerror="this.remove()">`
+                  : ""
+              }
+            </div>
+            <div class="flex-1">
+              <div class="font-bold text-white">${item.name}</div>
+              <div class="text-gray-400 font-bold">${item.score.toLocaleString()}</div>
+            </div>`;
+          return el;
+        }
+
+        function renderChampions(list) {
+          if (!podiumEl || !top5El || !list.length) return;
+          list.slice(0, 3).forEach((p, i) =>
+            podiumEl.appendChild(podiumCard(p, i)),
+          );
+          list.slice(3, 5).forEach((p, i) =>
+            top5El.appendChild(miniCard(p, i + 4)),
+          );
+        }
+
+        fetch(
+          "https://forums.jtechforums.org/api/users?sort=-points&page[limit]=5",
+        )
+          .then((r) => r.json())
+          .then((json) => {
+            const champs = (json.data || []).map((u) => ({
+              name: u.attributes.username,
+              score: u.attributes.points || 0,
+              avatar: u.attributes.avatarUrl,
+            }));
+            renderChampions(champs);
+          })
+          .catch(() => {});
+      });
+    </script>
   </body>
 </html>
