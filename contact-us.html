@@ -53,15 +53,15 @@
       >
         <!-- ✅ Using FormSubmit instead of mailto -->
         <form
+          id="contact-form"
           action="https://formsubmit.co/tripleuworld@gmail.com"
           method="POST"
-          class="space-y-6"
+          class="grid grid-cols-1 gap-6 sm:grid-cols-2"
         >
           <!-- Prevent spam -->
           <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="https://jtechforums.org/thank-you.html" />
 
-          <div>
+          <div class="flex flex-col">
             <label
               for="name"
               class="block text-sm font-medium text-gray-300"
@@ -75,7 +75,7 @@
               class="mt-1 w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <div class="flex flex-col">
             <label
               for="phone"
               class="block text-sm font-medium text-gray-300"
@@ -89,7 +89,7 @@
               class="mt-1 w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <div class="flex flex-col sm:col-span-2">
             <label
               for="email"
               class="block text-sm font-medium text-gray-300"
@@ -103,7 +103,7 @@
               class="mt-1 w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <div class="flex flex-col sm:col-span-2">
             <label
               for="message"
               class="block text-sm font-medium text-gray-300"
@@ -117,12 +117,20 @@
               class="mt-1 w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-blue-500 focus:ring-blue-500"
             ></textarea>
           </div>
-          <button
-            type="submit"
-            class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-          >
-            Send
-          </button>
+          <div class="sm:col-span-2">
+            <button
+              type="submit"
+              class="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            >
+              Send
+            </button>
+            <p
+              id="success-message"
+              class="mt-2 hidden text-center text-sm text-green-500"
+            >
+              Message has been sent, thank you.
+            </p>
+          </div>
         </form>
       </div>
     </div>
@@ -158,6 +166,24 @@
               mobileMenu.classList.add("hidden");
             });
           });
+
+        const form = document.getElementById("contact-form");
+        const successMessage = document.getElementById("success-message");
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+              Accept: "application/json",
+            },
+          });
+          if (response.ok) {
+            form.reset();
+            successMessage.classList.remove("hidden");
+          }
+        });
       });
     </script>
 
