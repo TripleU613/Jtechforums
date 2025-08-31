@@ -408,9 +408,9 @@
                   <button
                     type="button"
                     class="faq-toggle cursor-pointer flex w-full items-start justify-between text-left text-white"
-                    aria-controls="faq-0"
+                    aria-controls="faq-1"
                     aria-expanded="false"
-                    data-faq-index="0"
+                    data-faq-index="1"
                   >
                     <span class="text-base/7 cursor-pointer font-semibold">What type of information can be found here?</span>
                     <span class="ml-6 cursor-pointer flex h-7 items-center">
@@ -432,7 +432,7 @@
                     </span>
                   </button>
                 </dt>
-                <dd class="faq-answer mt-2 pr-12 hidden" id="faq-0">
+                <dd class="faq-answer mt-2 pr-12 hidden" id="faq-1">
                   <p class="text-base/7 text-gray-300">
                     Our forum is full of information ranging from information and guides to beginner questions. We have a wonderful community that is
                     eager to help others and share their contributions. You can find shared apps, guides, and more - all put out there by your fellow
@@ -446,46 +446,9 @@
                   <button
                     type="button"
                     class="faq-toggle flex cursor-pointer w-full items-start justify-between text-left text-white"
-                    aria-controls="faq-0"
+                    aria-controls="faq-2"
                     aria-expanded="false"
-                    data-faq-index="0"
-                  >
-                    <span class="text-base/7 cursor-pointer font-semibold">What is the apps page?</span>
-                    <span class="ml-6 flex h-7 cursor-pointer items-center">
-                      <!-- Plus icon (collapsed) -->
-                      <svg class="size-6 expand-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-                      </svg>
-                      <!-- Minus icon (expanded) -->
-                      <svg
-                        class="hidden size-6 cursor-pointer collapse-icon"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="white"
-                        aria-hidden="true"
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
-                      </svg>
-                    </span>
-                  </button>
-                </dt>
-                <dd class="faq-answer mt-2 pr-12 hidden" id="faq-0">
-                  <p class="text-base/7 text-gray-300">
-                    The apps page is a list of compiled apps from our community forum's <i>Uploaded Apps Thread</i>. Users share (modded) apps that
-                    are Kosher and optimized for you to be able to easily use.
-                  </p>
-                </dd>
-              </div>
-              <!-- FAQ Item -->
-              <div class="faq-item py-6 first:pt-0 last:pb-0">
-                <dt>
-                  <button
-                    type="button"
-                    class="faq-toggle flex cursor-pointer w-full items-start justify-between text-left text-white"
-                    aria-controls="faq-0"
-                    aria-expanded="false"
-                    data-faq-index="0"
+                    data-faq-index="2"
                   >
                     <span class="text-base/7 cursor-pointer font-semibold">How can I contact the moderators/administrators?</span>
                     <span class="ml-6 flex h-7 cursor-pointer items-center">
@@ -507,7 +470,7 @@
                     </span>
                   </button>
                 </dt>
-                <dd class="faq-answer mt-2 pr-12 hidden" id="faq-0">
+                <dd class="faq-answer mt-2 pr-12 hidden" id="faq-2">
                   <p class="text-base/7 text-gray-300">
                     You can private message any of our moderators or administrators on the forum. Simply go onto the forum, click on <i>Users</i> and
                     you will be able to see all of the moderators/administrators.
@@ -531,12 +494,11 @@
             const collapseIcon = faq.querySelector(".collapse-icon");
 
             toggleButton.addEventListener("click", function () {
-              // Toggle visibility of the answer
+              const hidden = answer.classList.contains("hidden");
               answer.classList.toggle("hidden");
-
-              // Toggle the icons
-              expandIcon.classList.toggle("hidden");
-              collapseIcon.classList.toggle("hidden");
+              toggleButton.setAttribute("aria-expanded", hidden ? "true" : "false");
+              expandIcon.classList.toggle("hidden", !hidden);
+              collapseIcon.classList.toggle("hidden", hidden);
             });
           });
         });
