@@ -3,11 +3,20 @@ name: Deploy Website
 on:
   push:
     branches:
-      - main   # Run workflow when pushing to main branch
+      - main
+
+# 👇 Add these permissions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repository
@@ -19,7 +28,7 @@ jobs:
       - name: Upload site files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .   # Use root directory (where your index.html is)
+          path: .   # or "./docs" if your site is inside docs/
 
       - name: Deploy to GitHub Pages
         id: deployment
