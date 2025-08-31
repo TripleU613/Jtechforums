@@ -51,12 +51,16 @@
       <div
         class="relative isolate overflow-hidden bg-gray-900 px-6 py-6 shadow-2xl sm:rounded-3xl sm:px-6"
       >
+        <!-- ✅ Using FormSubmit instead of mailto -->
         <form
-          action="mailto:tripleuworld@gmail.com"
+          action="https://formsubmit.co/tripleuworld@gmail.com"
           method="POST"
-          enctype="text/plain"
           class="space-y-6"
         >
+          <!-- Prevent spam -->
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="https://jtechforums.org/thank-you.html" />
+
           <div>
             <label
               for="name"
