@@ -156,18 +156,18 @@ function PatternGrid() {
 
 function PhoneMock() {
   return (
-    <svg viewBox="0 0 280 628" role="img" className="w-[16rem] max-w-full drop-shadow-2xl lg:w-[19rem]">
+    <svg viewBox="0 0 280 628" role="img" className="w-[12rem] max-w-full drop-shadow-2xl sm:w-[13.5rem] lg:w-[15.5rem]">
       <defs>
         <clipPath id="egate-phone-screen">
-          <rect width="180" height="250" rx="12" x="50" y="70" />
+          <rect width="190" height="270" rx="16" x="45" y="60" />
         </clipPath>
       </defs>
       <rect x="10" y="10" width="260" height="605" rx="35" fill="#232323" />
       <rect x="25" y="40" width="230" height="315" rx="12" fill="#050505" />
-      <foreignObject x="20" y="37" width="215" height="320" clipPath="url(#egate-phone-screen)">
+      <foreignObject x="45" y="60" width="190" height="270" clipPath="url(#egate-phone-screen)">
         <video
           src="/img/qinf21.mp4"
-          className="h-full w-full rounded-3xl object-cover"
+          className="h-full w-full rounded-3xl object-contain"
           autoPlay
           loop
           muted
