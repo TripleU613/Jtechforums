@@ -1,0 +1,8 @@
+node_modules
+functions/node_modules
+functions/.env
+functions/.env.*
+!functions/.env.example
+dist
+.env
+.DS_Store

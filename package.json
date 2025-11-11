@@ -1,0 +1,37 @@
+{
+  "name": "jtech-forums.github.io",
+  "version": "1.0.0",
+  "description": "Welcome to the **JTech Website** repository — the official open-source project for [JTech Forums](https://jtechforums.org).\r This site provides **beginner guides, an app list, FAQs, and other valuable resources** for the Jewish tech and filtering community.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JTech-Forums/jtech-forums.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JTech-Forums/jtech-forums.github.io/issues"
+  },
+  "homepage": "https://github.com/JTech-Forums/jtech-forums.github.io#readme",
+  "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
+    "firebase": "^12.5.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.0",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.13",
+    "vite": "^7.2.2"
+  }
+}
