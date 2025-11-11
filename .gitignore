@@ -3,6 +3,7 @@ functions/node_modules
 functions/.env
 functions/.env.*
 !functions/.env.example
+.firebase/
 dist
 .env
 .DS_Store
