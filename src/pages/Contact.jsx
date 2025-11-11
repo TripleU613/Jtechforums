@@ -18,19 +18,43 @@ export default function Contact() {
     document.body.appendChild(script);
   }, []);
 
-  const runRecaptcha = () =>
+  const waitForRecaptcha = () =>
     new Promise((resolve) => {
-      if (!RECAPTCHA_SITE_KEY || !window.grecaptcha?.enterprise) {
-        resolve('');
+      if (!RECAPTCHA_SITE_KEY) {
+        resolve(null);
         return;
       }
-      window.grecaptcha.enterprise.ready(() => {
-        window.grecaptcha.enterprise
+
+      const poll = (attempts = 0) => {
+        if (window.grecaptcha?.enterprise?.ready) {
+          resolve(window.grecaptcha.enterprise);
+          return;
+        }
+
+        if (attempts > 50) {
+          resolve(null);
+          return;
+        }
+
+        setTimeout(() => poll(attempts + 1), 100);
+      };
+
+      poll();
+    });
+
+  const runRecaptcha = async () => {
+    const enterprise = await waitForRecaptcha();
+    if (!enterprise) return '';
+
+    return new Promise((resolve) => {
+      enterprise.ready(() => {
+        enterprise
           .execute(RECAPTCHA_SITE_KEY, { action: 'contact' })
           .then(resolve)
           .catch(() => resolve(''));
       });
     });
+  };
 
   async function handleSubmit(event) {
     event.preventDefault();
