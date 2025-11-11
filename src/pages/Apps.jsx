@@ -249,22 +249,13 @@ export default function Apps() {
             <h2 className="text-2xl font-semibold text-white">Submit an app</h2>
             <p className="text-sm text-slate-300">Signed in as {user.email}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-              onClick={handleSignOut}
-            >
-              Sign out
-            </button>
-            <button
-              type="button"
-              className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-              onClick={() => setShowSubmissionForm((prev) => !prev)}
-            >
-              {showSubmissionForm ? 'Hide form' : 'Open submission'}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+            onClick={() => setShowSubmissionForm((prev) => !prev)}
+          >
+            {showSubmissionForm ? 'Hide form' : 'Open submission'}
+          </button>
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
