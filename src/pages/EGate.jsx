@@ -14,7 +14,7 @@ const featureList = [
   {
     title: 'Connectivity controls',
     body: 'Shut down Wi-Fi, hotspots, Bluetooth sharing, and MMS when zero side channels are allowed.',
-    icon: 'fa-solid fa-wifi-slash',
+    icon: 'fa-solid fa-tower-broadcast',
   },
   {
     title: 'Web filtering',
@@ -50,6 +50,12 @@ const faqs = [
       'Sign into the forum, open the Users tab, and DM any moderator/administrator. They can escalate eGate issues, approve guides, or loop in support.',
   },
 ];
+
+const slowVideoPlayback = (event) => {
+  if (event?.currentTarget) {
+    event.currentTarget.playbackRate = 0.8;
+  }
+};
 
 export default function EGate() {
   return (
@@ -115,20 +121,10 @@ function Hero() {
               Learn more <i className="fa-solid fa-arrow-up-right-from-square text-xs" />
             </a>
           </div>
-          <div className="flex flex-wrap gap-8 rounded-3xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 sm:text-base">
-            <div>
-              <p className="text-2xl font-semibold text-white">0</p>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Escalations</p>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-white">97%</p>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Satisfaction</p>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-white">Q4 build</p>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Pixel 8a</p>
-            </div>
-          </div>
+          <p className="rounded-3xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 sm:text-base">
+            Built and maintained by <span className="font-semibold text-white">Offline Software Solutions</span> so our kosher deployments always
+            inherit the hardened stack from the original .io launch.
+          </p>
         </div>
         <div className="flex justify-center lg:justify-end">
           <PhoneMock />
@@ -167,12 +163,14 @@ function PhoneMock() {
       <foreignObject x="45" y="60" width="190" height="270" clipPath="url(#egate-phone-screen)">
         <video
           src="/img/qinf21.mp4"
-          className="h-full w-full rounded-3xl object-contain"
+          className="h-full w-full rounded-3xl object-contain bg-black"
           autoPlay
           loop
           muted
           playsInline
           aria-label="eGate demo"
+          onLoadedData={slowVideoPlayback}
+          style={{ transform: 'scale(0.92)' }}
         />
       </foreignObject>
       <rect x="120" y="25" width="40" height="6" rx="3" fill="#555555" />
@@ -217,15 +215,19 @@ function Highlights() {
                 </p>
               </div>
               <div className="relative mx-auto flex w-full max-w-sm flex-1 items-center justify-center px-8 pb-10 pt-8 lg:max-w-full">
-                <div className="h-[22rem] w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-900 to-black p-4 shadow-2xl">
-                  <video
-                    src="/img/qinf21.mp4"
-                    className="h-full w-full rounded-[1.5rem] object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
+                <div className="h-[22rem] w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-950 to-slate-900 p-4 shadow-2xl">
+                  <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-black/70 p-4">
+                    <video
+                      src="/img/qinf21.mp4"
+                      className="h-full w-full rounded-2xl object-contain"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      onLoadedData={slowVideoPlayback}
+                      style={{ transform: 'scale(0.92)' }}
+                    />
+                  </div>
                 </div>
               </div>
             </CardChrome>
@@ -238,7 +240,7 @@ function Highlights() {
                 <p className="mt-3 text-sm text-slate-300">Locked by credentials you control—no unauthorized toggles.</p>
               </div>
               <div className="flex flex-1 items-center justify-center px-8 pb-10 pt-6">
-                <img src="/img/home/pwd.png" alt="Password UI" className="h-40 w-auto object-contain" />
+                <PasswordBadge />
               </div>
             </CardChrome>
           </article>
@@ -250,7 +252,7 @@ function Highlights() {
                 <p className="mt-3 text-sm text-slate-300">Rapid release cadence keeps policies and tooling modern.</p>
               </div>
               <div className="flex flex-1 items-center justify-center px-8 pb-10 pt-6">
-                <img src="/img/home/lines.png" alt="Update timeline" className="w-full max-w-xs object-contain" />
+                <ProgressiveGraphic />
               </div>
             </CardChrome>
           </article>
@@ -281,6 +283,66 @@ function CardChrome({ children, className = '' }) {
     <div className={`flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/70 ${className}`}>
       {children}
     </div>
+  );
+}
+
+function PasswordBadge() {
+  return (
+    <div className="relative w-full max-w-xs rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-900 p-6 text-center text-white shadow-xl">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-500/20 text-3xl text-sky-200">
+        <i className="fa-solid fa-lock"></i>
+      </div>
+      <p className="mt-4 text-lg font-semibold">Password enforced</p>
+      <p className="mt-1 text-xs uppercase tracking-[0.4em] text-slate-400">offline key</p>
+      <div className="mt-5 space-y-2 text-left text-xs text-slate-200/80">
+        <p className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          Local device PIN protection
+        </p>
+        <p className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+          Admin-only override portal
+        </p>
+        <p className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+          Logged policy revisions
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ProgressiveGraphic() {
+  return (
+    <svg viewBox="0 0 320 200" className="w-full max-w-xs" role="img">
+      <defs>
+        <linearGradient id="egate-pulse" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#6366f1" />
+          <stop offset="100%" stopColor="#f472b6" />
+        </linearGradient>
+      </defs>
+      <rect width="320" height="200" rx="28" fill="url(#egate-pulse)" opacity="0.15" />
+      <g fill="none" strokeWidth="3" strokeLinecap="round">
+        <path
+          d="M20 130 Q 60 40, 100 90 T 180 80 T 260 30"
+          stroke="url(#egate-pulse)"
+          opacity="0.8"
+        />
+        <path d="M20 150 Q 60 70, 120 120 T 200 90 T 300 120" stroke="#1d4ed8" opacity="0.4" />
+      </g>
+      <g fill="white" opacity="0.9">
+        <circle cx="100" cy="90" r="6" />
+        <circle cx="180" cy="80" r="6" />
+        <circle cx="260" cy="30" r="6" />
+      </g>
+      <text x="24" y="40" fill="white" fontSize="16" fontWeight="600">
+        Progressive timeline
+      </text>
+      <text x="24" y="64" fill="#cbd5f5" fontSize="12">
+        Weekly policy drops
+      </text>
+    </svg>
   );
 }
 
