@@ -6,6 +6,7 @@ import GuideDetail from './pages/GuideDetail';
 import About from './pages/About';
 import EGate from './pages/EGate';
 import Contact from './pages/Contact';
+import Apps from './pages/Apps';
 import Privacy from './pages/Privacy';
 import Maintenance from './pages/Maintenance';
 import ServerError from './pages/ServerError';
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/guides" element={<Guides />} />
         <Route path="/guides/:slug" element={<GuideDetail />} />
         <Route path="/egate" element={<EGate />} />
+        <Route path="/apps" element={<Apps />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<Privacy />} />

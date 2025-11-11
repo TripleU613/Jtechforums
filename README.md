@@ -47,6 +47,15 @@ Forum data now flows through Firebase Functions (`functions/index.js`) and the R
 
 ---
 
+## App Catalog & Submissions
+
+* `/apps` lists Firestore-backed cards for every approved submission and lets verified users upload APKs, icons, and forum links.
+* Email/password auth (Firebase Auth) plus email verification is required before the submission form unlocks; only `tripleuworld@gmail.com` sees the admin review queue.
+* Metadata lives in the Firestore `apps` collection and files in Storage buckets (`app-icons/` + `app-apks/`); security rules are defined in `firestore.rules` and `storage.rules`.
+* Deploy the new rules with `npx firebase deploy --only firestore:rules,storage:rules`, keep `CONTACT_SMTP_PASS` + `DISCOURSE_API_KEY` secrets set, and update `/apps` content by approving entries in the admin queue.
+
+---
+
 ## License
 
 This project is not available for personal or commercial use.

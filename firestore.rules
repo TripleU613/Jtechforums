@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /apps/{appId} {
+      allow read: if resource.data.status == "approved"
+        || (request.auth != null && request.auth.token.email == "tripleuworld@gmail.com");
+ 
+      allow create: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.resource.data.status == "pending"
+        && request.resource.data.uploaderUid == request.auth.uid;
+
+      allow update, delete: if request.auth != null
+        && request.auth.token.email == "tripleuworld@gmail.com";
+    }
+  }
+}

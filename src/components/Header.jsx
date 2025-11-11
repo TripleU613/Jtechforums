@@ -5,6 +5,7 @@ const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Guides', to: '/guides' },
   { label: 'eGate', to: '/egate' },
+  { label: 'Apps', to: '/apps' },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ];
