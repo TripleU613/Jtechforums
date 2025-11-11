@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
@@ -12,6 +12,12 @@ import { auth } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 
 const googleProvider = new GoogleAuthProvider();
+const passwordRequirements = [
+  { label: 'At least 8 characters', test: (value) => value.length >= 8 },
+  { label: 'An uppercase letter', test: (value) => /[A-Z]/.test(value) },
+  { label: 'A number', test: (value) => /\d/.test(value) },
+  { label: 'A symbol (!@#$)', test: (value) => /[^A-Za-z0-9]/.test(value) },
+];
 
 export default function SignIn() {
   const { user } = useAuth();
@@ -20,7 +26,7 @@ export default function SignIn() {
   const redirectTo = location.state?.from || '/apps';
 
   const [mode, setMode] = useState('signin');
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '', confirm: '' });
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -30,25 +36,51 @@ export default function SignIn() {
     }
   }, [user, redirectTo, navigate]);
 
+  const isSignup = mode === 'signup';
+  const passwordStatus = useMemo(
+    () => passwordRequirements.map((requirement) => ({ ...requirement, satisfied: requirement.test(form.password || '') })),
+    [form.password]
+  );
+  const passwordStrong = passwordStatus.every((requirement) => requirement.satisfied);
+  const canSubmit = isSignup
+    ? Boolean(form.email && form.password && form.confirm && passwordStrong && form.confirm === form.password)
+    : Boolean(form.email && form.password);
+
   const handleInput = (event) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const toggleMode = () => {
+    setMode((prev) => (prev === 'signin' ? 'signup' : 'signin'));
+    setForm((prev) => ({ ...prev, password: '', confirm: '' }));
+    setMessage('');
+  };
+
   const handleEmailSubmit = async (event) => {
     event.preventDefault();
     setMessage('');
+    if (isSignup) {
+      if (!passwordStrong) {
+        setMessage('Use a stronger password to protect your account.');
+        return;
+      }
+      if (form.password !== form.confirm) {
+        setMessage('Passwords do not match.');
+        return;
+      }
+    }
     setSubmitting(true);
 
     try {
-      if (mode === 'signin') {
+      if (!isSignup) {
         await signInWithEmailAndPassword(auth, form.email, form.password);
       } else {
         const credential = await createUserWithEmailAndPassword(auth, form.email, form.password);
         await sendEmailVerification(credential.user);
         setMessage('Account created. Check your email for a verification link.');
       }
-      setForm({ email: '', password: '' });
+      setForm({ email: '', password: '', confirm: '' });
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -82,94 +114,214 @@ export default function SignIn() {
   };
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-xl flex-col gap-6 px-6 py-16">
-      <div>
-        <p className="section-label text-xs uppercase text-sky-200">Account</p>
-        <h1 className="mt-4 text-4xl font-semibold text-white">{mode === 'signin' ? 'Sign in' : 'Create an account'}</h1>
-        <p className="mt-2 text-base text-slate-300">
-          Use email/password or Google to manage app submissions. Verified email is required before uploading APKs.
-        </p>
-      </div>
+    <div className="mx-auto max-w-5xl px-6 py-16">
+      <div className="overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900 to-slate-950 shadow-2xl shadow-black/40">
+        <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
+          <section className="border-b border-white/5 px-8 py-10 lg:border-b-0 lg:border-r">
+            <p className="section-label text-xs uppercase text-sky-200">Account</p>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+              <h1 className="text-4xl font-semibold text-white">{isSignup ? 'Create a secure account' : 'Welcome back'}</h1>
+              <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-sm font-semibold text-white">
+                <button
+                  type="button"
+                  className={`rounded-full px-4 py-1 transition ${!isSignup ? 'bg-white text-slate-900 shadow' : 'text-slate-200'}`}
+                  onClick={() => {
+                    if (mode !== 'signin') toggleMode();
+                  }}
+                >
+                  Sign in
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-full px-4 py-1 transition ${isSignup ? 'bg-white text-slate-900 shadow' : 'text-slate-200'}`}
+                  onClick={() => {
+                    if (mode !== 'signup') toggleMode();
+                  }}
+                >
+                  Sign up
+                </button>
+              </div>
+            </div>
+            <p className="mt-3 text-base text-slate-300">
+              Use email/password or Google to manage app submissions. Verified email is still required before uploading APKs.
+            </p>
 
-      <form onSubmit={handleEmailSubmit} className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-slate-900/40">
-        <div>
-          <label htmlFor="email" className="text-sm font-semibold text-white">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={form.email}
-            onChange={handleInput}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-          />
+            <form onSubmit={handleEmailSubmit} className="mt-8 space-y-5">
+              <FormField
+                label="Email"
+                htmlFor="email"
+                children={
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={form.email}
+                    onChange={handleInput}
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                  />
+                }
+              />
+
+              <FormField
+                label="Password"
+                htmlFor="password"
+                helper={
+                  isSignup ? 'Use a strong password to speed up verification.' : 'Need help? Reset your password below.'
+                }
+                children={
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    minLength={8}
+                    required
+                    autoComplete={isSignup ? 'new-password' : 'current-password'}
+                    value={form.password}
+                    onChange={handleInput}
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                  />
+                }
+              />
+
+              {isSignup && (
+                <>
+                  <FormField
+                    label="Confirm password"
+                    htmlFor="confirm"
+                    children={
+                      <input
+                        id="confirm"
+                        name="confirm"
+                        type="password"
+                        minLength={8}
+                        required
+                        autoComplete="new-password"
+                        value={form.confirm}
+                        onChange={handleInput}
+                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                      />
+                    }
+                  />
+                  <ul className="space-y-2 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
+                    {passwordStatus.map(({ label, satisfied }) => (
+                      <li key={label} className="flex items-center gap-3">
+                        <span
+                          className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                            satisfied ? 'bg-emerald-400/20 text-emerald-300' : 'bg-white/10 text-white/70'
+                          }`}
+                        >
+                          <i className={`fa-solid ${satisfied ? 'fa-check' : 'fa-minus'}`}></i>
+                        </span>
+                        <span className={satisfied ? 'text-white' : ''}>{label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              <div className="flex flex-col gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={submitting || !canSubmit}
+                  className="w-full rounded-full bg-gradient-to-r from-sky-400 to-indigo-400 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-900/40 transition hover:from-sky-300 hover:to-indigo-300 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSignup ? 'Create account' : 'Sign in with email'}
+                </button>
+                <button type="button" className="text-left text-xs text-slate-200 underline" onClick={handlePasswordReset}>
+                  Forgot password?
+                </button>
+              </div>
+            </form>
+
+            {message && (
+              <p
+                className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${
+                  message.toLowerCase().includes('error') || message.toLowerCase().includes('invalid')
+                    ? 'border-rose-400/20 bg-rose-400/10 text-rose-100'
+                    : 'border-emerald-400/20 bg-emerald-400/10 text-emerald-100'
+                }`}
+              >
+                {message}
+              </p>
+            )}
+
+            <Link to="/apps" className="mt-6 inline-flex items-center text-sm font-semibold text-sky-200">
+              <i className="fa-solid fa-arrow-left mr-2 text-xs" />
+              Back to the app catalog
+            </Link>
+          </section>
+
+          <aside className="relative overflow-hidden px-8 py-10">
+            <div className="pointer-events-none absolute inset-0 opacity-60">
+              <div className="absolute inset-y-0 right-[-30%] w-[120%] rounded-full bg-sky-500/20 blur-3xl" />
+            </div>
+            <div className="relative flex h-full flex-col gap-6 text-white">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200/80">Instant access</p>
+                <h2 className="mt-3 text-3xl font-semibold">Sign in with Google</h2>
+                <p className="mt-2 text-sm text-slate-200">
+                  Connect your existing Google account to keep forum activity and catalog uploads synced.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleGoogle}
+                  disabled={submitting}
+                  className="mt-6 flex w-full items-center justify-center gap-3 rounded-full border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-sky-300 disabled:opacity-60"
+                >
+                  <i className="fa-brands fa-google text-base text-sky-200" />
+                  Continue with Google
+                </button>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-slate-100">
+                <h3 className="text-base font-semibold text-white">Why verify?</h3>
+                <p className="mt-2">
+                  Verification protects our moderators and keeps malicious uploads out of the catalog. We only approve APKs that include a
+                  forum link so other members can review changes.
+                </p>
+                <ul className="mt-4 space-y-2 text-xs text-slate-300">
+                  <li className="flex items-center gap-2">
+                    <i className="fa-solid fa-shield-halved text-sky-300" />
+                    Admins manually review every submission.
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <i className="fa-solid fa-bell text-sky-300" />
+                    Email alerts arrive when your app is approved or needs edits.
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <i className="fa-solid fa-cloud-arrow-up text-sky-300" />
+                    You can replace icons/APKs anytime after approval.
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-auto text-xs text-slate-300">
+                Problems signing in? Email{' '}
+                <a href="mailto:support@jtechforums.org" className="text-sky-200 underline">
+                  support@jtechforums.org
+                </a>{' '}
+                and mention your JTech username.
+              </div>
+            </div>
+          </aside>
         </div>
-
-        <div>
-          <label htmlFor="password" className="text-sm font-semibold text-white">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            minLength={8}
-            value={form.password}
-            onChange={handleInput}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-full bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-70"
-        >
-          {mode === 'signin' ? 'Sign in with email' : 'Create account'}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setMode((prev) => (prev === 'signin' ? 'signup' : 'signin'))}
-          className="w-full text-center text-sm font-semibold text-sky-200 underline"
-        >
-          {mode === 'signin' ? 'Need an account?' : 'Have an account? Sign in'}
-        </button>
-
-        <button type="button" className="text-xs text-slate-200 underline" onClick={handlePasswordReset}>
-          Forgot password?
-        </button>
-      </form>
-
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center shadow-lg shadow-slate-900/40">
-        <p className="text-sm text-slate-200">Prefer using Google?</p>
-        <button
-          type="button"
-          onClick={handleGoogle}
-          disabled={submitting}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-3 text-sm font-semibold text-white transition hover:border-sky-300 disabled:opacity-70"
-        >
-          <i className="fa-brands fa-google text-base text-sky-300" />
-          Continue with Google
-        </button>
       </div>
+    </div>
+  );
+}
 
-      {message && <p className="text-sm text-white">{message}</p>}
-
-      <p className="text-xs text-slate-400">
-        Problems signing in? Contact{' '}
-        <a href="mailto:support@jtechforums.org" className="underline">
-          support@jtechforums.org
-        </a>{' '}
-        and mention your JTech username.
-      </p>
-
-      <Link to="/apps" className="text-sm text-sky-300 underline">
-        Back to apps
-      </Link>
+function FormField({ label, helper, htmlFor, children }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <label htmlFor={htmlFor} className="text-sm font-semibold text-white">
+          {label}
+        </label>
+        {helper && <p className="text-xs text-slate-400">{helper}</p>}
+      </div>
+      <div className="mt-2">{children}</div>
     </div>
   );
 }

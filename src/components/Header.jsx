@@ -25,6 +25,17 @@ export default function Header() {
     setProfileOpen(false);
   }, [user]);
 
+  const forumCta = (
+    <a
+      href="https://forums.jtechforums.org"
+      target="_blank"
+      rel="noopener"
+      className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
+    >
+      Join the Forum
+    </a>
+  );
+
   const avatar = user?.photoURL ? (
     <img src={user.photoURL} alt="Profile" className="h-9 w-9 rounded-full object-cover" />
   ) : (
@@ -67,45 +78,41 @@ export default function Header() {
               >
                 Sign in
               </NavLink>
-              <a
-                href="https://forums.jtechforums.org"
-                target="_blank"
-                rel="noopener"
-                className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
-              >
-                Join the Forum
-              </a>
+              {forumCta}
             </>
           ) : (
-            <div className="relative">
-              <button
-                type="button"
-                className="flex items-center gap-2 rounded-full border border-white/15 px-2 py-1 text-white"
-                onClick={() => setProfileOpen((prev) => !prev)}
-              >
-                {avatar}
-                <i className={`fa-solid ${profileOpen ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs text-white/70`} />
-              </button>
-              {profileOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-slate-900/95 p-4 text-sm text-white shadow-lg">
-                  <p className="truncate text-xs text-slate-300">{user.email}</p>
-                  <NavLink
-                    to="/apps"
-                    className="mt-3 block rounded-full border border-white/15 px-3 py-2 text-center font-semibold hover:border-sky-400"
-                    onClick={() => setProfileOpen(false)}
-                  >
-                    Apps dashboard
-                  </NavLink>
-                  <button
-                    type="button"
-                    className="mt-2 w-full rounded-full bg-slate-800 px-3 py-2 font-semibold hover:bg-slate-700"
-                    onClick={handleSignOut}
-                  >
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
+            <>
+              {forumCta}
+              <div className="relative">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full border border-white/15 px-2 py-1 text-white"
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                >
+                  {avatar}
+                  <i className={`fa-solid ${profileOpen ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs text-white/70`} />
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-slate-900/95 p-4 text-sm text-white shadow-lg">
+                    <p className="truncate text-xs text-slate-300">{user.email}</p>
+                    <NavLink
+                      to="/apps"
+                      className="mt-3 block rounded-full border border-white/15 px-3 py-2 text-center font-semibold hover:border-sky-400"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      Apps dashboard
+                    </NavLink>
+                    <button
+                      type="button"
+                      className="mt-2 w-full rounded-full bg-slate-800 px-3 py-2 font-semibold hover:bg-slate-700"
+                      onClick={handleSignOut}
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
 
