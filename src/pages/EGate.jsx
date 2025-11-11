@@ -122,8 +122,8 @@ function Hero() {
             </a>
           </div>
           <p className="rounded-3xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 sm:text-base">
-            Built and maintained by <span className="font-semibold text-white">Offline Software Solutions</span> so our kosher deployments always
-            inherit the hardened stack from the original .io launch.
+            Built and maintained by <span className="font-semibold text-white">Offline Software Solutions</span> so every kosher deployment inherits
+            the same hardened eGate stack.
           </p>
         </div>
         <div className="flex justify-center lg:justify-end">
