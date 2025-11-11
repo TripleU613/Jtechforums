@@ -1,86 +1,108 @@
-﻿import SectionHeading from '../components/SectionHeading';
-import GlassCard from '../components/GlassCard';
+import SectionHeading from '../components/SectionHeading';
 
-const features = [
+const featureList = [
   {
     title: 'Factory reset & ADB protection',
-    body: 'Blocks resets, OEM unlock, and developer options so eGate cannot be removed without authorization.',
+    body: 'Prevents resets, OEM unlock, and Developer Options tampering so eGate policies stay enforced.',
+    icon: 'fa-solid fa-user-shield',
   },
   {
-    title: 'App restrictions',
-    body: 'Remove the Play Store, hide apps, block installs, and disable removable storage from one policy.',
+    title: 'App & storage restrictions',
+    body: 'Hide or block apps, strip the Play Store, and disable removable media from one lock profile.',
+    icon: 'fa-solid fa-tablet-screen-button',
   },
   {
     title: 'Connectivity controls',
-    body: 'Kill Wi-Fi, tethering, Bluetooth sharing, and MMS when the deployment demands zero side channels.',
+    body: 'Shut down Wi-Fi, hotspots, Bluetooth sharing, and MMS when zero side channels are allowed.',
+    icon: 'fa-solid fa-wifi-slash',
   },
   {
     title: 'Web filtering',
-    body: 'DNS category controls plus WebView blocking keep in-app browsers honest while allowing explicit exceptions.',
+    body: 'DNS category blocks plus WebView and in-app browser controls with explicit exception lists.',
+    icon: 'fa-solid fa-globe',
   },
   {
     title: 'Accessibility-based security',
-    body: 'Accessibility services enforce app guards, disable WebView, and stop creative workarounds before they start.',
+    body: 'Accessibility services enforce launch guards, disable WebView, and stop workaround attempts.',
+    icon: 'fa-solid fa-universal-access',
   },
   {
     title: 'Remote management',
-    body: 'Reseller portal lets partners toggle profiles, push commands, and audit fleets without touching each phone.',
-  },
-];
-
-const spotlights = [
-  {
-    title: 'Easy-to-use design',
-    body: 'Non-technical coordinators can approve requests, push profiles, and see compliance at a glance.',
-    image: '/img/home/lines.png',
-  },
-  {
-    title: 'Reseller portal',
-    body: 'Gain discounted licensing, shared scripts, and remote toggles tailored for MSPs and yeshiva IT leads.',
-    image: '/img/home/reseller.png',
-  },
-  {
-    title: 'Device builder',
-    body: 'Pick a handset, launcher, and allowed apps to generate a battle-tested stack in minutes.',
-    image: '/img/home/android.png',
+    body: 'Reseller portal lets partners push commands, toggle profiles, and audit fleets anywhere.',
+    icon: 'fa-solid fa-arrows-spin',
   },
 ];
 
 const faqs = [
   {
-    question: 'Who is eGate for?',
+    question: 'What is JTech Forums?',
     answer:
-      'Families, schools, resellers, and MSPs who want GrapheneOS-level guardrails without wrestling with dozens of disconnected tools.',
+      "It's a community built to serve the Jewish Orthodox tech space—guides, kosher phone help, coding help, and product support live together so no one is left guessing.",
   },
   {
-    question: 'What makes eGate different from a VPN or DNS filter?',
+    question: 'What kind of help can I find?',
     answer:
-      'It combines filtering with MDM controls: app allowlists, hardware restrictions, accessibility locks, web controls, and reseller tooling.',
+      'Members post walkthroughs, app bundles, troubleshooting tips, and curated guides. Ask a question, share a win, or get expert help when you’re stuck.',
   },
   {
-    question: 'Can I manage eGate myself?',
+    question: 'How do I reach moderators or admins?',
     answer:
-      'Yes. Power users can purchase a license directly, while larger deployments often partner with a JTech-verified reseller.',
+      'Sign into the forum, open the Users tab, and DM any moderator/administrator. They can escalate eGate issues, approve guides, or loop in support.',
   },
 ];
 
 export default function EGate() {
   return (
-    <div className="space-y-16">
-      <section className="mx-auto flex max-w-6xl flex-col gap-10 px-6 pt-16 lg:flex-row lg:items-center">
-        <div className="flex-1 space-y-6">
+    <div className="bg-black">
+      <Hero />
+      <section className="bg-slate-950/70">
+        <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+          <SectionHeading
+            label="Everything you need"
+            title="Why choose eGate?"
+            description="The same controls that made the legacy eGate site popular now live inside our new React build."
+          />
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featureList.map((feature) => (
+              <article key={feature.title} className="rounded-3xl border border-white/10 bg-slate-900/60 p-6">
+                <div className="flex items-center gap-3 text-sky-300">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-500/10 text-lg text-sky-200">
+                    <i className={feature.icon}></i>
+                  </span>
+                  <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
+                </div>
+                <p className="mt-3 text-sm text-slate-300">{feature.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Highlights />
+      <FaqSection />
+      <Cta />
+    </div>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="relative isolate overflow-hidden border-b border-white/5 bg-gradient-to-b from-slate-950 via-slate-950 to-black">
+      <PatternGrid />
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:py-28">
+        <div className="space-y-6">
           <p className="section-label text-xs uppercase text-sky-200">eGate filter</p>
-          <h1 className="text-5xl font-semibold text-white sm:text-6xl">Enterprise-grade control for kosher devices</h1>
-          <p className="text-lg text-slate-300">
-            eGate layers MDM policies, filtering, and accessibility locks so you can deploy Android or flip phones with zero guesswork. Designed for
-            mechanchim, admins, and MSPs who need to keep people productive without loopholes.
+          <h1 className="text-4xl font-semibold text-white sm:text-5xl lg:text-6xl">Enterprise-grade control for kosher devices</h1>
+          <p className="text-base text-slate-300 sm:text-lg">
+            We rebuilt this page straight from the original jtech-forums.github.io site. The hero, copy, and media placements mirror the legacy
+            layout so partners instantly recognize the product story.
           </p>
           <div className="flex flex-wrap gap-4">
             <a
               href="https://payhip.com/b/vxf1i"
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-base font-semibold text-slate-950"
+              className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
             >
               Buy a license
             </a>
@@ -88,72 +110,236 @@ export default function EGate() {
               href="https://forums.jtechforums.org/t/what-is-egate-software/235"
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-base font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white"
             >
-              Learn more <i className="fa-solid fa-arrow-up-right-from-square"></i>
+              Learn more <i className="fa-solid fa-arrow-up-right-from-square text-xs" />
             </a>
           </div>
-        </div>
-        <div className="flex-1">
-          <div className="glass-panel relative rounded-[2.5rem] p-6 text-center shadow-2xl">
-            <img src="/img/home/android.png" alt="Phone mock" className="mx-auto w-64 object-contain" />
-            <p className="mt-6 text-sm uppercase tracking-[0.4em] text-slate-400">Live telemetry</p>
-            <h3 className="mt-3 text-2xl font-semibold text-white">0 escalations · 97% satisfaction</h3>
-            <p className="mt-2 text-sm text-slate-300">Q4 build · Pixel 8a · eGate multi-profile beta</p>
+          <div className="flex flex-wrap gap-8 rounded-3xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 sm:text-base">
+            <div>
+              <p className="text-2xl font-semibold text-white">0</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Escalations</p>
+            </div>
+            <div>
+              <p className="text-2xl font-semibold text-white">97%</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Satisfaction</p>
+            </div>
+            <div>
+              <p className="text-2xl font-semibold text-white">Q4 build</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Pixel 8a</p>
+            </div>
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Everything you need" title="Why choose eGate?" />
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <GlassCard key={feature.title} title={feature.title} description={feature.body} />
-          ))}
+        <div className="flex justify-center lg:justify-end">
+          <PhoneMock />
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading title="Highlights" description="A control tower for every persona" />
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {spotlights.map((card) => (
-            <GlassCard key={card.title}>
-              <h3 className="text-2xl font-semibold text-white">{card.title}</h3>
-              <p className="mt-3 text-sm text-slate-300">{card.body}</p>
-              <img src={card.image} alt={card.title} className="mt-6 h-48 w-full rounded-2xl object-cover" />
-            </GlassCard>
-          ))}
-        </div>
-      </section>
+function PatternGrid() {
+  return (
+    <svg
+      className="absolute inset-0 -z-10 size-full stroke-slate-900/80 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+      aria-hidden="true"
+    >
+      <defs>
+        <pattern id="egate-grid" width="200" height="200" patternUnits="userSpaceOnUse" x="50%" y="-1">
+          <path d="M0 200V0M200 0H0" fill="none" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#egate-grid)" />
+    </svg>
+  );
+}
 
-      <section className="mx-auto max-w-5xl px-6">
-        <div className="glass-panel rounded-4xl border border-white/10 bg-slate-950/80 p-8">
-          <SectionHeading label="FAQ" title="Still deciding?" align="center" />
-          <div className="mt-8 space-y-4">
-            {faqs.map((faq) => (
-              <details key={faq.question} className="rounded-3xl border border-white/5 bg-slate-900/60 p-5">
-                <summary className="cursor-pointer text-lg font-semibold text-white">{faq.question}</summary>
-                <p className="mt-3 text-sm text-slate-300">{faq.answer}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
+function PhoneMock() {
+  return (
+    <svg viewBox="0 0 280 628" role="img" className="w-[16rem] max-w-full drop-shadow-2xl lg:w-[19rem]">
+      <defs>
+        <clipPath id="egate-phone-screen">
+          <rect width="180" height="250" rx="12" x="50" y="70" />
+        </clipPath>
+      </defs>
+      <rect x="10" y="10" width="260" height="605" rx="35" fill="#232323" />
+      <rect x="25" y="40" width="230" height="315" rx="12" fill="#050505" />
+      <foreignObject x="20" y="37" width="215" height="320" clipPath="url(#egate-phone-screen)">
+        <video
+          src="/img/qinf21.mp4"
+          className="h-full w-full rounded-3xl object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label="eGate demo"
+        />
+      </foreignObject>
+      <rect x="120" y="25" width="40" height="6" rx="3" fill="#555555" />
+      <g fill="#575757">
+        <circle cx="140" cy="410" r="35" />
+        <circle fill="#232323" cx="140" cy="410" r="30" />
+        <circle fill="#575757" cx="140" cy="410" r="28" />
+        <rect x="35" y="375" width="60" height="30" rx="15" />
+        <rect x="35" y="415" width="60" height="30" rx="15" />
+        <rect x="185" y="375" width="60" height="30" rx="15" />
+        <rect x="185" y="415" width="60" height="30" rx="15" />
+      </g>
+      <g fill="#575757">
+        <rect x="35" y="470" width="60" height="30" rx="15" />
+        <rect x="110" y="470" width="60" height="30" rx="15" />
+        <rect x="185" y="470" width="60" height="30" rx="15" />
+        <rect x="35" y="515" width="60" height="30" rx="15" />
+        <rect x="110" y="515" width="60" height="30" rx="15" />
+        <rect x="185" y="515" width="60" height="30" rx="15" />
+        <rect x="35" y="560" width="60" height="30" rx="15" />
+        <rect x="110" y="560" width="60" height="30" rx="15" />
+        <rect x="185" y="560" width="60" height="30" rx="15" />
+      </g>
+    </svg>
+  );
+}
 
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <div className="glass-panel flex flex-col items-center gap-6 rounded-4xl border border-white/10 bg-gradient-to-r from-purple-500/20 to-sky-500/20 px-8 py-12 text-center">
-          <h2 className="text-3xl font-semibold text-white">Ready to roll out eGate?</h2>
-          <p className="text-base text-slate-200">Loop in a reseller or contact the JTech team—we will scope it together.</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="/contact" className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900">
-              Talk to a specialist
-            </a>
-            <a href="https://forums.jtechforums.org" target="_blank" rel="noopener" className="inline-flex items-center justify-center rounded-full border border-white/40 px-6 py-3 text-base font-semibold text-white">
-              Ask the community
-            </a>
-          </div>
+function Highlights() {
+  return (
+    <section className="bg-black py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-6">
+        <p className="mx-auto text-center text-3xl font-semibold text-white sm:text-4xl">
+          Check out what eGate can do&hellip;
+        </p>
+        <div className="mt-12 grid gap-4 lg:grid-cols-3 lg:grid-rows-2">
+          <article className="relative lg:row-span-2">
+            <CardChrome className="lg:rounded-l-[2rem]">
+              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
+                <p className="text-xl font-semibold text-white">Easy-to-use design</p>
+                <p className="mt-3 text-sm text-slate-300">
+                  Direct lift from the legacy site: the UI showcase stays front-and-center with the same video placement.
+                </p>
+              </div>
+              <div className="relative mx-auto flex w-full max-w-sm flex-1 items-center justify-center px-8 pb-10 pt-8 lg:max-w-full">
+                <div className="h-[22rem] w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-900 to-black p-4 shadow-2xl">
+                  <video
+                    src="/img/qinf21.mp4"
+                    className="h-full w-full rounded-[1.5rem] object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                </div>
+              </div>
+            </CardChrome>
+          </article>
+
+          <article className="relative max-lg:row-start-1">
+            <CardChrome className="max-lg:rounded-t-[2rem]">
+              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
+                <p className="text-xl font-semibold text-white">Password-based</p>
+                <p className="mt-3 text-sm text-slate-300">Locked by credentials you control—no unauthorized toggles.</p>
+              </div>
+              <div className="flex flex-1 items-center justify-center px-8 pb-10 pt-6">
+                <img src="/img/home/pwd.png" alt="Password UI" className="h-40 w-auto object-contain" />
+              </div>
+            </CardChrome>
+          </article>
+
+          <article className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
+            <CardChrome>
+              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
+                <p className="text-xl font-semibold text-white">Progressive updates</p>
+                <p className="mt-3 text-sm text-slate-300">Rapid release cadence keeps policies and tooling modern.</p>
+              </div>
+              <div className="flex flex-1 items-center justify-center px-8 pb-10 pt-6">
+                <img src="/img/home/lines.png" alt="Update timeline" className="w-full max-w-xs object-contain" />
+              </div>
+            </CardChrome>
+          </article>
+
+          <article className="relative lg:row-span-2">
+            <CardChrome className="max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]">
+              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
+                <p className="text-xl font-semibold text-white">Reseller portal</p>
+                <p className="mt-3 text-sm text-slate-300">
+                  The same screenshot from the legacy .io page showcases bulk license controls and remote toggles.
+                </p>
+              </div>
+              <div className="relative flex flex-1 items-center justify-center px-8 pb-10 pt-6">
+                <div className="w-full rounded-3xl border border-white/10 bg-slate-900 shadow-2xl">
+                  <img src="/img/home/reseller.png" alt="Reseller portal" className="h-full w-full rounded-3xl object-cover" />
+                </div>
+              </div>
+            </CardChrome>
+          </article>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
+
+function CardChrome({ children, className = '' }) {
+  return (
+    <div className={`flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/70 ${className}`}>
+      {children}
     </div>
+  );
+}
+
+function FaqSection() {
+  return (
+    <section className="bg-slate-950/80 py-20">
+      <div className="mx-auto max-w-5xl px-6">
+        <h2 className="text-center text-4xl font-semibold text-white sm:text-5xl">Frequently asked questions</h2>
+        <div className="mt-12 space-y-4">
+          {faqs.map((faq) => (
+            <details key={faq.question} className="group rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-white">
+              <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold">
+                {faq.question}
+                <span className="text-sky-300 transition group-open:rotate-45">
+                  <i className="fa-solid fa-plus"></i>
+                </span>
+              </summary>
+              <p className="mt-3 text-sm text-slate-300">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Cta() {
+  return (
+    <section className="bg-black py-24">
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-950/80 px-8 py-12 sm:px-12 lg:px-16">
+          <div className="absolute inset-y-0 right-0 -z-10 w-2/3 bg-gradient-to-l from-sky-500/20 to-transparent blur-3xl" aria-hidden="true" />
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div>
+              <h2 className="text-3xl font-semibold text-white sm:text-4xl">Join the same community from the legacy page</h2>
+              <p className="mt-4 text-base text-slate-200">
+                Ask moderators about eGate deployments, request guide approvals, or share APK policies. It’s the same CTA from the old .io experience,
+                now living in our Firebase-powered site.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a
+                  href="https://forums.jtechforums.org"
+                  target="_blank"
+                  rel="noopener"
+                  className="rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-slate-950"
+                >
+                  Join the forum
+                </a>
+                <a href="/contact" className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white">
+                  Talk to a specialist
+                </a>
+              </div>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
+              <img src="/img/forum.png" alt="Forum preview" className="w-full rounded-2xl object-cover" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
