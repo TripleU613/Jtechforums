@@ -2,6 +2,14 @@
   "projects": {
     "default": "jtechsite-2ebc8"
   },
-  "targets": {},
+  "targets": {
+    "jtechsite-2ebc8": {
+      "storage": {
+        "default": [
+          "jtechsite-2ebc8.firebasestorage.app"
+        ]
+      }
+    }
+  },
   "etags": {}
 }
