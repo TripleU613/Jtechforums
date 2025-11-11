@@ -7,6 +7,7 @@ const { defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 
 const DISCOURSE_API_KEY = defineSecret('DISCOURSE_API_KEY');
+const CONTACT_SMTP_PASS = defineSecret('CONTACT_SMTP_PASS');
 const DEFAULT_DISCOURSE_API_BASE = 'https://forums.jtechforums.org';
 const DEFAULT_DISCOURSE_API_USERNAME = 'system';
 
@@ -71,7 +72,7 @@ const getContactConfig = () => {
     port,
     secure,
     user: process.env.CONTACT_SMTP_USER || process.env.CONTACT_TO_EMAIL || 'tripleuworld@gmail.com',
-    pass: process.env.CONTACT_SMTP_PASS || '',
+    pass: CONTACT_SMTP_PASS.value() || '',
     to: process.env.CONTACT_TO_EMAIL || 'tripleuworld@gmail.com',
     recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY || '',
     recaptchaProjectId: process.env.RECAPTCHA_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || '',
@@ -237,7 +238,7 @@ app.use('/api', forumRouter);
 exports.forumApi = onRequest(
   {
     region: 'us-central1',
-    secrets: [DISCOURSE_API_KEY],
+    secrets: [DISCOURSE_API_KEY, CONTACT_SMTP_PASS],
     timeoutSeconds: 30,
   },
   app
