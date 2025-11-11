@@ -38,14 +38,16 @@ export default function Apps() {
   const [verificationMessage, setVerificationMessage] = useState('');
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [catalogReady, setCatalogReady] = useState(false);
+  const [catalogLoading, setCatalogLoading] = useState(true);
 
   useEffect(() => {
     setCatalogReady(false);
+    setCatalogLoading(true);
     const appsRef = collection(firestore, 'apps');
     const approvedQuery = query(appsRef, where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
     const unsubApproved = onSnapshot(approvedQuery, (snapshot) => {
       setApprovedApps(snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })));
-      setCatalogReady(true);
+      setCatalogLoading(false);
     });
 
     let unsubPending = () => {};
@@ -355,6 +357,12 @@ export default function Apps() {
       </div>
     );
   };
+
+  useEffect(() => {
+    if (catalogLoading) return;
+    const timeout = setTimeout(() => setCatalogReady(true), 350);
+    return () => clearTimeout(timeout);
+  }, [catalogLoading]);
 
   return (
     <>
