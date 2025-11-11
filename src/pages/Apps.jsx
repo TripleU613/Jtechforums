@@ -15,6 +15,7 @@ import {
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { auth, firestore, storage } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import PageLoader from '../components/PageLoader';
 
 const ADMIN_EMAIL = 'tripleuworld@gmail.com';
 const initialForm = {
@@ -36,12 +37,15 @@ export default function Apps() {
   const [moderationMessage, setModerationMessage] = useState('');
   const [verificationMessage, setVerificationMessage] = useState('');
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [catalogReady, setCatalogReady] = useState(false);
 
   useEffect(() => {
+    setCatalogReady(false);
     const appsRef = collection(firestore, 'apps');
     const approvedQuery = query(appsRef, where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
     const unsubApproved = onSnapshot(approvedQuery, (snapshot) => {
       setApprovedApps(snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })));
+      setCatalogReady(true);
     });
 
     let unsubPending = () => {};
@@ -353,7 +357,11 @@ export default function Apps() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12 px-6 py-16">
+    <>
+      <PageLoader show={!catalogReady} label="Loading catalog" />
+      <div
+        className={`mx-auto max-w-5xl space-y-12 px-6 py-16 transition-opacity duration-500 ${catalogReady ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      >
       <section className="text-center">
         <p className="section-label text-xs uppercase text-sky-200">Apps</p>
         <h1 className="mt-4 text-5xl font-semibold text-white">Community App Catalog</h1>
@@ -468,6 +476,7 @@ export default function Apps() {
         </section>
       )}
     </div>
+    </>
   );
 }
 

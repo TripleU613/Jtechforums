@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import SectionHeading from '../components/SectionHeading';
+import PageLoader from '../components/PageLoader';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
 
 const formatDate = (value) => {
@@ -20,6 +21,7 @@ export default function Guides() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasMore, setHasMore] = useState(true);
+  const [initialLoaded, setInitialLoaded] = useState(false);
 
   const forumBase = getForumWebBase();
   const guidesCategory = import.meta.env.VITE_DISCOURSE_GUIDES_PATH || 'guides';
@@ -49,10 +51,14 @@ export default function Guides() {
 
         const hasNext = Boolean(payload?.topic_list?.more_topics_url) || newTopics.length > 0;
         setHasMore(hasNext);
+        if (!aborted) {
+          setInitialLoaded(true);
+        }
       } catch (err) {
         if (!aborted) {
           setError(err.message || 'Unable to fetch guides right now.');
           setHasMore(false);
+          setInitialLoaded(true);
         }
       } finally {
         if (!aborted) setLoading(false);
@@ -95,7 +101,9 @@ export default function Guides() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12 px-6">
+    <>
+      <PageLoader show={!initialLoaded} label="Fetching guides" />
+      <div className={`mx-auto max-w-5xl space-y-12 px-6 transition-opacity duration-500 ${initialLoaded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <section className="pb-16 pt-12">
         <SectionHeading
           label="Guides"
@@ -124,6 +132,7 @@ export default function Guides() {
         )}
       </section>
     </div>
+    </>
   );
 }
 
