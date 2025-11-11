@@ -1,6 +1,16 @@
+import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function PageLoader({ show, label = 'Loading' }) {
+  useEffect(() => {
+    if (!show) return undefined;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [show]);
+
   return (
     <AnimatePresence>
       {show && (
