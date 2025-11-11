@@ -35,6 +35,7 @@ export default function Apps() {
   const [uploadProgress, setUploadProgress] = useState({ icon: 0, apk: 0 });
   const [moderationMessage, setModerationMessage] = useState('');
   const [verificationMessage, setVerificationMessage] = useState('');
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
 
   useEffect(() => {
     const appsRef = collection(firestore, 'apps');
@@ -248,80 +249,109 @@ export default function Apps() {
             <h2 className="text-2xl font-semibold text-white">Submit an app</h2>
             <p className="text-sm text-slate-300">Signed in as {user.email}</p>
           </div>
-          <button
-            type="button"
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-            onClick={handleSignOut}
-          >
-            Sign out
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+              onClick={handleSignOut}
+            >
+              Sign out
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+              onClick={() => setShowSubmissionForm((prev) => !prev)}
+            >
+              {showSubmissionForm ? 'Hide form' : 'Open submission'}
+            </button>
+          </div>
         </div>
 
-        <form className="space-y-4" onSubmit={handleAppSubmit}>
-          <div className="grid gap-4 md:grid-cols-2">
-            <InputField label="App name" name="name" value={formValues.name} onChange={handleFormChange} required />
-            <InputField
-              label="JTech username"
-              name="username"
-              value={formValues.username}
-              onChange={handleFormChange}
-              placeholder="@you"
-              required
-            />
+        <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-white">Need to upload an APK?</p>
+              <p className="text-xs text-slate-400">
+                Keep icons ≤2MB, link your forum post, and wait for the admin review queue to approve.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSubmissionForm((prev) => !prev)}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white"
+            >
+              <span>{showSubmissionForm ? 'Collapse' : 'Expand form'}</span>
+              <i className={`fa-solid ${showSubmissionForm ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs`} />
+            </button>
           </div>
-          <InputField label="Header info" name="header" value={formValues.header} onChange={handleFormChange} required />
-          <div>
-            <label className="text-sm font-semibold text-white" htmlFor="description">
-              More info
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              rows="4"
-              required
-              value={formValues.description}
-              onChange={handleFormChange}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-            />
-          </div>
-          <InputField
-            label="Guide or forum link"
-            name="forumUrl"
-            value={formValues.forumUrl}
-            onChange={handleFormChange}
-            placeholder="https://forums.jtechforums.org/..."
-            required
-          />
-        <div className="grid gap-4 md:grid-cols-2">
-          <FileField
-            label="App icon"
-            name="icon"
-            accept="image/png,image/jpeg,image/webp"
-            file={files.icon}
-            onChange={handleFileChange}
-            onDropFile={handleFileDrop}
-            helper="PNG/JPG/WebP • 1024×1024 preferred • < 2 MB"
-            progress={uploadProgress.icon}
-          />
-          <FileField
-            label="APK file"
-            name="apk"
-            accept=".apk"
-            file={files.apk}
-            onChange={handleFileChange}
-            onDropFile={handleFileDrop}
-            helper="Signed release build • max 200 MB"
-            progress={uploadProgress.apk}
-          />
+          {showSubmissionForm && (
+            <form className="mt-6 space-y-4" onSubmit={handleAppSubmit}>
+              <div className="grid gap-4 md:grid-cols-2">
+                <InputField label="App name" name="name" value={formValues.name} onChange={handleFormChange} required />
+                <InputField
+                  label="JTech username"
+                  name="username"
+                  value={formValues.username}
+                  onChange={handleFormChange}
+                  placeholder="@you"
+                  required
+                />
+              </div>
+              <InputField label="Header info" name="header" value={formValues.header} onChange={handleFormChange} required />
+              <div>
+                <label className="text-sm font-semibold text-white" htmlFor="description">
+                  More info
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="4"
+                  required
+                  value={formValues.description}
+                  onChange={handleFormChange}
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                />
+              </div>
+              <InputField
+                label="Guide or forum link"
+                name="forumUrl"
+                value={formValues.forumUrl}
+                onChange={handleFormChange}
+                placeholder="https://forums.jtechforums.org/..."
+                required
+              />
+              <div className="grid gap-4 md:grid-cols-2">
+                <FileField
+                  label="App icon"
+                  name="icon"
+                  accept="image/png,image/jpeg,image/webp"
+                  file={files.icon}
+                  onChange={handleFileChange}
+                  onDropFile={handleFileDrop}
+                  helper="PNG/JPG/WebP • 1024×1024 preferred • < 2 MB"
+                  progress={uploadProgress.icon}
+                />
+                <FileField
+                  label="APK file"
+                  name="apk"
+                  accept=".apk"
+                  file={files.apk}
+                  onChange={handleFileChange}
+                  onDropFile={handleFileDrop}
+                  helper="Signed release build • max 200 MB"
+                  progress={uploadProgress.apk}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={submissionStatus.state === 'loading'}
+                className="w-full rounded-full bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-70"
+              >
+                {submissionStatus.state === 'loading' ? 'Submitting…' : 'Submit for review'}
+              </button>
+            </form>
+          )}
         </div>
-          <button
-            type="submit"
-            disabled={submissionStatus.state === 'loading'}
-            className="w-full rounded-full bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-70"
-          >
-            {submissionStatus.state === 'loading' ? 'Submitting…' : 'Submit for review'}
-          </button>
-        </form>
         {submissionStatus.message && (
           <p className={`text-sm ${submissionStatus.state === 'error' ? 'text-rose-200' : 'text-emerald-300'}`}>
             {submissionStatus.message}
