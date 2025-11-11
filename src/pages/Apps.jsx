@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth';
+import { Link } from 'react-router-dom';
+import { sendEmailVerification, signOut } from 'firebase/auth';
 import {
   addDoc,
   collection,
@@ -20,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { auth, firestore, storage } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
 
 const ADMIN_EMAIL = 'tripleuworld@gmail.com';
 const initialForm = {
@@ -31,23 +26,14 @@ const initialForm = {
 };
 
 export default function Apps() {
-  const [user, setUser] = useState(null);
+  const { user, loading } = useAuth();
   const [approvedApps, setApprovedApps] = useState([]);
   const [pendingApps, setPendingApps] = useState([]);
-  const [authMode, setAuthMode] = useState('signin');
-  const [authForm, setAuthForm] = useState({ email: '', password: '' });
-  const [authMessage, setAuthMessage] = useState('');
   const [formValues, setFormValues] = useState(initialForm);
   const [files, setFiles] = useState({ icon: null, apk: null });
   const [submissionStatus, setSubmissionStatus] = useState({ state: 'idle', message: '' });
   const [moderationMessage, setModerationMessage] = useState('');
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-    });
-    return () => unsub();
-  }, []);
+  const [verificationMessage, setVerificationMessage] = useState('');
 
   useEffect(() => {
     const appsRef = collection(firestore, 'apps');
@@ -87,60 +73,14 @@ export default function Apps() {
     [approvedApps]
   );
 
-  const handleAuthSubmit = async (event) => {
-    event.preventDefault();
-    setAuthMessage('');
-    try {
-      if (authMode === 'signin') {
-        await signInWithEmailAndPassword(auth, authForm.email, authForm.password);
-        setAuthMessage('Signed in successfully.');
-      } else {
-        const credential = await createUserWithEmailAndPassword(auth, authForm.email, authForm.password);
-        await sendEmailVerification(credential.user);
-        setAuthMessage('Account created. Check your inbox for a verification link.');
-      }
-      setAuthForm({ email: '', password: '' });
-    } catch (error) {
-      setAuthMessage(error.message);
-    }
-  };
-
-  const handlePasswordReset = async () => {
-    if (!authForm.email) {
-      setAuthMessage('Enter your email to receive a reset link.');
-      return;
-    }
-    try {
-      await sendPasswordResetEmail(auth, authForm.email);
-      setAuthMessage('Password reset email sent.');
-    } catch (error) {
-      setAuthMessage(error.message);
-    }
-  };
-
-  const handleResendVerification = async () => {
-    if (!user) return;
-    try {
-      await sendEmailVerification(user);
-      setAuthMessage('Verification email sent.');
-    } catch (error) {
-      setAuthMessage(error.message);
-    }
-  };
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    setAuthMessage('');
-  };
-
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (event) => {
-    const { name, files: selected } = event.target;
-    setFiles((prev) => ({ ...prev, [name]: selected?.[0] || null }));
+    const { name, files: list } = event.target;
+    setFiles((prev) => ({ ...prev, [name]: list?.[0] || null }));
   };
 
   const uploadFile = async (path, file) => {
@@ -152,26 +92,24 @@ export default function Apps() {
   const handleAppSubmit = async (event) => {
     event.preventDefault();
     if (!user) {
-      setSubmissionStatus({ state: 'error', message: 'You must be signed in to submit an app.' });
+      setSubmissionStatus({ state: 'error', message: 'Sign in before submitting.' });
       return;
     }
     if (!user.emailVerified) {
-      setSubmissionStatus({ state: 'error', message: 'Verify your email before submitting.' });
+      setSubmissionStatus({ state: 'error', message: 'Verify your email first.' });
       return;
     }
-
     if (!files.icon || !files.apk) {
       setSubmissionStatus({ state: 'error', message: 'Upload both an icon and APK.' });
       return;
     }
 
     setSubmissionStatus({ state: 'loading', message: 'Uploading files...' });
-
     try {
-      const safeName = (value) => value.trim();
-      const normalizedUsername = safeName(formValues.username).startsWith('@')
-        ? safeName(formValues.username)
-        : `@${safeName(formValues.username)}`;
+      const safe = (value) => value.trim();
+      const normalizedUsername = safe(formValues.username).startsWith('@')
+        ? safe(formValues.username)
+        : `@${safe(formValues.username)}`;
       const normalizedLink = formValues.forumUrl?.startsWith('http')
         ? formValues.forumUrl.trim()
         : `https://${formValues.forumUrl.trim()}`;
@@ -186,10 +124,10 @@ export default function Apps() {
       ]);
 
       await addDoc(collection(firestore, 'apps'), {
-        name: safeName(formValues.name),
+        name: safe(formValues.name),
         username: normalizedUsername,
-        header: safeName(formValues.header),
-        description: safeName(formValues.description),
+        header: safe(formValues.header),
+        description: safe(formValues.description),
         forumUrl: normalizedLink,
         iconUrl,
         iconPath,
@@ -203,7 +141,7 @@ export default function Apps() {
 
       setFormValues(initialForm);
       setFiles({ icon: null, apk: null });
-      setSubmissionStatus({ state: 'success', message: 'Submitted for review. Thanks for contributing!' });
+      setSubmissionStatus({ state: 'success', message: 'Submitted for review. Thanks!' });
     } catch (error) {
       console.error(error);
       setSubmissionStatus({ state: 'error', message: error.message || 'Unable to submit app.' });
@@ -212,7 +150,6 @@ export default function Apps() {
 
   const handleModeration = async (appId, status) => {
     try {
-      setModerationMessage('');
       await updateDoc(doc(firestore, 'apps', appId), {
         status,
         reviewerEmail: user.email,
@@ -224,14 +161,146 @@ export default function Apps() {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut(auth);
+  };
+
+  const handleResendVerification = async () => {
+    if (!user) return;
+    try {
+      await sendEmailVerification(user);
+      setVerificationMessage('Verification email sent. Check your inbox.');
+    } catch (error) {
+      setVerificationMessage(error.message);
+    }
+  };
+
+  const renderSubmissionSection = () => {
+    if (loading) {
+      return <p className="text-sm text-slate-300">Checking your account…</p>;
+    }
+    if (!user) {
+      return (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold text-white">Sign in to contribute</h2>
+          <p className="text-sm text-slate-200">
+            You need a verified account before uploading APKs.{' '}
+            <Link to="/signin" className="text-sky-300 underline">
+              Go to sign in
+            </Link>
+            .
+          </p>
+        </div>
+      );
+    }
+    if (!user.emailVerified) {
+      return (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold text-white">Verify your email</h2>
+          <p className="text-sm text-slate-200">
+            We sent a link to <span className="font-semibold">{user.email}</span>. Once verified, revisit this page to unlock uploads.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+              onClick={handleResendVerification}
+            >
+              Resend verification email
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+              onClick={handleSignOut}
+            >
+              Sign out
+            </button>
+          </div>
+          {verificationMessage && <p className="text-sm text-white">{verificationMessage}</p>}
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-semibold text-white">Submit an app</h2>
+            <p className="text-sm text-slate-300">Signed in as {user.email}</p>
+          </div>
+          <button
+            type="button"
+            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+            onClick={handleSignOut}
+          >
+            Sign out
+          </button>
+        </div>
+
+        <form className="space-y-4" onSubmit={handleAppSubmit}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <InputField label="App name" name="name" value={formValues.name} onChange={handleFormChange} required />
+            <InputField
+              label="JTech username"
+              name="username"
+              value={formValues.username}
+              onChange={handleFormChange}
+              placeholder="@you"
+              required
+            />
+          </div>
+          <InputField label="Header info" name="header" value={formValues.header} onChange={handleFormChange} required />
+          <div>
+            <label className="text-sm font-semibold text-white" htmlFor="description">
+              More info
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              required
+              value={formValues.description}
+              onChange={handleFormChange}
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+            />
+          </div>
+          <InputField
+            label="Guide or forum link"
+            name="forumUrl"
+            value={formValues.forumUrl}
+            onChange={handleFormChange}
+            placeholder="https://forums.jtechforums.org/..."
+            required
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            <FileField label="App icon" name="icon" accept="image/png,image/jpeg,image/webp" file={files.icon} onChange={handleFileChange} />
+            <FileField label="APK file" name="apk" accept=".apk" file={files.apk} onChange={handleFileChange} />
+          </div>
+          <button
+            type="submit"
+            disabled={submissionStatus.state === 'loading'}
+            className="w-full rounded-full bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-70"
+          >
+            {submissionStatus.state === 'loading' ? 'Submitting…' : 'Submit for review'}
+          </button>
+        </form>
+        {submissionStatus.message && (
+          <p className={`text-sm ${submissionStatus.state === 'error' ? 'text-rose-200' : 'text-emerald-300'}`}>
+            {submissionStatus.message}
+          </p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="mx-auto max-w-5xl space-y-12 px-6 py-16">
       <section className="text-center">
         <p className="section-label text-xs uppercase text-sky-200">Apps</p>
         <h1 className="mt-4 text-5xl font-semibold text-white">Community App Catalog</h1>
         <p className="mt-3 text-base text-slate-300">
-          Browse vetted APKs submitted by verified community members. Upload your own builds, icons, and forum links so the
-          admin team can review them before they land here.
+          Browse vetted APKs submitted by verified community members. Upload your own builds, icons, and forum links so the admin team can
+          review them before they land here.
         </p>
       </section>
 
@@ -293,36 +362,13 @@ export default function Apps() {
       </section>
 
       <section className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-slate-900/30">
-        {!user ? (
-          <AuthCard
-            authMode={authMode}
-            setAuthMode={setAuthMode}
-            authForm={authForm}
-            setAuthForm={setAuthForm}
-            onSubmit={handleAuthSubmit}
-            onPasswordReset={handlePasswordReset}
-            authMessage={authMessage}
-          />
-        ) : (
-          <VerifiedSubmissionSection
-            user={user}
-            onSignOut={handleSignOut}
-            onResendVerification={handleResendVerification}
-            formValues={formValues}
-            setFormValues={setFormValues}
-            files={files}
-            handleFileChange={handleFileChange}
-            handleFormChange={handleFormChange}
-            handleAppSubmit={handleAppSubmit}
-            submissionStatus={submissionStatus}
-          />
-        )}
+        {renderSubmissionSection()}
       </section>
 
       {user?.email === ADMIN_EMAIL && (
         <section className="rounded-3xl border border-amber-300/30 bg-amber-300/5 p-6 shadow-lg shadow-amber-900/20">
           <h2 className="text-2xl font-semibold text-white">Admin review queue</h2>
-          <p className="mt-2 text-sm text-amber-100">Only you can see this section.</p>
+          <p className="mt-2 text-sm text-amber-100">Only admins can see this section.</p>
           {moderationMessage && <p className="mt-3 text-sm text-white">{moderationMessage}</p>}
           {pendingApps.length === 0 ? (
             <p className="mt-4 text-sm text-white/80">No pending submissions.</p>
@@ -361,184 +407,6 @@ export default function Apps() {
             </div>
           )}
         </section>
-      )}
-    </div>
-  );
-}
-
-function AuthCard({ authMode, setAuthMode, authForm, setAuthForm, onSubmit, onPasswordReset, authMessage }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-white">{authMode === 'signin' ? 'Sign in' : 'Sign up'}</h2>
-        <button
-          type="button"
-          className="text-sm font-semibold text-sky-300 underline"
-          onClick={() => setAuthMode((prev) => (prev === 'signin' ? 'signup' : 'signin'))}
-        >
-          {authMode === 'signin' ? 'Need an account?' : 'Have an account?'}
-        </button>
-      </div>
-
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="auth-email" className="text-sm font-semibold text-white">
-            Email
-          </label>
-          <input
-            id="auth-email"
-            type="email"
-            name="email"
-            required
-            value={authForm.email}
-            onChange={(event) => setAuthForm((prev) => ({ ...prev, email: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-          />
-        </div>
-        <div>
-          <label htmlFor="auth-password" className="text-sm font-semibold text-white">
-            Password
-          </label>
-          <input
-            id="auth-password"
-            type="password"
-            name="password"
-            required
-            minLength={8}
-            value={authForm.password}
-            onChange={(event) => setAuthForm((prev) => ({ ...prev, password: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full rounded-full bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
-        >
-          {authMode === 'signin' ? 'Sign in' : 'Sign up'}
-        </button>
-      </form>
-      <button type="button" className="text-xs text-sky-200 underline" onClick={onPasswordReset}>
-        Forgot password?
-      </button>
-      {authMessage && <p className="text-sm text-white">{authMessage}</p>}
-    </div>
-  );
-}
-
-function VerifiedSubmissionSection({
-  user,
-  onSignOut,
-  onResendVerification,
-  formValues,
-  setFormValues,
-  files,
-  handleFileChange,
-  handleFormChange,
-  handleAppSubmit,
-  submissionStatus,
-}) {
-  if (!user.emailVerified) {
-    return (
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-white">Verify your email</h2>
-        <p className="text-sm text-slate-200">
-          We sent a verification link to <span className="font-semibold">{user.email}</span>. Once you verify, refresh this page and
-          the submission form will unlock.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-            onClick={onResendVerification}
-          >
-            Resend verification email
-          </button>
-          <button
-            type="button"
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-            onClick={onSignOut}
-          >
-            Sign out
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-white">Submit an app</h2>
-          <p className="text-sm text-slate-200">Signed in as {user.email}</p>
-        </div>
-        <button
-          type="button"
-          className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-          onClick={onSignOut}
-        >
-          Sign out
-        </button>
-      </div>
-
-      <form className="space-y-4" onSubmit={handleAppSubmit}>
-        <div className="grid gap-4 md:grid-cols-2">
-          <InputField label="App name" name="name" value={formValues.name} onChange={handleFormChange} required />
-          <InputField
-            label="JTech username"
-            name="username"
-            value={formValues.username}
-            onChange={handleFormChange}
-            required
-            placeholder="@you"
-          />
-        </div>
-        <InputField label="Header info" name="header" value={formValues.header} onChange={handleFormChange} required />
-        <div>
-          <label className="text-sm font-semibold text-white" htmlFor="description">
-            More info
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            rows="4"
-            required
-            value={formValues.description}
-            onChange={handleFormChange}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-          />
-        </div>
-        <InputField
-          label="Guide or forum link"
-          name="forumUrl"
-          value={formValues.forumUrl}
-          onChange={handleFormChange}
-          placeholder="https://forums.jtechforums.org/..."
-          required
-        />
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <FileField label="App icon" name="icon" accept="image/png,image/jpeg,image/webp" onChange={handleFileChange} file={files.icon} />
-          <FileField label="APK file" name="apk" accept=".apk" onChange={handleFileChange} file={files.apk} />
-        </div>
-
-        <button
-          type="submit"
-          disabled={submissionStatus.state === 'loading'}
-          className="w-full rounded-full bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-wait disabled:opacity-70"
-        >
-          {submissionStatus.state === 'loading' ? 'Submitting...' : 'Submit for review'}
-        </button>
-      </form>
-
-      {submissionStatus.message && (
-        <p
-          className={`text-sm ${
-            submissionStatus.state === 'error' ? 'text-rose-200' : 'text-emerald-300'
-          }`}
-        >
-          {submissionStatus.message}
-        </p>
       )}
     </div>
   );
