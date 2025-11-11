@@ -272,10 +272,24 @@ export default function Apps() {
             placeholder="https://forums.jtechforums.org/..."
             required
           />
-          <div className="grid gap-4 md:grid-cols-2">
-            <FileField label="App icon" name="icon" accept="image/png,image/jpeg,image/webp" file={files.icon} onChange={handleFileChange} />
-            <FileField label="APK file" name="apk" accept=".apk" file={files.apk} onChange={handleFileChange} />
-          </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <FileField
+            label="App icon"
+            name="icon"
+            accept="image/png,image/jpeg,image/webp"
+            file={files.icon}
+            onChange={handleFileChange}
+            helper="PNG/JPG/WebP • 1024×1024 preferred • < 2 MB"
+          />
+          <FileField
+            label="APK file"
+            name="apk"
+            accept=".apk"
+            file={files.apk}
+            onChange={handleFileChange}
+            helper="Signed release build • max 200 MB"
+          />
+        </div>
           <button
             type="submit"
             disabled={submissionStatus.state === 'loading'}
@@ -431,21 +445,22 @@ function InputField({ label, name, value, onChange, required, placeholder }) {
   );
 }
 
-function FileField({ label, name, accept, onChange, file }) {
+function FileField({ label, name, accept, onChange, file, helper }) {
   return (
     <div>
       <label htmlFor={name} className="text-sm font-semibold text-white">
         {label}
       </label>
-      <input
-        id={name}
-        name={name}
-        type="file"
-        accept={accept}
-        onChange={onChange}
-        className="mt-2 w-full rounded-2xl border border-dashed border-white/20 bg-black/10 px-4 py-3 text-sm text-white focus:border-sky-400 focus:outline-none"
-      />
-      {file && <p className="mt-1 text-xs text-slate-300">{file.name}</p>}
+      <label
+        htmlFor={name}
+        className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-white/20 bg-slate-900/30 px-4 py-8 text-center text-sm text-white transition hover:border-sky-400 hover:bg-slate-900/60"
+      >
+        <i className="fa-solid fa-cloud-arrow-up text-2xl text-sky-300" />
+        <span className="mt-2 font-semibold">{file ? 'Replace file' : 'Click to upload'}</span>
+        {file && <span className="mt-1 text-xs text-slate-300">{file.name}</span>}
+        {helper && <span className="mt-1 text-xs text-slate-400">{helper}</span>}
+      </label>
+      <input id={name} name={name} type="file" accept={accept} onChange={onChange} className="hidden" />
     </div>
   );
 }
