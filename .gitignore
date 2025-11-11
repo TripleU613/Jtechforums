@@ -7,3 +7,4 @@ functions/.env.*
 dist
 .env
 .DS_Store
+firebase-debug.log
