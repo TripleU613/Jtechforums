@@ -19,20 +19,20 @@ export default function Contact() {
   }, []);
 
   const waitForRecaptcha = () =>
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       if (!RECAPTCHA_SITE_KEY) {
         resolve(null);
         return;
       }
 
       const poll = (attempts = 0) => {
-        if (window.grecaptcha?.enterprise?.ready) {
+        if (window.grecaptcha?.enterprise?.ready && window.grecaptcha?.enterprise?.execute) {
           resolve(window.grecaptcha.enterprise);
           return;
         }
 
         if (attempts > 50) {
-          resolve(null);
+          reject(new Error('reCAPTCHA failed to load'));
           return;
         }
 
@@ -43,17 +43,15 @@ export default function Contact() {
     });
 
   const runRecaptcha = async () => {
-    const enterprise = await waitForRecaptcha();
-    if (!enterprise) return '';
+    try {
+      const enterprise = await waitForRecaptcha();
+      if (!enterprise) return '';
 
-    return new Promise((resolve) => {
-      enterprise.ready(() => {
-        enterprise
-          .execute(RECAPTCHA_SITE_KEY, { action: 'contact' })
-          .then(resolve)
-          .catch(() => resolve(''));
-      });
-    });
+      return await enterprise.execute(RECAPTCHA_SITE_KEY, { action: 'contact' });
+    } catch (error) {
+      console.warn('Unable to load reCAPTCHA', error);
+      return '';
+    }
   };
 
   async function handleSubmit(event) {
