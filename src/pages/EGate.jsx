@@ -1,4 +1,5 @@
 import SectionHeading from '../components/SectionHeading';
+import Reveal from '../components/Reveal';
 
 const featureList = [
   {
@@ -59,7 +60,7 @@ const slowVideoPlayback = (event) => {
 
 export default function EGate() {
   return (
-    <div className="bg-black">
+    <Reveal as="div" className="bg-black" amount={0.1}>
       <Hero />
       <section className="bg-slate-950/70">
         <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
@@ -87,13 +88,17 @@ export default function EGate() {
       <Highlights />
       <FaqSection />
       <Cta />
-    </div>
+    </Reveal>
   );
 }
 
 function Hero() {
   return (
-    <section className="relative isolate overflow-hidden border-b border-white/5 bg-gradient-to-b from-slate-950 via-slate-950 to-black">
+    <Reveal
+      as="section"
+      className="relative isolate overflow-hidden border-b border-white/5 bg-gradient-to-b from-slate-950 via-slate-950 to-black"
+      amount={0.1}
+    >
       <PatternGrid />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:py-28">
         <div className="space-y-6">
@@ -130,7 +135,7 @@ function Hero() {
           <PhoneMock />
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }
 
@@ -200,7 +205,7 @@ function PhoneMock() {
 
 function Highlights() {
   return (
-    <section className="bg-black py-20 sm:py-24">
+    <Reveal as="section" className="bg-black py-20 sm:py-24" amount={0.15}>
       <div className="mx-auto max-w-6xl px-6">
         <p className="mx-auto text-center text-3xl font-semibold text-white sm:text-4xl">
           Check out what eGate can do&hellip;
@@ -274,7 +279,7 @@ function Highlights() {
           </article>
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }
 
@@ -348,7 +353,7 @@ function ProgressiveGraphic() {
 
 function FaqSection() {
   return (
-    <section className="bg-slate-950/80 py-20">
+    <Reveal as="section" className="bg-slate-950/80 py-20" amount={0.15}>
       <div className="mx-auto max-w-5xl px-6">
         <h2 className="text-center text-4xl font-semibold text-white sm:text-5xl">Frequently asked questions</h2>
         <div className="mt-12 space-y-4">
@@ -365,13 +370,13 @@ function FaqSection() {
           ))}
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }
 
 function Cta() {
   return (
-    <section className="bg-black py-24">
+    <Reveal as="section" className="bg-black py-24" amount={0.15}>
       <div className="mx-auto max-w-5xl px-6">
         <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-950/80 px-8 py-12 sm:px-12 lg:px-16">
           <div className="absolute inset-y-0 right-0 -z-10 w-2/3 bg-gradient-to-l from-sky-500/20 to-transparent blur-3xl" aria-hidden="true" />
@@ -402,6 +407,6 @@ function Cta() {
           </div>
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }

@@ -15,6 +15,7 @@ import {
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { auth, firestore, storage } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import Reveal from '../components/Reveal';
 
 const ADMIN_EMAIL = 'tripleuworld@gmail.com';
 const initialForm = {
@@ -353,7 +354,7 @@ export default function Apps() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12 px-6 py-16">
+    <Reveal as="div" className="mx-auto max-w-5xl space-y-12 px-6 py-16" amount={0.1}>
       <section className="text-center">
         <p className="section-label text-xs uppercase text-sky-200">Apps</p>
         <h1 className="mt-4 text-5xl font-semibold text-white">Community App Catalog</h1>
@@ -467,7 +468,7 @@ export default function Apps() {
           )}
         </section>
       )}
-    </div>
+    </Reveal>
   );
 }
 

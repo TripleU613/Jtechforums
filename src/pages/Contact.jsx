@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Reveal from '../components/Reveal';
 
 const ENDPOINT = '/api/contact';
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
@@ -95,7 +96,7 @@ export default function Contact() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16">
+    <Reveal as="div" className="mx-auto max-w-4xl px-6 py-16" amount={0.15}>
       <div className="text-center">
         <p className="section-label text-xs uppercase text-sky-200">Contact</p>
         <h1 className="mt-4 text-5xl font-semibold text-white">Talk to JTech</h1>
@@ -185,6 +186,6 @@ export default function Contact() {
           </div>
         )}
       </form>
-    </div>
+    </Reveal>
   );
 }

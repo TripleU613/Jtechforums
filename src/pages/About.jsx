@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import SectionHeading from '../components/SectionHeading';
 import GlassCard from '../components/GlassCard';
+import Reveal from '../components/Reveal';
 import { fetchForumApi } from '../lib/forumApi';
 
 const missionParagraphs = [
@@ -101,7 +102,7 @@ export default function About() {
   );
 
   return (
-    <div className="space-y-20">
+    <Reveal as="div" className="space-y-20" amount={0.1}>
       <section className="relative isolate overflow-hidden px-6 pb-20 pt-16 text-center">
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-60">
           <img src="/img/phonegrid.png" alt="" className="h-full w-full object-cover opacity-15" />
@@ -235,6 +236,6 @@ export default function About() {
           </div>
         </div>
       </section>
-    </div>
+    </Reveal>
   );
 }

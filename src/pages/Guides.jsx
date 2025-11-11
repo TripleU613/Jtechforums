@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import SectionHeading from '../components/SectionHeading';
+import Reveal from '../components/Reveal';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
 
 const formatDate = (value) => {
@@ -95,7 +96,7 @@ export default function Guides() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12 px-6">
+    <Reveal as="div" className="mx-auto max-w-5xl space-y-12 px-6" amount={0.1}>
       <section className="pb-16 pt-12">
         <SectionHeading
           label="Guides"
@@ -123,7 +124,7 @@ export default function Guides() {
           </div>
         )}
       </section>
-    </div>
+    </Reveal>
   );
 }
 

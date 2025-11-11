@@ -1,5 +1,6 @@
 ﻿import SectionHeading from '../components/SectionHeading';
 import GlassCard from '../components/GlassCard';
+import Reveal from '../components/Reveal';
 
 const stats = [
   { value: '4.2k+', label: 'Families, yeshivos & IT partners' },
@@ -128,7 +129,7 @@ const faqs = [
 
 export default function Home() {
   return (
-    <div className="space-y-20">
+    <Reveal as="div" className="space-y-20" amount={0.1}>
       <section className="mx-auto max-w-6xl px-6 pt-12">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
@@ -401,6 +402,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </div>
+    </Reveal>
   );
 }

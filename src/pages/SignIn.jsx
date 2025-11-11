@@ -10,6 +10,7 @@ import {
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import Reveal from '../components/Reveal';
 
 const googleProvider = new GoogleAuthProvider();
 const passwordRequirements = [
@@ -114,7 +115,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
+    <Reveal as="div" className="mx-auto max-w-5xl px-6 py-16" amount={0.1}>
       <div className="overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900 to-slate-950 shadow-2xl shadow-black/40">
         <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
           <section className="border-b border-white/5 px-8 py-10 lg:border-b-0 lg:border-r">
@@ -308,7 +309,7 @@ export default function SignIn() {
           </aside>
         </div>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
