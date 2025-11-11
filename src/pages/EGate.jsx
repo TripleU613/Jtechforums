@@ -211,24 +211,11 @@ function Highlights() {
               <div className="px-8 pt-8 sm:px-10 sm:pt-10">
                 <p className="text-xl font-semibold text-white">Easy-to-use design</p>
                 <p className="mt-3 text-sm text-slate-300">
-                  Direct lift from the legacy site: the UI showcase stays front-and-center with the same video placement.
+                  Redesigned mock UI shows how quick actions, toggles, and reports sit inside the console without touching the legacy assets.
                 </p>
               </div>
               <div className="relative mx-auto flex w-full max-w-sm flex-1 items-center justify-center px-8 pb-10 pt-8 lg:max-w-full">
-                <div className="h-[22rem] w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-950 to-slate-900 p-4 shadow-2xl">
-                  <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-black/70 p-4">
-                    <video
-                      src="/img/qinf21.mp4"
-                      className="h-full w-full rounded-2xl object-contain"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      onLoadedData={slowVideoPlayback}
-                      style={{ transform: 'scale(0.92)' }}
-                    />
-                  </div>
-                </div>
+                <EaseOfUseMock />
               </div>
             </CardChrome>
           </article>
@@ -262,13 +249,11 @@ function Highlights() {
               <div className="px-8 pt-8 sm:px-10 sm:pt-10">
                 <p className="text-xl font-semibold text-white">Reseller portal</p>
                 <p className="mt-3 text-sm text-slate-300">
-                  The same screenshot from the legacy .io page showcases bulk license controls and remote toggles.
+                  Purpose-built partner dashboard visualization with active licenses, approval badges, and one-click remote actions.
                 </p>
               </div>
               <div className="relative flex flex-1 items-center justify-center px-8 pb-10 pt-6">
-                <div className="w-full rounded-3xl border border-white/10 bg-slate-900 shadow-2xl">
-                  <img src="/img/home/reseller.png" alt="Reseller portal" className="h-full w-full rounded-3xl object-cover" />
-                </div>
+                <ResellerPortalMock />
               </div>
             </CardChrome>
           </article>
@@ -282,6 +267,130 @@ function CardChrome({ children, className = '' }) {
   return (
     <div className={`flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/70 ${className}`}>
       {children}
+    </div>
+  );
+}
+
+function EaseOfUseMock() {
+  const shortcuts = ['Profiles', 'App guard', 'Connectivity', 'Reports'];
+  const toggles = [
+    { label: 'Play Store', status: 'Blocked', color: 'bg-rose-400/60' },
+    { label: 'WebView', status: 'Locked', color: 'bg-amber-300/60' },
+    { label: 'Hotspot', status: 'Disabled', color: 'bg-emerald-400/60' },
+  ];
+
+  return (
+    <div className="h-[22rem] w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-950 to-slate-900 p-5 shadow-2xl">
+      <div className="flex items-center justify-between text-xs text-slate-400">
+        <span>Offline Console</span>
+        <span className="flex items-center gap-2 text-emerald-300">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
+          Live
+        </span>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {shortcuts.map((shortcut) => (
+          <button
+            key={shortcut}
+            type="button"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200 hover:border-sky-400"
+          >
+            {shortcut}
+          </button>
+        ))}
+      </div>
+      <div className="mt-5 rounded-[1.5rem] border border-white/5 bg-black/40 p-4 shadow-inner">
+        <p className="text-sm font-semibold text-white">Quick toggles</p>
+        <p className="text-xs text-slate-400">Applies instantly to 480 managed devices</p>
+        <div className="mt-4 space-y-3">
+          {toggles.map((toggle) => (
+            <div key={toggle.label} className="flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-white">{toggle.label}</p>
+                <p className="text-xs text-slate-400">MDM enforced</p>
+              </div>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold text-slate-900 ${toggle.color}`}>{toggle.status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-slate-300">
+          <p className="text-2xl font-semibold text-white">43</p>
+          Tasks queued
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-slate-300">
+          <p className="text-2xl font-semibold text-white">8</p>
+          Pending approvals
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-slate-300">
+          <p className="text-2xl font-semibold text-white">2m</p>
+          Avg. rollout
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResellerPortalMock() {
+  const partners = [
+    { name: 'Torah Tech', seats: 120, status: 'Healthy', color: 'text-emerald-300' },
+    { name: 'Meshulach IT', seats: 64, status: 'Review', color: 'text-amber-200' },
+    { name: 'Yeshiva Secure', seats: 210, status: 'Syncing', color: 'text-sky-300' },
+  ];
+
+  return (
+    <div className="w-full rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 text-white shadow-2xl">
+      <div className="flex items-center justify-between text-xs text-slate-300">
+        <span>Reseller dashboard</span>
+        <span className="flex items-center gap-2 text-slate-100">
+          <i className="fa-solid fa-circle-nodes text-sky-300" />
+          Synced
+        </span>
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-3 text-left text-xs text-slate-300">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-sm font-semibold text-white">Active licenses</p>
+          <p className="mt-1 text-3xl font-bold text-emerald-300">1,284</p>
+          <p className="text-[11px] text-emerald-200/80">+36 this week</p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-sm font-semibold text-white">Automation health</p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="text-sm text-white">All systems running</span>
+          </div>
+          <div className="mt-3 h-2 rounded-full bg-white/10">
+            <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-emerald-400 to-sky-400" />
+          </div>
+        </div>
+      </div>
+      <div className="mt-5 rounded-[1.75rem] border border-white/5 bg-black/40 p-4">
+        <p className="text-sm font-semibold">Partners</p>
+        <div className="mt-3 space-y-3">
+          {partners.map((partner) => (
+            <div key={partner.name} className="flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3 text-xs">
+              <div>
+                <p className="text-sm font-semibold text-white">{partner.name}</p>
+                <p className="text-slate-400">{partner.seats} seats</p>
+              </div>
+              <span className={`flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 font-semibold ${partner.color}`}>
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                {partner.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 flex items-center justify-between rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-3 text-xs text-slate-200">
+        <span>Next bulk update: 02:30 AM</span>
+        <button
+          type="button"
+          className="rounded-full bg-sky-500/90 px-3 py-1 text-[11px] font-semibold text-slate-950 hover:bg-sky-400"
+        >
+          Trigger now
+        </button>
+      </div>
     </div>
   );
 }
