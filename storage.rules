@@ -8,7 +8,7 @@ service firebase.storage {
     }
 
     match /app-apks/{userId}/{allPaths=**} {
-      allow read: if true;
+      allow read: if request.auth != null && request.auth.token.email == 'tripleuworld@gmail.com';
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 

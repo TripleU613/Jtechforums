@@ -12,7 +12,7 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { auth, firestore, storage } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 
@@ -32,6 +32,7 @@ export default function Apps() {
   const [formValues, setFormValues] = useState(initialForm);
   const [files, setFiles] = useState({ icon: null, apk: null });
   const [submissionStatus, setSubmissionStatus] = useState({ state: 'idle', message: '' });
+  const [uploadProgress, setUploadProgress] = useState({ icon: 0, apk: 0 });
   const [moderationMessage, setModerationMessage] = useState('');
   const [verificationMessage, setVerificationMessage] = useState('');
 
@@ -83,11 +84,28 @@ export default function Apps() {
     setFiles((prev) => ({ ...prev, [name]: list?.[0] || null }));
   };
 
-  const uploadFile = async (path, file) => {
-    const storageRef = ref(storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    return getDownloadURL(snapshot.ref);
+  const handleFileDrop = (name, file) => {
+    if (!file) return;
+    setFiles((prev) => ({ ...prev, [name]: file }));
   };
+
+  const uploadFile = (path, file, key) =>
+    new Promise((resolve, reject) => {
+      const storageRef = ref(storage, path);
+      const task = uploadBytesResumable(storageRef, file);
+      task.on(
+        'state_changed',
+        (snapshot) => {
+          const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          setUploadProgress((prev) => ({ ...prev, [key]: percent }));
+        },
+        reject,
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref);
+          resolve(url);
+        }
+      );
+    });
 
   const handleAppSubmit = async (event) => {
     event.preventDefault();
@@ -105,6 +123,7 @@ export default function Apps() {
     }
 
     setSubmissionStatus({ state: 'loading', message: 'Uploading files...' });
+    setUploadProgress({ icon: 0, apk: 0 });
     try {
       const safe = (value) => value.trim();
       const normalizedUsername = safe(formValues.username).startsWith('@')
@@ -119,8 +138,8 @@ export default function Apps() {
       const apkPath = `app-apks/${user.uid}/${timestamp}-${files.apk.name.replace(/\s+/g, '-')}`;
 
       const [iconUrl, apkUrl] = await Promise.all([
-        uploadFile(iconPath, files.icon),
-        uploadFile(apkPath, files.apk),
+        uploadFile(iconPath, files.icon, 'icon'),
+        uploadFile(apkPath, files.apk, 'apk'),
       ]);
 
       await addDoc(collection(firestore, 'apps'), {
@@ -142,6 +161,7 @@ export default function Apps() {
       setFormValues(initialForm);
       setFiles({ icon: null, apk: null });
       setSubmissionStatus({ state: 'success', message: 'Submitted for review. Thanks!' });
+      setUploadProgress({ icon: 0, apk: 0 });
     } catch (error) {
       console.error(error);
       setSubmissionStatus({ state: 'error', message: error.message || 'Unable to submit app.' });
@@ -279,7 +299,9 @@ export default function Apps() {
             accept="image/png,image/jpeg,image/webp"
             file={files.icon}
             onChange={handleFileChange}
+            onDropFile={handleFileDrop}
             helper="PNG/JPG/WebP • 1024×1024 preferred • < 2 MB"
+            progress={uploadProgress.icon}
           />
           <FileField
             label="APK file"
@@ -287,7 +309,9 @@ export default function Apps() {
             accept=".apk"
             file={files.apk}
             onChange={handleFileChange}
+            onDropFile={handleFileDrop}
             helper="Signed release build • max 200 MB"
+            progress={uploadProgress.apk}
           />
         </div>
           <button
@@ -445,20 +469,51 @@ function InputField({ label, name, value, onChange, required, placeholder }) {
   );
 }
 
-function FileField({ label, name, accept, onChange, file, helper }) {
+function FileField({ label, name, accept, onChange, onDropFile, file, helper, progress }) {
+  const [dragging, setDragging] = useState(false);
+
+  const handleDrag = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.type === 'dragenter' || event.type === 'dragover') {
+      setDragging(true);
+    } else if (event.type === 'dragleave') {
+      setDragging(false);
+    }
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragging(false);
+    const droppedFile = event.dataTransfer?.files?.[0];
+    if (droppedFile) {
+      onDropFile(name, droppedFile);
+    }
+  };
+
   return (
     <div>
-      <label htmlFor={name} className="text-sm font-semibold text-white">
-        {label}
-      </label>
+      <label className="text-sm font-semibold text-white">{label}</label>
       <label
         htmlFor={name}
-        className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-white/20 bg-slate-900/30 px-4 py-8 text-center text-sm text-white transition hover:border-sky-400 hover:bg-slate-900/60"
+        onDragEnter={handleDrag}
+        onDragOver={handleDrag}
+        onDragLeave={handleDrag}
+        onDrop={handleDrop}
+        className={`mt-2 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed px-4 py-8 text-center text-sm text-white transition ${
+          dragging ? 'border-sky-400 bg-slate-900/70' : 'border-white/20 bg-slate-900/30 hover:border-sky-400 hover:bg-slate-900/60'
+        }`}
       >
         <i className="fa-solid fa-cloud-arrow-up text-2xl text-sky-300" />
-        <span className="mt-2 font-semibold">{file ? 'Replace file' : 'Click to upload'}</span>
+        <span className="mt-2 font-semibold">{file ? 'Replace file' : 'Click or drag to upload'}</span>
         {file && <span className="mt-1 text-xs text-slate-300">{file.name}</span>}
         {helper && <span className="mt-1 text-xs text-slate-400">{helper}</span>}
+        {progress > 0 && progress < 100 && (
+          <div className="mt-4 h-2 w-full rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-sky-400" style={{ width: `${progress}%` }} />
+          </div>
+        )}
       </label>
       <input id={name} name={name} type="file" accept={accept} onChange={onChange} className="hidden" />
     </div>
