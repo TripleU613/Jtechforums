@@ -59,7 +59,8 @@ export default function Contact() {
     setStatus('loading');
     setMessage('');
 
-    const formData = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const formData = new FormData(formElement);
     const payload = new URLSearchParams();
     formData.forEach((value, key) => {
       if (typeof value === 'string') {
@@ -84,7 +85,7 @@ export default function Contact() {
         throw new Error(result?.error || 'Unable to send message right now.');
       }
 
-      event.currentTarget.reset();
+      formElement.reset();
       setStatus('success');
       setMessage(result?.message || 'Message sent. Thanks for reaching out!');
     } catch (err) {
