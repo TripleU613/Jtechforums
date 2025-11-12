@@ -3,12 +3,6 @@ import Reveal from '../components/Reveal';
 import SectionHeading from '../components/SectionHeading';
 import GlassCard from '../components/GlassCard';
 
-const fallbackHeroStats = [
-  { value: '305+', label: 'Signups last month' },
-  { value: '100k+', label: 'Page visits' },
-  { value: '15k+', label: 'Posts last month' },
-];
-
 const resourceCards = [
   {
     title: 'Community Forum',
@@ -129,8 +123,6 @@ export default function Home() {
   const leaderboardKey = import.meta.env.VITE_FORUM_API_KEY;
   const [leaders, setLeaders] = useState(fallbackLeaders);
   const [leaderLoading, setLeaderLoading] = useState(Boolean(leaderboardUrl));
-  const statsEndpoint = import.meta.env.VITE_FORUM_STATS_ENDPOINT;
-  const [heroStats, setHeroStats] = useState(fallbackHeroStats);
 
   useEffect(() => {
     if (!leaderboardUrl) {
@@ -167,69 +159,30 @@ export default function Home() {
     return () => controller.abort();
   }, [leaderboardUrl, leaderboardKey]);
 
-  useEffect(() => {
-    if (!statsEndpoint) return;
-    const controller = new AbortController();
-
-    const fetchStats = async () => {
-      try {
-        const response = await fetch(statsEndpoint, { signal: controller.signal });
-        if (!response.ok) throw new Error('Stats request failed');
-        const payload = await response.json();
-        const mapped = [
-          { value: payload.signups ?? fallbackHeroStats[0].value, label: 'Signups last month' },
-          { value: payload.pageViews ?? fallbackHeroStats[1].value, label: 'Page visits' },
-          { value: payload.posts ?? fallbackHeroStats[2].value, label: 'Posts last month' },
-        ];
-        setHeroStats(mapped);
-      } catch (error) {
-        console.warn('Unable to load stats', error);
-      }
-    };
-
-    fetchStats();
-    return () => controller.abort();
-  }, [statsEndpoint]);
-
   return (
     <Reveal as="div" className="space-y-20">
       <section className="relative isolate overflow-hidden bg-slate-950 px-6 pt-20 pb-24">
         <img src="/img/phonegrid.png" alt="" className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-20" />
         <div className="mx-auto flex max-w-5xl flex-col gap-12">
-          <div className="space-y-8 text-center lg:text-left">
-            <div className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-[0.3em] text-slate-300">
-              Check out our forum for answers, information, and guides!
-              <a href="https://forums.jtechforums.org" className="ml-2 font-semibold text-sky-300">
-                Go now →
-              </a>
-            </div>
-            <h1 className="text-4xl font-semibold leading-tight text-white sm:text-6xl">The Leading Jewish Filtering & Tech Forum</h1>
-            <p className="text-lg text-slate-300">
-              JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 lg:justify-start">
-              <a
-                href="https://forums.jtechforums.org"
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-base font-semibold text-slate-950 transition hover:bg-sky-400"
-              >
-                Join the forum
-              </a>
-              <a
-                href="/guides"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-white/60"
-              >
-                View guides
-              </a>
-            </div>
-            <div className="mt-6 grid gap-6 sm:grid-cols-3">
-              {heroStats.map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-3xl font-semibold text-white">{stat.value}</p>
-                  <p className="text-sm text-slate-400">{stat.label}</p>
-                </div>
-              ))}
+          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-950/90 via-slate-900/70 to-slate-950/60 p-10 text-center shadow-2xl lg:text-left">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-40"
+              style={{
+                background:
+                  'radial-gradient(circle at 20% 20%, rgba(56,189,248,0.4), transparent 55%), radial-gradient(circle at 80% 80%, rgba(14,165,233,0.25), transparent 60%)',
+              }}
+            />
+            <div className="relative space-y-6">
+              <div className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-[0.3em] text-slate-300">
+                Check out our forum for answers, information, and guides!
+                <a href="https://forums.jtechforums.org" className="ml-2 font-semibold text-sky-300">
+                  Go now →
+                </a>
+              </div>
+              <h1 className="text-4xl font-semibold leading-tight text-white sm:text-6xl">The Leading Jewish Filtering & Tech Forum</h1>
+              <p className="text-lg text-slate-300">
+                JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information.
+              </p>
             </div>
           </div>
         </div>
