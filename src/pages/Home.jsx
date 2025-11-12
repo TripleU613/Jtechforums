@@ -1,344 +1,193 @@
-import { useEffect, useState } from 'react';
-import Reveal from '../components/Reveal';
-import SectionHeading from '../components/SectionHeading';
-import GlassCard from '../components/GlassCard';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-const resourceCards = [
-  {
-    title: 'Community Forum',
-    body:
-      'Ask questions, explore guides, and help others. Threads are moderated so every answer stays accurate and respectful.',
-    cta: 'Join now →',
-    href: 'https://forums.jtechforums.org',
-  },
-  {
-    title: 'Guides Library',
-    body:
-      'We mirror the forum’s best walkthroughs—flashing firmware, configuring filters, onboarding families, and more.',
-    cta: 'View guides →',
-    href: '/guides',
-  },
+const heroLines = [
+  'Welcome to JTech Forums.',
+  'The leading Jewish filtering & tech forum.',
+  'Everything here is written by the community for the community.',
 ];
 
-const guidePreview = [
-  {
-    title: "Beginner's Guide to Getting Started",
-    tag: 'Guide',
-    blurb: 'A friendly checklist for brand-new members learning phones, filters, and terminology.',
-  },
-  {
-    title: 'What is ADB and Getting Started',
-    tag: 'Android guide',
-    blurb: 'Explains how to send commands from your computer so you can tweak a phone without touching it.',
-  },
-  {
-    title: 'What is the eGate filter?',
-    tag: 'eGate',
-    blurb: 'Covers how the Android MDM works, why it is hard to remove, and how admins stay compliant.',
-  },
-  {
-    title: 'Beginner Questions',
-    tag: 'Community',
-    blurb: 'A no-judgment megathread for parents, mechanchim, and MSPs who need fast help.',
-  },
-  {
-    title: 'How to Make Any App Work Without Google Play Services',
-    tag: 'Android guide',
-    blurb: 'Workarounds for apps that normally refuse to launch without Play Services installed.',
-  },
+const previewLines = [
+  'Every post in this feed is written by real JTech members solving real kosher tech problems.',
+  'Browse the latest app drops, FAQs, and walkthroughs, then jump into the thread when you need more.',
 ];
 
-const adminProfiles = [
-  {
-    name: 'Usher Weiss',
-    handle: '@TripleU',
-    role: 'Forums Owner & Maintainer',
-    avatar: '/img/appslist.png',
-  },
-  {
-    name: 'Avrumi Sternheim',
-    handle: '@ars18',
-    role: 'Forums Admin & Moderator',
-    avatar: '/img/home/android.png',
-  },
-  {
-    name: 'Offline Software Solutions',
-    handle: '@flipadmin',
-    role: 'Forum Founder & Developer',
-    avatar: '/img/home/reseller.png',
-  },
-];
-
-const statsSnapshot = [
-  { label: 'Signups last month', value: '305+' },
-  { label: 'Page visits last month', value: '100k+' },
-  { label: 'Posts last month', value: '15k+' },
-  { label: 'User visits last month', value: '1.6k+' },
-];
-
-const testimonials = [
-  {
-    quote:
-      'I was completely stuck trying to get my new flip phone working. A forum member walked me through every step. Could not have done it without this community.',
-    author: '@Simple_Yid · Forum member',
-  },
-  {
-    quote:
-      'JTech MDM Installer was a lifesaver. We install filters in-house without chasing paid installers.',
-    author: '@Chevra_Man · Forum member',
-  },
-  {
-    quote:
-      'When Apps4Flip went offline we needed a new home. JTech became the trusted resource for kosher tech.',
-    author: '@kosherboy · Moderator',
-  },
-];
-
-const faqs = [
-  {
-    question: 'What is JTech Forums?',
-    answer:
-      'A moderated community for kosher technology: phones, filters, firmware, policy templates, and support from mechanchim and IT leads.',
-  },
-  {
-    question: 'What type of information can be found?',
-    answer:
-      'Guides, hashkafic guardrails, troubleshooting posts, vetted downloads, and daily intel from real deployments.',
-  },
-  {
-    question: 'How can I contact moderators?',
-    answer:
-      'Sign into the forum, open the Users tab, and DM any moderator or admin. You can also reach out via the contact page.',
-  },
-];
-
-const fallbackLeaders = [
-  { username: '@TripleU', points: 1280, avatar: '/img/whitelogo.png' },
-  { username: '@ars18', points: 940, avatar: '/img/home/metadata.png' },
-  { username: '@flipadmin', points: 775, avatar: '/img/home/lines.png' },
-];
+const HERO_PORTION = 0.6; // 60% of the journey for hero copy, rest for preview card.
+const AUTO_SPEED = 0.0008;
+const SCROLL_FACTOR = 0.0009;
 
 export default function Home() {
-  const leaderboardUrl = import.meta.env.VITE_FORUM_LEADERBOARD_ENDPOINT;
-  const leaderboardKey = import.meta.env.VITE_FORUM_API_KEY;
-  const [leaders, setLeaders] = useState(fallbackLeaders);
-  const [leaderLoading, setLeaderLoading] = useState(Boolean(leaderboardUrl));
+  const [progress, setProgress] = useState(0); // 0 → hero start, 1 → preview finished
+  const autoDisabledRef = useRef(false);
 
   useEffect(() => {
-    if (!leaderboardUrl) {
-      setLeaderLoading(false);
-      return;
-    }
+    if (typeof document === 'undefined') return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
-    const controller = new AbortController();
-    const fetchLeaders = async () => {
-      try {
-        const response = await fetch(leaderboardUrl, {
-          headers: leaderboardKey ? { 'x-api-key': leaderboardKey } : undefined,
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error('Leaderboard request failed');
-        const payload = await response.json();
-        if (Array.isArray(payload?.leaders)) {
-          setLeaders(
-            payload.leaders.slice(0, 3).map((entry, index) => ({
-              username: entry.username || ('@helper' + (index + 1)),
-              points: entry.points ?? entry.score ?? 0,
-              avatar: entry.avatar || fallbackLeaders[index]?.avatar,
-            }))
-          );
-        }
-      } catch (error) {
-        console.warn('Unable to load leaderboard', error);
-      } finally {
-        setLeaderLoading(false);
+  useEffect(() => {
+    let rafId;
+    const tick = () => {
+      setProgress((prev) => {
+        if (autoDisabledRef.current || prev >= HERO_PORTION) return prev;
+        return Math.min(HERO_PORTION, prev + AUTO_SPEED);
+      });
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  useEffect(() => {
+    const handleWheel = (event) => {
+      event.preventDefault();
+      const delta = event.deltaY * SCROLL_FACTOR;
+      if (delta < 0) {
+        autoDisabledRef.current = true;
       }
+      setProgress((prev) => Math.min(1, Math.max(0, prev + delta)));
     };
 
-    fetchLeaders();
-    return () => controller.abort();
-  }, [leaderboardUrl, leaderboardKey]);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  const backgroundStyles = useMemo(
+    () => ({
+      backgroundImage: 'url(/img/home/reseller.png)',
+    }),
+    []
+  );
+
+const heroProgress = clamp(progress / HERO_PORTION, 0, 1);
+const previewProgress = progress <= HERO_PORTION ? 0 : clamp((progress - HERO_PORTION) / (1 - HERO_PORTION), 0, 1);
+
+const heroRender = useMemo(() => sliceLines(heroLines, heroProgress), [heroProgress]);
+const previewRender = useMemo(() => sliceLines(previewLines, previewProgress), [previewProgress]);
+const heroActiveLine = useMemo(() => activeLineIndex(heroLines, heroProgress), [heroProgress]);
+const previewActiveLine = useMemo(() => activeLineIndex(previewLines, previewProgress), [previewProgress]);
+
+const FADE_START = 0.15;
+const CARD_ENTRY_START = 0.8;
+const heroFadeProgress = previewProgress <= FADE_START ? 0 : (previewProgress - FADE_START) / (1 - FADE_START);
+const heroOpacity = 1 - heroFadeProgress;
+const heroTranslate = -heroFadeProgress * 12;
+const heroBlur = heroFadeProgress * 4;
+const cardSlideProgress =
+  heroFadeProgress <= CARD_ENTRY_START
+    ? 0
+    : clamp((heroFadeProgress - CARD_ENTRY_START) / (1 - CARD_ENTRY_START), 0, 1);
 
   return (
-    <Reveal as="div" className="space-y-20">
-      <section className="relative isolate overflow-hidden bg-slate-950 px-6 pt-20 pb-24">
-        <img src="/img/phonegrid.png" alt="" className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-20" />
-        <div className="mx-auto flex max-w-5xl flex-col gap-12">
-          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-950/90 via-slate-900/70 to-slate-950/60 p-10 text-center shadow-2xl lg:text-left">
-            <div
-              className="pointer-events-none absolute inset-0 opacity-40"
+    <div className="relative h-full overflow-hidden bg-slate-950 text-white">
+      <div
+        className="absolute inset-0 -z-20 h-full w-full opacity-60"
+        style={{ ...backgroundStyles, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/90 via-slate-950/70 to-slate-950/95 backdrop-blur-[12px]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-30 mix-blend-screen [background-image:radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.35),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(56,189,248,0.25),transparent_55%)]" />
+
+      <div className="relative flex h-full items-center justify-center px-6 py-8 sm:px-10">
+        <div className="w-full max-w-5xl translate-y-8 sm:translate-y-16">
+         <div className="relative min-h-[32rem]">
+           <div
+             className="space-y-5 transition duration-500 ease-out"
               style={{
-                background:
-                  'radial-gradient(circle at 20% 20%, rgba(56,189,248,0.4), transparent 55%), radial-gradient(circle at 80% 80%, rgba(14,165,233,0.25), transparent 60%)',
+                opacity: heroOpacity,
+                transform: `translateY(${heroTranslate}px)`,
+                filter: heroBlur ? `blur(${heroBlur}px)` : 'none',
               }}
-            />
-            <div className="relative space-y-6">
-              <div className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-[0.3em] text-slate-300">
-                Check out our forum for answers, information, and guides!
-                <a href="https://forums.jtechforums.org" className="ml-2 font-semibold text-sky-300">
-                  Go now →
-                </a>
+            >
+              <span className="block text-xs uppercase tracking-[0.6em] text-slate-300/80">Hey there</span>
+              <div className="min-h-[12rem] space-y-4 text-3xl font-medium leading-tight text-slate-100 sm:text-4xl">
+                {heroLines.map((line, idx) => (
+                  <span
+                    key={`${idx}-${line}`}
+                    className={`block ${
+                      idx === 1 ? 'text-sky-300' : idx === 2 ? 'text-slate-200/80' : 'text-slate-100'
+                    }`}
+                  >
+                    {heroRender[idx] || '\u00A0'}
+                    <Cursor active={heroProgress < 1 && heroActiveLine === idx} />
+                  </span>
+                ))}
               </div>
-              <h1 className="text-4xl font-semibold leading-tight text-white sm:text-6xl">The Leading Jewish Filtering & Tech Forum</h1>
-              <p className="text-lg text-slate-300">
-                JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information.
-              </p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="mx-auto max-w-6xl px-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          {resourceCards.map((card) => (
-            <GlassCard key={card.title} title={card.title} description={card.body}>
-              <a href={card.href} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-300">
-                {card.cta}
-              </a>
-            </GlassCard>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-6">
-        <div className="glass-panel flex flex-col items-center gap-6 rounded-4xl border border-white/10 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 px-8 py-12 text-center">
-          <p className="section-label text-xs uppercase text-sky-200">Join our community forum today</p>
-          <p className="text-base text-slate-200">
-            Ask questions, find answers, explore guides, and access valuable information—all while helping others in the community.
-          </p>
-          <a
-            href="https://forums.jtechforums.org"
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-slate-100"
-          >
-            Join now
-          </a>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Guides" title="Hand-picked forum threads" />
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {guidePreview.map((post) => (
-            <GlassCard key={post.title} eyebrow={post.tag} title={post.title} description={post.blurb} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Meet our admins" title="Humans behind the forum" />
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {adminProfiles.map((admin) => (
-            <div key={admin.handle} className="rounded-3xl border border-white/10 bg-white/5 p-5 text-center">
-              <img src={admin.avatar} alt={admin.name} className="mx-auto h-16 w-16 rounded-full object-cover" />
-              <p className="mt-4 text-lg font-semibold text-white">{admin.name}</p>
-              <p className="text-sm text-sky-300">{admin.handle}</p>
-              <p className="mt-2 text-sm text-slate-300">{admin.role}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Quick search" title="Looking for something specific?" />
-        <form
-          action={import.meta.env.VITE_FORUM_SEARCH_URL || 'https://forums.jtechforums.org/search'}
-          method="get"
-          className="mt-6 flex flex-col gap-3 rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-white md:flex-row"
-        >
-          <input
-            type="search"
-            name="q"
-            required
-            placeholder="Search the forum..."
-            className="flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
-          />
-          <button type="submit" className="rounded-2xl bg-sky-500 px-6 py-3 font-semibold text-slate-900 transition hover:bg-sky-400">
-            Search
-          </button>
-        </form>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Stats" title="Our forum snapshot" />
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {statsSnapshot.map((stat) => (
-            <GlassCard key={stat.label} title={stat.value} description={stat.label} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Leaderboard" title="Helpers keeping things running" />
-        <div className="mt-6 rounded-3xl border border-white/10 bg-slate-950/70 p-6">
-          {leaderLoading ? (
-            <p className="text-sm text-slate-300">Fetching latest leaderboard…</p>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {leaders.map((leader) => (
-                <div key={leader.username} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
-                  <img src={leader.avatar} alt={leader.username} className="mx-auto h-14 w-14 rounded-full object-cover" />
-                  <p className="mt-3 text-base font-semibold text-white">{leader.username}</p>
-                  <p className="text-sm text-slate-300">{leader.points} pts</p>
+            <div className="absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden={cardSlideProgress === 0}>
+              <div
+                className="flex w-full flex-col rounded-[28px] border border-white/10 bg-slate-950/90 p-10 shadow-2xl backdrop-blur transition duration-600 ease-out"
+                style={{
+                  opacity: cardSlideProgress,
+                  transform: `translateX(${(1 - cardSlideProgress) * 90}px)`,
+                  pointerEvents: cardSlideProgress > 0.05 ? 'auto' : 'none',
+                }}
+              >
+                <div className="relative w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-900 aspect-[21/9]">
+                  <img
+                    src="/img/forum.png"
+                    alt="JTech Forums preview"
+                    className="h-full w-full rounded-xl object-cover"
+                    loading="lazy"
+                  />
                 </div>
-              ))}
+                <div className="mt-6 space-y-3 text-base font-medium text-slate-100 sm:text-lg">
+                  {previewLines.map((line, idx) => (
+                    <p
+                      key={`${idx}-${line}`}
+                      className={`text-slate-200/90 ${previewActiveLine === idx && previewProgress < 1 ? 'text-white' : ''}`}
+                      style={{ minHeight: '2.2rem' }}
+                    >
+                      {previewRender[idx] || '\u00A0'}
+                      <Cursor active={previewProgress < 1 && previewActiveLine === idx} className="h-5" />
+                    </p>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Testimonials" title="What our members are saying" />
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {testimonials.map((item) => (
-            <GlassCard key={item.author}>
-              <p className="text-sm text-slate-200">{item.quote}</p>
-              <p className="mt-4 text-xs uppercase tracking-[0.3em] text-slate-400">{item.author}</p>
-            </GlassCard>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <div className="glass-panel rounded-4xl border border-white/10 bg-slate-950/80 p-8">
-          <SectionHeading label="FAQ" title="Frequently asked questions" />
-          <div className="mt-8 space-y-4">
-            {faqs.map((faq) => (
-              <details key={faq.question} className="rounded-3xl border border-white/5 bg-slate-900/60 p-5">
-                <summary className="cursor-pointer text-lg font-semibold text-white">{faq.question}</summary>
-                <p className="mt-3 text-sm text-slate-300">{faq.answer}</p>
-              </details>
-            ))}
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="glass-panel flex flex-col items-center gap-6 rounded-4xl border border-white/10 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 px-8 py-12 text-center">
-          <p className="section-label text-xs uppercase text-sky-200">Next step</p>
-          <h2 className="text-3xl font-semibold text-white">Join our community forum today</h2>
-          <p className="text-base text-slate-200">
-            Ask questions, find answers, explore in-depth guides, and help the next person ship a kosher device the right way.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://forums.jtechforums.org"
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-slate-100"
-            >
-              Join now
-            </a>
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-white/40 px-6 py-3 text-base font-semibold text-white transition hover:border-white/70"
-            >
-              Request a walkthrough
-            </a>
-          </div>
-        </div>
-      </section>
-    </Reveal>
+      </div>
+    </div>
   );
+}
+
+function Cursor({ active, className = '' }) {
+  return (
+    <span
+      className={`ml-1 inline-block w-[3px] align-middle transition-opacity duration-150 ${
+        active ? 'bg-white/90 animate-pulse' : 'bg-transparent'
+      } ${className || 'h-7 translate-y-1'}`}
+    />
+  );
+}
+
+function sliceLines(lines, ratio) {
+  const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
+  const target = Math.round(totalChars * ratio);
+  let remaining = target;
+  return lines.map((line) => {
+    if (remaining <= 0) return '';
+    const length = Math.min(line.length, remaining);
+    remaining -= length;
+    return line.slice(0, length);
+  });
+}
+
+function activeLineIndex(lines, ratio) {
+  const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
+  const target = Math.max(0, Math.min(totalChars - 1, Math.floor(totalChars * ratio)));
+  let cumulative = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    cumulative += lines[i].length;
+    if (target < cumulative) return i;
+  }
+  return lines.length - 1;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
