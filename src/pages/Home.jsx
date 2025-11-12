@@ -207,22 +207,7 @@ export default function Home() {
             </div>
           </div>
           <div className="glass-panel w-full max-w-md rounded-3xl border border-white/10 p-6 text-sm text-white shadow-2xl">
-            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-300">
-              <span className="rounded-full bg-emerald-400/20 px-3 py-1 font-semibold text-emerald-200">Live radar</span>
-              <span>Deploy status</span>
-            </div>
-            <ul className="mt-6 space-y-4">
-              {[
-                'Pixel 8a eGate stack shipped with 0 escalations',
-                'Battery saver profile published for Qin F21',
-                'Kosher Launcher nav fix live for patrons',
-              ].map((item) => (
-                <li key={item} className="rounded-2xl border border-white/5 bg-slate-900/70 p-4 text-sm text-slate-200">
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <img src="/img/home/android.png" alt="Live build" className="mt-6 h-60 w-full rounded-2xl object-cover" />
+            <img src="/img/home/android.png" alt="Live build" className="h-80 w-full rounded-2xl object-cover" />
           </div>
         </div>
       </section>
