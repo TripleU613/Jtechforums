@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { sendEmailVerification, signOut } from 'firebase/auth';
 import {
@@ -281,8 +282,16 @@ export default function Apps() {
               <i className={`fa-solid ${showSubmissionForm ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs`} />
             </button>
           </div>
-          {showSubmissionForm && (
-            <form className="mt-6 space-y-4" onSubmit={handleAppSubmit}>
+          <AnimatePresence initial={false}>
+            {showSubmissionForm && (
+              <motion.form
+                className="mt-6 space-y-4"
+                onSubmit={handleAppSubmit}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              >
               <div className="grid gap-4 md:grid-cols-2">
                 <InputField label="App name" name="name" value={formValues.name} onChange={handleFormChange} required />
                 <InputField
@@ -346,8 +355,9 @@ export default function Apps() {
               >
                 {submissionStatus.state === 'loading' ? 'Submitting…' : 'Submit for review'}
               </button>
-            </form>
-          )}
+              </motion.form>
+            )}
+          </AnimatePresence>
         </div>
         {submissionStatus.message && (
           <p className={`text-sm ${submissionStatus.state === 'error' ? 'text-rose-200' : 'text-emerald-300'}`}>

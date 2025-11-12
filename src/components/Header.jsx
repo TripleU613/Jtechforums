@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
@@ -92,25 +93,33 @@ export default function Header() {
                   {avatar}
                   <i className={`fa-solid ${profileOpen ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs text-white/70`} />
                 </button>
-                {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-slate-900/95 p-4 text-sm text-white shadow-lg">
-                    <p className="truncate text-xs text-slate-300">{user.email}</p>
-                    <NavLink
-                      to="/apps"
-                      className="mt-3 block rounded-full border border-white/15 px-3 py-2 text-center font-semibold hover:border-sky-400"
-                      onClick={() => setProfileOpen(false)}
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                      transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                      className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-slate-900/95 p-4 text-sm text-white shadow-lg"
                     >
-                      Apps dashboard
-                    </NavLink>
-                    <button
-                      type="button"
-                      className="mt-2 w-full rounded-full bg-slate-800 px-3 py-2 font-semibold hover:bg-slate-700"
-                      onClick={handleSignOut}
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                )}
+                      <p className="truncate text-xs text-slate-300">{user.email}</p>
+                      <NavLink
+                        to="/apps"
+                        className="mt-3 block rounded-full border border-white/15 px-3 py-2 text-center font-semibold hover:border-sky-400"
+                        onClick={() => setProfileOpen(false)}
+                      >
+                        Apps dashboard
+                      </NavLink>
+                      <button
+                        type="button"
+                        className="mt-2 w-full rounded-full bg-slate-800 px-3 py-2 font-semibold hover:bg-slate-700"
+                        onClick={handleSignOut}
+                      >
+                        Sign out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </>
           )}
