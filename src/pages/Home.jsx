@@ -48,6 +48,7 @@ const AUTO_SPEED = 0.0008;
 const PREVIEW_AUTO_SPEED = 0.0006;
 const SCROLL_FACTOR = 0.0009;
 const PREVIEW_SCROLL_STRETCH = 6; // makes preview text require more scroll distance
+const PAUSE_SCROLL_STRETCH = 4; // makes the between-page pause require extra scrolling
 const PREVIEW_SCROLL_SCALE =
   HERO_PORTION > 0 ? Math.max(((PREVIEW_END - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
 
@@ -85,9 +86,9 @@ export default function Home() {
         autoDisabledRef.current = true;
       }
       setProgress((prev) => {
-        const virtualPrev = expandPreviewProgress(prev);
+        const virtualPrev = expandProgressForScroll(prev);
         const virtualNext = virtualPrev + delta;
-        const next = collapsePreviewProgress(virtualNext);
+        const next = collapseProgressForScroll(virtualNext);
         return clamp(next, 0, MAX_PROGRESS);
       });
     };
@@ -318,21 +319,37 @@ const PREVIEW_EXPANDED_LENGTH =
   PREVIEW_SECTION_LENGTH <= 0 ? 0 : PREVIEW_SECTION_LENGTH / PREVIEW_SCROLL_SCALE;
 const PREVIEW_EXTRA_LENGTH = Math.max(PREVIEW_EXPANDED_LENGTH - PREVIEW_SECTION_LENGTH, 0);
 
-function expandPreviewProgress(value) {
-  if (value <= CARD_STAGE_END || PREVIEW_SECTION_LENGTH <= 0) return value;
-  if (value <= PREVIEW_END) {
-    return CARD_STAGE_END + (value - CARD_STAGE_END) / PREVIEW_SCROLL_SCALE;
+const PAUSE_SECTION_LENGTH = ADMIN_STAGE_START - PREVIEW_END;
+const PAUSE_EXPANDED_LENGTH = PAUSE_SECTION_LENGTH <= 0 ? 0 : PAUSE_SECTION_LENGTH * PAUSE_SCROLL_STRETCH;
+const PAUSE_EXTRA_LENGTH = Math.max(PAUSE_EXPANDED_LENGTH - PAUSE_SECTION_LENGTH, 0);
+
+const EXPANDED_PREVIEW_END = CARD_STAGE_END + PREVIEW_EXPANDED_LENGTH;
+const EXPANDED_PAUSE_END = EXPANDED_PREVIEW_END + PAUSE_EXPANDED_LENGTH;
+
+function expandProgressForScroll(value) {
+  if (value <= CARD_STAGE_END) return value;
+  let expanded = value;
+  if (value <= PREVIEW_END && PREVIEW_SECTION_LENGTH > 0) {
+    expanded = CARD_STAGE_END + (value - CARD_STAGE_END) / PREVIEW_SCROLL_SCALE;
+  } else if (value <= ADMIN_STAGE_START && PAUSE_SECTION_LENGTH > 0) {
+    expanded = EXPANDED_PREVIEW_END + (value - PREVIEW_END) * PAUSE_SCROLL_STRETCH;
+  } else {
+    expanded = value + PREVIEW_EXTRA_LENGTH + PAUSE_EXTRA_LENGTH;
   }
-  return value + PREVIEW_EXTRA_LENGTH;
+  return expanded;
 }
 
-function collapsePreviewProgress(value) {
-  if (value <= CARD_STAGE_END || PREVIEW_SECTION_LENGTH <= 0) return value;
-  const expandedPreviewEnd = CARD_STAGE_END + PREVIEW_EXPANDED_LENGTH;
-  if (value <= expandedPreviewEnd) {
-    return CARD_STAGE_END + (value - CARD_STAGE_END) * PREVIEW_SCROLL_SCALE;
+function collapseProgressForScroll(value) {
+  if (value <= CARD_STAGE_END) return value;
+  let collapsed = value;
+  if (value <= EXPANDED_PREVIEW_END && PREVIEW_SECTION_LENGTH > 0) {
+    collapsed = CARD_STAGE_END + (value - CARD_STAGE_END) * PREVIEW_SCROLL_SCALE;
+  } else if (value <= EXPANDED_PAUSE_END && PAUSE_SECTION_LENGTH > 0) {
+    collapsed = PREVIEW_END + (value - EXPANDED_PREVIEW_END) / PAUSE_SCROLL_STRETCH;
+  } else {
+    collapsed = value - (PREVIEW_EXTRA_LENGTH + PAUSE_EXTRA_LENGTH);
   }
-  return value - PREVIEW_EXTRA_LENGTH;
+  return collapsed;
 }
 
 
