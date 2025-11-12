@@ -9,6 +9,27 @@ const heroStats = [
   { value: '24/6', label: 'Live dispatch' },
 ];
 
+const dispatchFeed = [
+  {
+    tag: 'Phones',
+    title: 'Qin F21 shipped with patched launcher',
+    note: 'Use MDN Installer v3.2 to keep Hebrew keyboard.',
+    time: '18:42',
+  },
+  {
+    tag: 'Filtering',
+    title: 'eGate beta enables multi-profile',
+    note: 'Toggle the Layers flag for patrons before rollout.',
+    time: '15:20',
+  },
+  {
+    tag: 'Deployment',
+    title: 'Yeshiva lockdown template updated',
+    note: 'New VLAN map + Wi-Fi reminders poster.',
+    time: '09:05',
+  },
+];
+
 const resourceCards = [
   {
     title: 'Community Forum',
