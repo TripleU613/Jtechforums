@@ -16,6 +16,7 @@ import NotFound from './pages/NotFound';
 
 export default function App() {
   const location = useLocation();
+  const isHome = location.pathname === '/';
 
   const pageVariants = {
     initial: { opacity: 0, y: 24 },
@@ -26,7 +27,14 @@ export default function App() {
   return (
     <PageShell>
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div key={location.pathname} variants={pageVariants} initial="initial" animate="animate" exit="exit">
+        <motion.div
+          key={location.pathname}
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className={isHome ? 'h-full flex-1' : undefined}
+        >
           <Routes location={location}>
             <Route path="/" element={<Home />} />
             <Route path="/guides" element={<Guides />} />

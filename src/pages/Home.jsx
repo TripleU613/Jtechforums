@@ -11,12 +11,17 @@ const previewLines = [
   'Browse the latest app drops, FAQs, and walkthroughs, then jump into the thread when you need more.',
 ];
 
-const HERO_PORTION = 0.6; // 60% of the journey for hero copy, rest for preview card.
+const HERO_PORTION = 0.6; // 60% of the journey for hero copy
+const CARD_STAGE_END = 0.85; // point in the journey when the card is fully in place
 const AUTO_SPEED = 0.0008;
+const PREVIEW_AUTO_SPEED = 0.0006;
 const SCROLL_FACTOR = 0.0009;
+const PREVIEW_SCROLL_STRETCH = 6; // makes preview text require more scroll distance
+const PREVIEW_SCROLL_SCALE =
+  HERO_PORTION > 0 ? Math.max(((1 - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
 
 export default function Home() {
-  const [progress, setProgress] = useState(0); // 0 → hero start, 1 → preview finished
+  const [progress, setProgress] = useState(0); // 0 - hero start, 1 - preview finished
   const autoDisabledRef = useRef(false);
 
   useEffect(() => {
@@ -48,11 +53,29 @@ export default function Home() {
       if (delta < 0) {
         autoDisabledRef.current = true;
       }
-      setProgress((prev) => Math.min(1, Math.max(0, prev + delta)));
+      setProgress((prev) => {
+        const virtualPrev = expandPreviewProgress(prev);
+        const virtualNext = virtualPrev + delta;
+        const next = collapsePreviewProgress(virtualNext);
+        return clamp(next, 0, 1);
+      });
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
     return () => window.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  useEffect(() => {
+    let rafId;
+    const tick = () => {
+      setProgress((prev) => {
+        if (autoDisabledRef.current || prev < CARD_STAGE_END || prev >= 1) return prev;
+        return Math.min(1, prev + PREVIEW_AUTO_SPEED);
+      });
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   const backgroundStyles = useMemo(
@@ -63,23 +86,26 @@ export default function Home() {
   );
 
 const heroProgress = clamp(progress / HERO_PORTION, 0, 1);
-const previewProgress = progress <= HERO_PORTION ? 0 : clamp((progress - HERO_PORTION) / (1 - HERO_PORTION), 0, 1);
+const cardProgress =
+  progress <= HERO_PORTION ? 0 : clamp((progress - HERO_PORTION) / (CARD_STAGE_END - HERO_PORTION), 0, 1);
+const previewProgress =
+  progress <= CARD_STAGE_END ? 0 : clamp((progress - CARD_STAGE_END) / (1 - CARD_STAGE_END), 0, 1);
 
-const heroRender = useMemo(() => sliceLines(heroLines, heroProgress), [heroProgress]);
-const previewRender = useMemo(() => sliceLines(previewLines, previewProgress), [previewProgress]);
+const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
+const previewLineCharacters = useMemo(() => buildLineCharacters(previewLines, previewProgress), [previewProgress]);
 const heroActiveLine = useMemo(() => activeLineIndex(heroLines, heroProgress), [heroProgress]);
 const previewActiveLine = useMemo(() => activeLineIndex(previewLines, previewProgress), [previewProgress]);
 
 const FADE_START = 0.15;
 const CARD_ENTRY_START = 0.8;
-const heroFadeProgress = previewProgress <= FADE_START ? 0 : (previewProgress - FADE_START) / (1 - FADE_START);
+const heroFadeProgress = cardProgress <= FADE_START ? 0 : (cardProgress - FADE_START) / (1 - FADE_START);
 const heroOpacity = 1 - heroFadeProgress;
 const heroTranslate = -heroFadeProgress * 12;
 const heroBlur = heroFadeProgress * 4;
 const cardSlideProgress =
-  heroFadeProgress <= CARD_ENTRY_START
+  cardProgress <= CARD_ENTRY_START
     ? 0
-    : clamp((heroFadeProgress - CARD_ENTRY_START) / (1 - CARD_ENTRY_START), 0, 1);
+    : clamp((cardProgress - CARD_ENTRY_START) / (1 - CARD_ENTRY_START), 0, 1);
 
   return (
     <div className="relative h-full overflow-hidden bg-slate-950 text-white">
@@ -90,9 +116,9 @@ const cardSlideProgress =
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/90 via-slate-950/70 to-slate-950/95 backdrop-blur-[12px]" />
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-30 mix-blend-screen [background-image:radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.35),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(56,189,248,0.25),transparent_55%)]" />
 
-      <div className="relative flex h-full items-center justify-center px-6 py-8 sm:px-10">
-        <div className="w-full max-w-5xl translate-y-8 sm:translate-y-16">
-         <div className="relative min-h-[32rem]">
+      <div className="relative flex h-full items-center justify-center px-2 py-6 sm:px-6 lg:px-12">
+        <div className="w-full translate-y-2 sm:translate-y-4 max-w-[min(2000px,92vw)] mx-auto">
+         <div className="relative min-h-[36rem] sm:min-h-[70vh] lg:min-h-[82vh]">
            <div
              className="space-y-5 transition duration-500 ease-out"
               style={{
@@ -110,27 +136,28 @@ const cardSlideProgress =
                       idx === 1 ? 'text-sky-300' : idx === 2 ? 'text-slate-200/80' : 'text-slate-100'
                     }`}
                   >
-                    {heroRender[idx] || '\u00A0'}
+                    <LineCharacters chars={heroLineCharacters[idx]} />
                     <Cursor active={heroProgress < 1 && heroActiveLine === idx} />
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden={cardSlideProgress === 0}>
+            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={cardSlideProgress === 0}>
               <div
-                className="flex w-full flex-col rounded-[28px] border border-white/10 bg-slate-950/90 p-10 shadow-2xl backdrop-blur transition duration-600 ease-out"
+                className="flex w-full max-w-[min(1700px,88vw)] flex-col rounded-[32px] border border-white/10 bg-slate-950/95 p-4 sm:p-10 lg:p-14 shadow-[0_70px_240px_rgba(2,6,23,0.78)] transition duration-600 ease-out min-h-[34rem] sm:min-h-[42rem] lg:min-h-[52rem]"
                 style={{
                   opacity: cardSlideProgress,
-                  transform: `translateX(${(1 - cardSlideProgress) * 90}px)`,
+                  transform: `translateY(${(1 - cardSlideProgress) * 80}px)`,
                   pointerEvents: cardSlideProgress > 0.05 ? 'auto' : 'none',
                 }}
               >
-                <div className="relative w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-900 aspect-[21/9]">
+                <div className="relative w-full overflow-hidden rounded-[24px] border border-white/15 bg-slate-900 aspect-[16/9.5] mx-auto">
                   <img
                     src="/img/forum.png"
                     alt="JTech Forums preview"
-                    className="h-full w-full rounded-xl object-cover"
+                    className="h-full w-full object-contain bg-slate-950"
+                    style={{ transform: 'scale(1.2)', transformOrigin: 'center' }}
                     loading="lazy"
                   />
                 </div>
@@ -141,7 +168,7 @@ const cardSlideProgress =
                       className={`text-slate-200/90 ${previewActiveLine === idx && previewProgress < 1 ? 'text-white' : ''}`}
                       style={{ minHeight: '2.2rem' }}
                     >
-                      {previewRender[idx] || '\u00A0'}
+                      <LineCharacters chars={previewLineCharacters[idx]} />
                       <Cursor active={previewProgress < 1 && previewActiveLine === idx} className="h-5" />
                     </p>
                   ))}
@@ -165,18 +192,6 @@ function Cursor({ active, className = '' }) {
   );
 }
 
-function sliceLines(lines, ratio) {
-  const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
-  const target = Math.round(totalChars * ratio);
-  let remaining = target;
-  return lines.map((line) => {
-    if (remaining <= 0) return '';
-    const length = Math.min(line.length, remaining);
-    remaining -= length;
-    return line.slice(0, length);
-  });
-}
-
 function activeLineIndex(lines, ratio) {
   const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
   const target = Math.max(0, Math.min(totalChars - 1, Math.floor(totalChars * ratio)));
@@ -191,3 +206,48 @@ function activeLineIndex(lines, ratio) {
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
+
+function buildLineCharacters(lines, ratio) {
+  const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
+  if (totalChars === 0) return lines.map(() => []);
+  const target = totalChars * ratio;
+  let offset = 0;
+  return lines.map((line) => {
+    const chars = [];
+    for (let i = 0; i < line.length; i += 1) {
+      const position = offset + i;
+      const opacity = clamp(target - position, 0, 1);
+      if (opacity <= 0) break;
+      chars.push({ char: line[i], opacity });
+    }
+    offset += line.length;
+    return chars;
+  });
+}
+
+function LineCharacters({ chars }) {
+  if (!chars || chars.length === 0) {
+    return <span className="inline-block opacity-0">&nbsp;</span>;
+  }
+  return chars.map(({ char, opacity }, idx) => (
+    <span
+      key={idx}
+      className="inline-block transition-all duration-150"
+      style={{ opacity, transform: `translateY(${(1 - opacity) * 6}px)` }}
+    >
+      {char === ' ' ? '\u00A0' : char}
+    </span>
+  ));
+}
+
+function expandPreviewProgress(value) {
+  if (value <= CARD_STAGE_END) return value;
+  return CARD_STAGE_END + (value - CARD_STAGE_END) / PREVIEW_SCROLL_SCALE;
+}
+
+function collapsePreviewProgress(value) {
+  if (value <= CARD_STAGE_END) return value;
+  return CARD_STAGE_END + (value - CARD_STAGE_END) * PREVIEW_SCROLL_SCALE;
+}
+
+
