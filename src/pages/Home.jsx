@@ -169,7 +169,7 @@ export default function Home() {
     <Reveal as="div" className="space-y-20">
       <section className="relative isolate overflow-hidden bg-slate-950 px-6 pt-20 pb-24">
         <img src="/img/phonegrid.png" alt="" className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-20" />
-        <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
+        <div className="mx-auto flex max-w-5xl flex-col gap-12">
           <div className="space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-[0.3em] text-slate-300">
               Check out our forum for answers, information, and guides!
@@ -205,9 +205,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="glass-panel w-full max-w-md rounded-3xl border border-white/10 p-6 text-sm text-white shadow-2xl">
-            <img src="/img/home/android.png" alt="Live build" className="h-80 w-full rounded-2xl object-cover" />
           </div>
         </div>
       </section>
