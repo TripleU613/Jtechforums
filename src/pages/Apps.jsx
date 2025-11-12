@@ -359,8 +359,11 @@ export default function Apps() {
   };
 
   useEffect(() => {
-    if (catalogLoading) return;
-    const timeout = setTimeout(() => setCatalogReady(true), 350);
+    if (catalogLoading) {
+      setCatalogReady(false);
+      return undefined;
+    }
+    const timeout = setTimeout(() => setCatalogReady(true), 600);
     return () => clearTimeout(timeout);
   }, [catalogLoading]);
 

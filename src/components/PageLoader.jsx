@@ -1,44 +1,32 @@
-import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function PageLoader({ show, label = 'Loading' }) {
-  useEffect(() => {
-    if (!show) return undefined;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [show]);
 
   return (
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/90"
+          className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-slate-950"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
           <motion.div
-            className="flex w-full max-w-xs flex-col items-center gap-4 rounded-3xl border border-white/10 bg-slate-950/70 px-8 py-10 text-center text-white shadow-2xl"
-            initial={{ scale: 0.9, opacity: 0 }}
+            className="flex flex-col items-center gap-4 px-6 text-center text-white"
+            initial={{ scale: 0.92, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.92, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
           >
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.5em] text-slate-300">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-sky-300" />
-              {label}
-            </div>
-            <p className="text-sm text-slate-300">Preparing content…</p>
-            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+            <div className="text-xs uppercase tracking-[0.5em] text-slate-400">{label}</div>
+            <p className="text-sm text-slate-200">Preparing content…</p>
+            <div className="relative mt-2 h-1.5 w-40 overflow-hidden rounded-full bg-white/10">
               <motion.span
                 className="absolute inset-y-0 w-1/3 rounded-full bg-white/60"
-                initial={{ x: '-100%' }}
-                animate={{ x: ['-100%', '130%'] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                initial={{ x: '-120%' }}
+                animate={{ x: ['-120%', '140%'] }}
+                transition={{ duration: 1.35, repeat: Infinity, ease: 'easeInOut' }}
               />
             </div>
           </motion.div>
