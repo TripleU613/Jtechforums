@@ -1,12 +1,12 @@
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function PageLoader({ show, label = 'Loading' }) {
-
-  return (
+  return createPortal(
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-slate-950"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-950"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -32,6 +32,7 @@ export default function PageLoader({ show, label = 'Loading' }) {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
