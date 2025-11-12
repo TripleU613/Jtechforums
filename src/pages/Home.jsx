@@ -4,30 +4,9 @@ import SectionHeading from '../components/SectionHeading';
 import GlassCard from '../components/GlassCard';
 
 const heroStats = [
-  { value: '32k+', label: 'Threads answered' },
-  { value: '5.1k', label: 'Active helpers' },
-  { value: '24/6', label: 'Live dispatch' },
-];
-
-const dispatchFeed = [
-  {
-    tag: 'Phones',
-    title: 'Qin F21 shipped with patched launcher',
-    note: 'Use MDN Installer v3.2 to keep Hebrew keyboard.',
-    time: '18:42',
-  },
-  {
-    tag: 'Filtering',
-    title: 'eGate beta enables multi-profile',
-    note: 'Toggle the Layers flag for patrons before rollout.',
-    time: '15:20',
-  },
-  {
-    tag: 'Deployment',
-    title: 'Yeshiva lockdown template updated',
-    note: 'New VLAN map + Wi-Fi reminders poster.',
-    time: '09:05',
-  },
+  { value: '305+', label: 'Signups last month' },
+  { value: '100k+', label: 'Page visits' },
+  { value: '15k+', label: 'Posts last month' },
 ];
 
 const resourceCards = [
@@ -47,26 +26,31 @@ const resourceCards = [
   },
 ];
 
-const previewPosts = [
+const guidePreview = [
   {
-    title: 'Beginner’s guide to getting started',
+    title: "Beginner's Guide to Getting Started",
     tag: 'Guide',
-    blurb: 'A friendly checklist that walks brand-new members through phones, filters, and terminology.',
+    blurb: 'A friendly checklist for brand-new members learning phones, filters, and terminology.',
   },
   {
-    title: 'What is ADB and how do I use it?',
+    title: 'What is ADB and Getting Started',
     tag: 'Android guide',
-    blurb: 'Explains how to control a phone from a computer so you can tweak launches without touching the device.',
+    blurb: 'Explains how to send commands from your computer so you can tweak a phone without touching it.',
   },
   {
     title: 'What is the eGate filter?',
     tag: 'eGate',
-    blurb: 'Breaks down how the MDM works, why it’s hard to bypass, and how resellers stay compliant.',
+    blurb: 'Covers how the Android MDM works, why it is hard to remove, and how admins stay compliant.',
   },
   {
-    title: 'Beginner questions megathread',
+    title: 'Beginner Questions',
     tag: 'Community',
-    blurb: 'No judgment zone for parents, mechanchim, and MSPs who need fast help.',
+    blurb: 'A no-judgment megathread for parents, mechanchim, and MSPs who need fast help.',
+  },
+  {
+    title: 'How to Make Any App Work Without Google Play Services',
+    tag: 'Android guide',
+    blurb: 'Workarounds for apps that normally refuse to launch without Play Services installed.',
   },
 ];
 
@@ -93,44 +77,44 @@ const adminProfiles = [
 
 const statsSnapshot = [
   { label: 'Signups last month', value: '305+' },
-  { label: 'Page visits', value: '100k+' },
+  { label: 'Page visits last month', value: '100k+' },
   { label: 'Posts last month', value: '15k+' },
-  { label: 'User visits', value: '1.6k+' },
+  { label: 'User visits last month', value: '1.6k+' },
 ];
 
 const testimonials = [
   {
     quote:
-      '“I was stuck configuring a flip phone. A forum volunteer and the published guide walked me through every command. Problem solved before lunch.”',
+      'I was completely stuck trying to get my new flip phone working. A forum member walked me through every step. Could not have done it without this community.',
     author: '@Simple_Yid · Forum member',
   },
   {
     quote:
-      '“JTech MDM Installer saved us thousands. We can flash filters in-house without chasing paid installers.”',
+      'JTech MDM Installer was a lifesaver. We install filters in-house without chasing paid installers.',
     author: '@Chevra_Man · Forum member',
   },
   {
     quote:
-      '“When Apps4Flip closed we needed a replacement fast. JTech became the trustworthy source for kosher tech.”',
+      'When Apps4Flip went offline we needed a new home. JTech became the trusted resource for kosher tech.',
     author: '@kosherboy · Moderator',
   },
 ];
 
 const faqs = [
   {
-    question: 'Is JTech only for techies?',
+    question: 'What is JTech Forums?',
     answer:
-      'It’s a moderated space for the Orthodox community to discuss kosher technology, share guides, and request help without noise.',
+      'A moderated community for kosher technology: phones, filters, firmware, policy templates, and support from mechanchim and IT leads.',
   },
   {
-    question: 'What type of information can I find?',
+    question: 'What type of information can be found?',
     answer:
-      'Guides, firmware, scripts, app recommendations, policy templates, and daily status updates from real deployments.',
+      'Guides, hashkafic guardrails, troubleshooting posts, vetted downloads, and daily intel from real deployments.',
   },
   {
-    question: 'How do I contact moderators?',
+    question: 'How can I contact moderators?',
     answer:
-      'Sign in to the forum, open the Users tab, and direct-message any listed moderator or admin. You can also use the contact form.',
+      'Sign into the forum, open the Users tab, and DM any moderator or admin. You can also reach out via the contact page.',
   },
 ];
 
@@ -187,10 +171,15 @@ export default function Home() {
         <img src="/img/phonegrid.png" alt="" className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-20" />
         <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
           <div className="space-y-8 text-center lg:text-left">
-            <p className="section-label text-xs uppercase text-sky-300">Community resources</p>
-            <h1 className="text-4xl font-semibold leading-tight text-white sm:text-6xl">The leading Jewish filtering & tech forum.</h1>
+            <div className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-[0.3em] text-slate-300">
+              Check out our forum for answers, information, and guides!
+              <a href="https://forums.jtechforums.org" className="ml-2 font-semibold text-sky-300">
+                Go now →
+              </a>
+            </div>
+            <h1 className="text-4xl font-semibold leading-tight text-white sm:text-6xl">The Leading Jewish Filtering & Tech Forum</h1>
             <p className="text-lg text-slate-300">
-              JTech empowers the community with precise, current filtering intel—phones, firmware, eGate scripts, hashkafic guardrails, and support lines.
+              JTech's mission is to empower the Jewish community with the most precise, accurate, and up-to-date tech and filtering information.
             </p>
             <div className="flex flex-wrap justify-center gap-4 lg:justify-start">
               <a
@@ -199,13 +188,13 @@ export default function Home() {
                 rel="noopener"
                 className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-base font-semibold text-slate-950 transition hover:bg-sky-400"
               >
-                Jump into the forum
+                Join the forum
               </a>
               <a
                 href="/guides"
                 className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-white/60"
               >
-                Browse guides
+                View guides
               </a>
             </div>
             <div className="mt-6 grid gap-6 sm:grid-cols-3">
@@ -220,20 +209,19 @@ export default function Home() {
           <div className="glass-panel w-full max-w-md rounded-3xl border border-white/10 p-6 text-sm text-white shadow-2xl">
             <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-300">
               <span className="rounded-full bg-emerald-400/20 px-3 py-1 font-semibold text-emerald-200">Live radar</span>
-              <span>Deploy status • Q4</span>
+              <span>Deploy status</span>
             </div>
-            <div className="mt-6 space-y-4">
-              {dispatchFeed.map(({ tag, title, note, time }) => (
-                <div key={title} className="rounded-2xl border border-white/5 bg-slate-900/70 p-4">
-                  <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-400">
-                    <span>{tag}</span>
-                    <span>{time}</span>
-                  </div>
-                  <p className="mt-2 text-base font-semibold text-white">{title}</p>
-                  <p className="text-xs text-slate-300">{note}</p>
-                </div>
+            <ul className="mt-6 space-y-4">
+              {[
+                'Pixel 8a eGate stack shipped with 0 escalations',
+                'Battery saver profile published for Qin F21',
+                'Kosher Launcher nav fix live for patrons',
+              ].map((item) => (
+                <li key={item} className="rounded-2xl border border-white/5 bg-slate-900/70 p-4 text-sm text-slate-200">
+                  {item}
+                </li>
               ))}
-            </div>
+            </ul>
             <img src="/img/home/android.png" alt="Live build" className="mt-6 h-60 w-full rounded-2xl object-cover" />
           </div>
         </div>
@@ -251,20 +239,37 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-5xl px-6">
+        <div className="glass-panel flex flex-col items-center gap-6 rounded-4xl border border-white/10 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 px-8 py-12 text-center">
+          <p className="section-label text-xs uppercase text-sky-200">Join our community forum today</p>
+          <p className="text-base text-slate-200">
+            Ask questions, find answers, explore guides, and access valuable information—all while helping others in the community.
+          </p>
+          <a
+            href="https://forums.jtechforums.org"
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-slate-100"
+          >
+            Join now
+          </a>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Forum preview" title="Guides people are reading right now" />
+        <SectionHeading label="Guides" title="Hand-picked forum threads" />
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {previewPosts.map((post) => (
+          {guidePreview.map((post) => (
             <GlassCard key={post.title} eyebrow={post.tag} title={post.title} description={post.blurb} />
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Moderation team" title="Meet our admins" />
+        <SectionHeading label="Meet our admins" title="Humans behind the forum" />
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {adminProfiles.map((admin) => (
-            <div key={admin.name} className="rounded-3xl border border-white/10 bg-white/5 p-5 text-center">
+            <div key={admin.handle} className="rounded-3xl border border-white/10 bg-white/5 p-5 text-center">
               <img src={admin.avatar} alt={admin.name} className="mx-auto h-16 w-16 rounded-full object-cover" />
               <p className="mt-4 text-lg font-semibold text-white">{admin.name}</p>
               <p className="text-sm text-sky-300">{admin.handle}</p>
@@ -275,26 +280,7 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Leaderboard" title="Helpers keeping the forum running" />
-        <div className="mt-6 rounded-3xl border border-white/10 bg-slate-950/70 p-6">
-          {leaderLoading ? (
-            <p className="text-sm text-slate-300">Fetching latest leaderboard…</p>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {leaders.map((leader) => (
-                <div key={leader.username} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
-                  <img src={leader.avatar} alt={leader.username} className="mx-auto h-14 w-14 rounded-full object-cover" />
-                  <p className="mt-3 text-base font-semibold text-white">{leader.username}</p>
-                  <p className="text-sm text-slate-300">{leader.points} pts</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Quick search" title="Find what you need instantly" />
+        <SectionHeading label="Quick search" title="Looking for something specific?" />
         <form
           action={import.meta.env.VITE_FORUM_SEARCH_URL || 'https://forums.jtechforums.org/search'}
           method="get"
@@ -314,11 +300,30 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6">
-        <SectionHeading label="Stats" title="Forum health at a glance" />
+        <SectionHeading label="Stats" title="Our forum snapshot" />
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {statsSnapshot.map((stat) => (
             <GlassCard key={stat.label} title={stat.value} description={stat.label} />
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6">
+        <SectionHeading label="Leaderboard" title="Helpers keeping things running" />
+        <div className="mt-6 rounded-3xl border border-white/10 bg-slate-950/70 p-6">
+          {leaderLoading ? (
+            <p className="text-sm text-slate-300">Fetching latest leaderboard…</p>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {leaders.map((leader) => (
+                <div key={leader.username} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                  <img src={leader.avatar} alt={leader.username} className="mx-auto h-14 w-14 rounded-full object-cover" />
+                  <p className="mt-3 text-base font-semibold text-white">{leader.username}</p>
+                  <p className="text-sm text-slate-300">{leader.points} pts</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
