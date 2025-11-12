@@ -3,7 +3,7 @@ import Reveal from '../components/Reveal';
 import SectionHeading from '../components/SectionHeading';
 import GlassCard from '../components/GlassCard';
 
-const heroStats = [
+const fallbackHeroStats = [
   { value: '305+', label: 'Signups last month' },
   { value: '100k+', label: 'Page visits' },
   { value: '15k+', label: 'Posts last month' },
@@ -129,6 +129,8 @@ export default function Home() {
   const leaderboardKey = import.meta.env.VITE_FORUM_API_KEY;
   const [leaders, setLeaders] = useState(fallbackLeaders);
   const [leaderLoading, setLeaderLoading] = useState(Boolean(leaderboardUrl));
+  const statsEndpoint = import.meta.env.VITE_FORUM_STATS_ENDPOINT;
+  const [heroStats, setHeroStats] = useState(fallbackHeroStats);
 
   useEffect(() => {
     if (!leaderboardUrl) {
@@ -164,6 +166,30 @@ export default function Home() {
     fetchLeaders();
     return () => controller.abort();
   }, [leaderboardUrl, leaderboardKey]);
+
+  useEffect(() => {
+    if (!statsEndpoint) return;
+    const controller = new AbortController();
+
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(statsEndpoint, { signal: controller.signal });
+        if (!response.ok) throw new Error('Stats request failed');
+        const payload = await response.json();
+        const mapped = [
+          { value: payload.signups ?? fallbackHeroStats[0].value, label: 'Signups last month' },
+          { value: payload.pageViews ?? fallbackHeroStats[1].value, label: 'Page visits' },
+          { value: payload.posts ?? fallbackHeroStats[2].value, label: 'Posts last month' },
+        ];
+        setHeroStats(mapped);
+      } catch (error) {
+        console.warn('Unable to load stats', error);
+      }
+    };
+
+    fetchStats();
+    return () => controller.abort();
+  }, [statsEndpoint]);
 
   return (
     <Reveal as="div" className="space-y-20">
