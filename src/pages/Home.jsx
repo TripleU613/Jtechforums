@@ -11,14 +11,45 @@ const previewLines = [
   'Browse the latest app drops, FAQs, and walkthroughs, then jump into the thread when you need more.',
 ];
 
+const adminProfiles = [
+  {
+    name: 'Usher Weiss',
+    handle: '@TripleU',
+    role: 'Forums Owner & Maintainer',
+    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/tripleu/144/488_2.png',
+    profileUrl: 'https://forums.jtechforums.org/u/tripleu',
+  },
+  {
+    name: 'Avrumi Sternheim',
+    handle: '@ars18',
+    role: 'Forums Admin & Moderator',
+    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/ars18/144/2336_2.png',
+    profileUrl: 'https://forums.jtechforums.org/u/ars18',
+  },
+  {
+    name: 'Offline Software Solutions',
+    handle: '@flipadmin',
+    role: 'Forum Founder & Developer',
+    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/flipadmin/144/2891_2.png',
+    profileUrl: 'https://forums.jtechforums.org/u/flipadmin',
+  },
+];
+
 const HERO_PORTION = 0.6; // 60% of the journey for hero copy
 const CARD_STAGE_END = 0.85; // point in the journey when the card is fully in place
+const PREVIEW_END = 1; // second screen fully rendered
+const ADMIN_PAUSE = 0.15; // dead zone after preview before admin section
+const ADMIN_STAGE_LENGTH = 0.3;
+const ADMIN_STAGE_START = PREVIEW_END + ADMIN_PAUSE;
+const ADMIN_STAGE_END = ADMIN_STAGE_START + ADMIN_STAGE_LENGTH;
+const MAX_PROGRESS = ADMIN_STAGE_END;
+
 const AUTO_SPEED = 0.0008;
 const PREVIEW_AUTO_SPEED = 0.0006;
 const SCROLL_FACTOR = 0.0009;
 const PREVIEW_SCROLL_STRETCH = 6; // makes preview text require more scroll distance
 const PREVIEW_SCROLL_SCALE =
-  HERO_PORTION > 0 ? Math.max(((1 - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
+  HERO_PORTION > 0 ? Math.max(((PREVIEW_END - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
 
 export default function Home() {
   const [progress, setProgress] = useState(0); // 0 - hero start, 1 - preview finished
@@ -57,7 +88,7 @@ export default function Home() {
         const virtualPrev = expandPreviewProgress(prev);
         const virtualNext = virtualPrev + delta;
         const next = collapsePreviewProgress(virtualNext);
-        return clamp(next, 0, 1);
+        return clamp(next, 0, MAX_PROGRESS);
       });
     };
 
@@ -69,8 +100,8 @@ export default function Home() {
     let rafId;
     const tick = () => {
       setProgress((prev) => {
-        if (autoDisabledRef.current || prev < CARD_STAGE_END || prev >= 1) return prev;
-        return Math.min(1, prev + PREVIEW_AUTO_SPEED);
+        if (autoDisabledRef.current || prev < CARD_STAGE_END || prev >= PREVIEW_END) return prev;
+        return Math.min(PREVIEW_END, prev + PREVIEW_AUTO_SPEED);
       });
       rafId = requestAnimationFrame(tick);
     };
@@ -89,7 +120,9 @@ const heroProgress = clamp(progress / HERO_PORTION, 0, 1);
 const cardProgress =
   progress <= HERO_PORTION ? 0 : clamp((progress - HERO_PORTION) / (CARD_STAGE_END - HERO_PORTION), 0, 1);
 const previewProgress =
-  progress <= CARD_STAGE_END ? 0 : clamp((progress - CARD_STAGE_END) / (1 - CARD_STAGE_END), 0, 1);
+  progress <= CARD_STAGE_END ? 0 : clamp((progress - CARD_STAGE_END) / (PREVIEW_END - CARD_STAGE_END), 0, 1);
+const adminStageProgress =
+  progress <= ADMIN_STAGE_START ? 0 : clamp((progress - ADMIN_STAGE_START) / (ADMIN_STAGE_END - ADMIN_STAGE_START), 0, 1);
 
 const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
 const previewLineCharacters = useMemo(() => buildLineCharacters(previewLines, previewProgress), [previewProgress]);
@@ -147,8 +180,10 @@ const cardSlideProgress =
               <div
                 className="flex w-full max-w-[min(1700px,88vw)] flex-col rounded-[32px] border border-white/10 bg-slate-950/95 p-4 sm:p-10 lg:p-14 shadow-[0_70px_240px_rgba(2,6,23,0.78)] transition duration-600 ease-out min-h-[34rem] sm:min-h-[42rem] lg:min-h-[52rem]"
                 style={{
-                  opacity: cardSlideProgress,
-                  transform: `translateY(${(1 - cardSlideProgress) * 80}px)`,
+                  opacity: cardSlideProgress * (1 - adminStageProgress * 1.1),
+                  transform: `translateY(${(1 - cardSlideProgress) * 80}px) translateX(${-adminStageProgress * 140}px) scale(${
+                    1 - adminStageProgress * 0.05
+                  })`,
                   pointerEvents: cardSlideProgress > 0.05 ? 'auto' : 'none',
                 }}
               >
@@ -171,6 +206,44 @@ const cardSlideProgress =
                       <LineCharacters chars={previewLineCharacters[idx]} />
                       <Cursor active={previewProgress < 1 && previewActiveLine === idx} className="h-5" />
                     </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0}>
+              <div
+                className="flex w-full max-w-[min(1500px,86vw)] flex-col gap-8 rounded-[32px] border border-white/10 bg-slate-900/90 p-6 sm:p-10 lg:p-14 shadow-[0_40px_160px_rgba(2,6,23,0.7)] transition duration-700"
+                style={{
+                  opacity: adminStageProgress,
+                  transform: `translateX(${(1 - adminStageProgress) * 180}px)`,
+                }}
+              >
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs uppercase tracking-[0.65em] text-slate-400">Community</p>
+                  <div className="flex flex-wrap items-baseline gap-3">
+                    <h2 className="text-3xl font-semibold text-white sm:text-4xl">Meet our admins</h2>
+                    <span className="text-sm text-slate-400">Dedicated volunteers keeping things kosher-friendly</span>
+                  </div>
+                </div>
+                <div className="grid gap-6 md:grid-cols-3">
+                  {adminProfiles.map((admin) => (
+                    <a
+                      key={admin.name}
+                      href={admin.profileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 backdrop-blur transition hover:border-white/30 hover:bg-slate-900/80"
+                    >
+                      <div className="mb-5">
+                        <div className="h-16 w-16 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+                          <img src={admin.avatar} alt={`${admin.handle} avatar`} className="h-full w-full object-cover" loading="lazy" />
+                        </div>
+                      </div>
+                      <p className="text-xl font-semibold text-white">{admin.name}</p>
+                      <p className="text-sm text-slate-400">{admin.handle}</p>
+                      <p className="mt-3 text-sm text-slate-300">{admin.role}</p>
+                    </a>
                   ))}
                 </div>
               </div>
@@ -240,14 +313,26 @@ function LineCharacters({ chars }) {
   ));
 }
 
+const PREVIEW_SECTION_LENGTH = PREVIEW_END - CARD_STAGE_END;
+const PREVIEW_EXPANDED_LENGTH =
+  PREVIEW_SECTION_LENGTH <= 0 ? 0 : PREVIEW_SECTION_LENGTH / PREVIEW_SCROLL_SCALE;
+const PREVIEW_EXTRA_LENGTH = Math.max(PREVIEW_EXPANDED_LENGTH - PREVIEW_SECTION_LENGTH, 0);
+
 function expandPreviewProgress(value) {
-  if (value <= CARD_STAGE_END) return value;
-  return CARD_STAGE_END + (value - CARD_STAGE_END) / PREVIEW_SCROLL_SCALE;
+  if (value <= CARD_STAGE_END || PREVIEW_SECTION_LENGTH <= 0) return value;
+  if (value <= PREVIEW_END) {
+    return CARD_STAGE_END + (value - CARD_STAGE_END) / PREVIEW_SCROLL_SCALE;
+  }
+  return value + PREVIEW_EXTRA_LENGTH;
 }
 
 function collapsePreviewProgress(value) {
-  if (value <= CARD_STAGE_END) return value;
-  return CARD_STAGE_END + (value - CARD_STAGE_END) * PREVIEW_SCROLL_SCALE;
+  if (value <= CARD_STAGE_END || PREVIEW_SECTION_LENGTH <= 0) return value;
+  const expandedPreviewEnd = CARD_STAGE_END + PREVIEW_EXPANDED_LENGTH;
+  if (value <= expandedPreviewEnd) {
+    return CARD_STAGE_END + (value - CARD_STAGE_END) * PREVIEW_SCROLL_SCALE;
+  }
+  return value - PREVIEW_EXTRA_LENGTH;
 }
 
 
