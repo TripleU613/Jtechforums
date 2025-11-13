@@ -9,7 +9,7 @@ export default function Reveal({
   ...rest
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const MotionComponent = motion(as);
+  const MotionComponent = motion.create(as);
 
   if (shouldReduceMotion) {
     const StaticComponent = as;

@@ -1,5 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
+import { firestore } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
 
 const heroLines = [
   'Welcome to JTech Forums.',
@@ -79,9 +83,14 @@ const TERMINAL_TYPE_TRAIL = 0.8;
 const TERMINAL_CHAR_SCROLL_MULT = 20;
 const TERMINAL_AUTO_CHAR_RATE = 45; // baseline characters per second when auto-typing kicks in
 const TERMINAL_SCROLL_MARGIN_RATIO = 0.12; // keep ~12% of viewport visible above latest line
-const TERMINAL_SCROLL_STICKY_DISTANCE = 80; // px distance from bottom treated as "pinned"
+const TERMINAL_SCROLL_LINE_STEP = 28; // px advance per revealed line when pinned
+const FEEDBACK_STAGE_PAUSE = 0.05;
+const FEEDBACK_STAGE_LENGTH = 0.4;
+const FEEDBACK_STAGE_START = TERMINAL_STAGE_END + FEEDBACK_STAGE_PAUSE;
+const FEEDBACK_STAGE_END = FEEDBACK_STAGE_START + FEEDBACK_STAGE_LENGTH;
 const TEXT_SLOWNESS = 7;
-const MAX_PROGRESS = TERMINAL_STAGE_END + TERMINAL_TYPE_TRAIL;
+const MAX_PROGRESS = FEEDBACK_STAGE_END + TERMINAL_TYPE_TRAIL;
+const MIN_FEEDBACK_LENGTH = 20;
 const terminalEntries = [
   {
     command: 'whoami',
@@ -167,6 +176,30 @@ const terminalEntries = [
   },
 ];
 
+const feedbackShowcase = [
+  {
+    id: 'fb-1',
+    name: 'Sara K.',
+    handle: '@kosherandroid',
+    context: 'Galaxy A14 + TAG Guardian',
+    quote: '“The apps section walked me through every step. My phone is locked down, but still useful.”',
+  },
+  {
+    id: 'fb-2',
+    name: 'Eli D.',
+    handle: '@flipguy',
+    context: 'Nokia 2780 & Kosher config',
+    quote: '“Every time I break something, the forum already has the answer. Huge time saver.”',
+  },
+  {
+    id: 'fb-3',
+    name: 'Malky R.',
+    handle: '@techmom',
+    context: 'Moto G Pure for the family',
+    quote: '“Needed a safe phone setup for our teens. The guidance here kept it calm, kosher, and doable.”',
+  },
+];
+
 const terminalTabs = [
   {
     id: 'tab-primary',
@@ -189,10 +222,16 @@ export default function Home() {
   const [terminalTypedChars, setTerminalTypedChars] = useState(0);
   const typingAccumulatorRef = useRef(0);
   const terminalTypedCharsRef = useRef(0);
+  const terminalContainerRef = useRef(null);
   const terminalScrollingRef = useRef(null);
-  const terminalPinnedRef = useRef(true);
-  const typedLineCountRef = useRef(0);
   const progressRef = useRef(0);
+  const { user } = useAuth();
+  const [feedbackEntries, setFeedbackEntries] = useState(feedbackShowcase);
+  const [feedbackStatus, setFeedbackStatus] = useState('idle');
+  const [feedbackForm, setFeedbackForm] = useState({ context: '', quote: '' });
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [leaderboardState, setLeaderboardState] = useState({
     entries: [],
     status: 'idle',
@@ -209,31 +248,101 @@ export default function Home() {
       ),
     [terminalEntries]
   );
+  useEffect(() => {
+    const feedbackRef = collection(firestore, 'feedback');
+    const feedbackQuery = query(feedbackRef, orderBy('createdAt', 'desc'), limit(6));
+    setFeedbackStatus('loading');
+    const unsubscribe = onSnapshot(
+      feedbackQuery,
+      (snapshot) => {
+        if (snapshot.empty) {
+          setFeedbackEntries(feedbackShowcase);
+          setFeedbackStatus('empty');
+          return;
+        }
+        const docs = snapshot.docs.map((doc) => {
+          const data = doc.data() || {};
+          return {
+            id: doc.id,
+            name: data.authorName || 'Forum member',
+            handle: data.authorHandle || '@community',
+            context: data.context || 'Shared setup',
+            quote: data.quote || '',
+          };
+        });
+        setFeedbackEntries(docs);
+        setFeedbackStatus('ready');
+      },
+      (error) => {
+        setFeedbackEntries(feedbackShowcase);
+        setFeedbackStatus('error');
+        setFeedbackMessage(error?.message || 'Unable to load feedback right now.');
+      }
+    );
+    return unsubscribe;
+  }, []);
 
 useEffect(() => {
   if (typeof document === 'undefined') return;
   const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden';
   return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, []);
+    document.body.style.overflow = previousOverflow;
+  };
+}, []);
 
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
-  useEffect(() => {
-    const scroller = terminalScrollingRef.current;
-    if (!scroller) return undefined;
-    const handleScroll = () => {
-      const distanceFromBottom = scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop;
-      terminalPinnedRef.current = distanceFromBottom <= TERMINAL_SCROLL_STICKY_DISTANCE;
-    };
-    handleScroll();
-    scroller.addEventListener('scroll', handleScroll, { passive: true });
-    return () => scroller.removeEventListener('scroll', handleScroll);
-  }, []);
+  const handleFeedbackInput = (event) => {
+    const { name, value } = event.target;
+    setFeedbackForm((prev) => ({ ...prev, [name]: value }));
+    setFeedbackMessage('');
+  };
+
+  const handleFeedbackSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      if (!user) {
+        setFeedbackMessage('Sign in first so we can link your feedback to the right account.');
+        return;
+      }
+      if (!feedbackForm.quote.trim()) {
+        setFeedbackMessage('Share a short quote before submitting.');
+        return;
+      }
+      setFeedbackSubmitting(true);
+      setFeedbackMessage('');
+      try {
+        await addDoc(collection(firestore, 'feedback'), {
+          uid: user.uid,
+          authorName: user.displayName || user.email?.split('@')[0] || 'Forum member',
+          authorHandle: user.email ? `@${user.email.split('@')[0]}` : `@${user.uid.slice(0, 6)}`,
+          context: feedbackForm.context.trim() || 'Custom setup',
+          quote: feedbackForm.quote.trim(),
+          createdAt: serverTimestamp(),
+        });
+        setFeedbackForm({ context: '', quote: '' });
+        setFeedbackMessage('Submitted! A moderator will publish it shortly.');
+        setFeedbackModalOpen(false);
+      } catch (error) {
+        setFeedbackMessage(error?.message || 'Unable to submit feedback right now.');
+      } finally {
+        setFeedbackSubmitting(false);
+      }
+    },
+    [feedbackForm, user]
+  );
+
+  const skipTerminalStage = useCallback(() => {
+    typingAccumulatorRef.current = 0;
+    if (totalTerminalChars > 0) {
+      terminalTypedCharsRef.current = totalTerminalChars;
+      setTerminalTypedChars(totalTerminalChars);
+    }
+    setProgress((prev) => Math.max(prev, FEEDBACK_STAGE_START));
+  }, [totalTerminalChars]);
 
   useEffect(() => {
     let rafId;
@@ -248,47 +357,64 @@ useEffect(() => {
     return () => cancelAnimationFrame(rafId);
   }, []);
 
-  useEffect(() => {
-    const handleWheel = (event) => {
+useEffect(() => {
+  const handleWheel = (event) => {
+    const delta = event.deltaY * SCROLL_FACTOR;
+    const isTerminalContext = progressRef.current >= TERMINAL_STAGE_START && progressRef.current < FEEDBACK_STAGE_START;
+    const insideTerminal = terminalContainerRef.current?.contains(event.target);
+
+    if (isTerminalContext) {
       event.preventDefault();
-      const delta = event.deltaY * SCROLL_FACTOR;
-      if (delta < 0) {
-        autoDisabledRef.current = true;
-      }
-      setProgress((prev) => {
-        const virtualPrev = expandProgressForScroll(prev);
-        const virtualNext = virtualPrev + delta;
+    }
 
-        if (totalTerminalChars > 0 && (virtualPrev >= TERMINAL_STAGE_START || virtualNext >= TERMINAL_STAGE_START)) {
-          typingAccumulatorRef.current += delta * TERMINAL_CHAR_SCROLL_MULT;
-          let charDelta = 0;
-          while (
-            typingAccumulatorRef.current >= 1 &&
-            terminalTypedCharsRef.current + charDelta < totalTerminalChars
-          ) {
-            typingAccumulatorRef.current -= 1;
-            charDelta += 1;
-          }
-          while (
-            typingAccumulatorRef.current <= -1 &&
-            terminalTypedCharsRef.current + charDelta > 0
-          ) {
-            typingAccumulatorRef.current += 1;
-            charDelta -= 1;
-          }
-          if (charDelta !== 0) {
-            setTerminalTypedChars((prevChars) => clamp(prevChars + charDelta, 0, totalTerminalChars));
-          }
+    if (delta < 0) {
+      autoDisabledRef.current = true;
+    }
+
+    setProgress((prev) => {
+      const isCurrentlyTerminal = prev >= TERMINAL_STAGE_START && prev < FEEDBACK_STAGE_START;
+      if (isCurrentlyTerminal && delta > 0 && !insideTerminal) {
+        if (totalTerminalChars > 0) {
+          typingAccumulatorRef.current = 0;
+          terminalTypedCharsRef.current = totalTerminalChars;
+          setTerminalTypedChars(totalTerminalChars);
         }
+        return clamp(Math.max(prev, FEEDBACK_STAGE_START), 0, MAX_PROGRESS);
+      }
 
-        const next = collapseProgressForScroll(virtualNext);
-        return clamp(next, 0, MAX_PROGRESS);
-      });
-    };
+      const virtualPrev = expandProgressForScroll(prev);
+      const virtualNext = virtualPrev + delta;
 
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [totalTerminalChars]);
+      if (totalTerminalChars > 0 && (virtualPrev >= TERMINAL_STAGE_START || virtualNext >= TERMINAL_STAGE_START)) {
+        typingAccumulatorRef.current += delta * TERMINAL_CHAR_SCROLL_MULT;
+        let charDelta = 0;
+        while (
+          typingAccumulatorRef.current >= 1 &&
+          terminalTypedCharsRef.current + charDelta < totalTerminalChars
+        ) {
+          typingAccumulatorRef.current -= 1;
+          charDelta += 1;
+        }
+        while (
+          typingAccumulatorRef.current <= -1 &&
+          terminalTypedCharsRef.current + charDelta > 0
+        ) {
+          typingAccumulatorRef.current += 1;
+          charDelta -= 1;
+        }
+        if (charDelta !== 0) {
+          setTerminalTypedChars((prevChars) => clamp(prevChars + charDelta, 0, totalTerminalChars));
+        }
+      }
+
+      const next = collapseProgressForScroll(virtualNext);
+      return clamp(next, 0, MAX_PROGRESS);
+    });
+  };
+
+  window.addEventListener('wheel', handleWheel, { passive: false });
+  return () => window.removeEventListener('wheel', handleWheel);
+}, [totalTerminalChars]);
 
   useEffect(() => {
     terminalTypedCharsRef.current = terminalTypedChars;
@@ -330,34 +456,6 @@ useEffect(() => {
 
   return () => window.cancelAnimationFrame(rafId);
 }, [totalTerminalChars]);
-
-  useEffect(() => {
-    const scroller = terminalScrollingRef.current;
-    if (!scroller || !terminalPinnedRef.current) return;
-    const available = scroller.scrollHeight - scroller.clientHeight;
-    if (available <= 0) {
-      scroller.scrollTop = 0;
-      return;
-    }
-    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
-    scroller.scrollTo({
-      top: Math.max(0, available - margin),
-      behavior: 'smooth',
-    });
-  }, [terminalTypedChars]);
-
-useEffect(() => {
-  const scroller = terminalScrollingRef.current;
-  if (!scroller) return undefined;
-  const observer = new ResizeObserver(() => {
-    if (!terminalPinnedRef.current) return;
-    const available = scroller.scrollHeight - scroller.clientHeight;
-    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
-    scroller.scrollTop = available > 0 ? Math.max(0, available - margin) : 0;
-  });
-  observer.observe(scroller);
-  return () => observer.disconnect();
-}, []);
 
 
   useEffect(() => {
@@ -446,6 +544,16 @@ const captionStageProgress =
 const terminalStageProgress =
   progress <= TERMINAL_STAGE_START ? 0 : clamp((progress - TERMINAL_STAGE_START) / (TERMINAL_STAGE_LENGTH || 0.0001), 0, 1);
 const terminalTypingProgress = totalTerminalChars > 0 ? terminalTypedChars / totalTerminalChars : 0;
+const rawFeedbackStageProgress =
+  progress <= FEEDBACK_STAGE_START ? 0 : clamp((progress - FEEDBACK_STAGE_START) / (FEEDBACK_STAGE_LENGTH || 0.0001), 0, 1);
+const feedbackStageProgress = terminalTypingProgress >= 0.999 ? rawFeedbackStageProgress : 0;
+const terminalFocusOpacity = clamp(terminalStageProgress * (1 - feedbackStageProgress * 1.2), 0, 1);
+const terminalFocusScale = 1 + feedbackStageProgress * 0.35;
+const terminalFocusTranslateY = feedbackStageProgress * -20;
+const feedbackSectionStyle = {
+  opacity: feedbackStageProgress,
+  transform: `translateY(${(1 - feedbackStageProgress) * 140}px) scale(${0.9 + feedbackStageProgress * 0.12})`,
+};
 const terminalTypingState = useMemo(
   () => buildTerminalTypingState(terminalEntries, terminalTypingProgress),
   [terminalEntries, terminalTypingProgress]
@@ -470,31 +578,36 @@ const terminalTotalLines = useMemo(() => {
   });
   return Math.max(total, 1);
 }, []);
+const feedbackList = feedbackEntries && feedbackEntries.length > 0 ? feedbackEntries : feedbackShowcase;
+const trimmedQuote = feedbackForm.quote.trim();
+const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
+const canSubmitFeedback = Boolean(user && remainingChars <= 0);
 
 useEffect(() => {
   const scroller = terminalScrollingRef.current;
   if (!scroller) return undefined;
 
-  const syncScroll = () => {
+  const syncScrollPosition = () => {
     const available = scroller.scrollHeight - scroller.clientHeight;
     if (available <= 0) {
       scroller.scrollTop = 0;
       return;
     }
 
+    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
+    const maxScrollable = Math.max(available - margin, 0);
     const linesBeyondStart = Math.max(typedLineCount - 5, 0);
     const totalBeyondStart = Math.max(terminalTotalLines - 5, 1);
     const ratio = clamp(linesBeyondStart / totalBeyondStart, 0, 1);
 
-    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
-    const maxScrollable = Math.max(available - margin, 0);
-    const target = ratio * maxScrollable;
-
-    scroller.scrollTo({ top: target, behavior: 'smooth' });
+    scroller.scrollTo({
+      top: ratio * maxScrollable,
+      behavior: 'smooth',
+    });
   };
 
-  syncScroll();
-  const observer = new ResizeObserver(syncScroll);
+  syncScrollPosition();
+  const observer = new ResizeObserver(syncScrollPosition);
   observer.observe(scroller);
 
   return () => observer.disconnect();
@@ -652,6 +765,51 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
               </div>
             </div>
 
+            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={feedbackStageProgress === 0}>
+              <section
+                className="w-full max-w-[min(1200px,90vw)] rounded-[32px] border border-white/10 bg-slate-950/92 p-6 sm:p-10 shadow-[0_60px_160px_rgba(2,6,23,0.68)] transition duration-500"
+                style={{ ...feedbackSectionStyle, pointerEvents: feedbackStageProgress > 0.2 ? 'auto' : 'none' }}
+              >
+                <div className="text-center space-y-3">
+                  <p className="text-xs uppercase tracking-[0.4em] text-slate-400">What our users say</p>
+                  <h2 className="text-2xl font-semibold text-white sm:text-3xl">Real voices from the JTech forums</h2>
+                </div>
+                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                  {feedbackList.map((entry) => (
+                    <article
+                      key={entry.id}
+                      className="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left transition hover:border-white/30"
+                    >
+                      <p className="text-base font-semibold text-white">{entry.name}</p>
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
+                      <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
+                      <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+            <div className="absolute inset-x-0 bottom-6 flex justify-center" aria-hidden={feedbackStageProgress === 0}>
+              <div className="w-full max-w-3xl rounded-[24px] border border-white/10 bg-slate-950/85 px-5 py-4 text-center shadow-[0_20px_80px_rgba(2,6,23,0.6)]">
+                <button
+                  type="button"
+                  onClick={user ? () => setFeedbackModalOpen(true) : undefined}
+                  className="inline-flex items-center justify-center rounded-2xl border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
+                >
+                  {user ? 'Share your feedback' : 'Sign in to share feedback'}
+                </button>
+                {!user && (
+                  <p className="mt-2 text-xs text-slate-400">
+                    <Link to="/signin" className="text-sky-300 underline">
+                      Log in
+                    </Link>{' '}
+                    to share your experience and help the next member.
+                  </p>
+                )}
+                {feedbackMessage && <p className="mt-1 text-xs text-slate-300">{feedbackMessage}</p>}
+              </div>
+            </div>
+
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0 && terminalStageProgress === 0}>
               <div
                 className="pointer-events-none absolute left-1/2 top-[5%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center text-2xl uppercase tracking-[0.4em] text-white transition duration-300"
@@ -794,10 +952,11 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
 
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden={terminalStageProgress === 0}>
               <div
+                ref={terminalContainerRef}
                 className="w-full max-w-[min(1100px,80vw)] rounded-[18px] border border-[#1d2231] bg-[#0b0f1d] shadow-[0_40px_140px_rgba(5,7,15,0.8)] transition duration-700"
                 style={{
-                  opacity: terminalStageProgress,
-                  transform: `translateX(${(1 - terminalStageProgress) * 220}px)`,
+                  opacity: terminalFocusOpacity,
+                  transform: `translateX(${(1 - terminalStageProgress) * 220}px) translateY(${terminalFocusTranslateY}px) scale(${terminalFocusScale})`,
                 }}
               >
                 <div className="flex items-center justify-between rounded-t-[18px] border-b border-[#151926] bg-[#0f131f] px-3 pt-2 pb-1">
@@ -836,6 +995,7 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                     <button
                       type="button"
                       aria-label="Minimize"
+                      onClick={skipTerminalStage}
                       className="inline-flex h-6 w-9 items-center justify-center rounded-sm text-lg leading-none hover:bg-[#1f222b]"
                     >
                       &#8722;
@@ -843,6 +1003,7 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                     <button
                       type="button"
                       aria-label="Maximize"
+                      onClick={skipTerminalStage}
                       className="inline-flex h-6 w-9 items-center justify-center rounded-sm text-sm leading-none hover:bg-[#1f222b]"
                     >
                       &#9634;
@@ -850,6 +1011,7 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                     <button
                       type="button"
                       aria-label="Close"
+                      onClick={skipTerminalStage}
                       className="inline-flex h-6 w-9 items-center justify-center rounded-sm text-base leading-none hover:bg-[#40242c] hover:text-[#ffd8dd]"
                     >
                       &#10005;
@@ -875,6 +1037,65 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
           </div>
         </div>
       </div>
+      {user && isFeedbackModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-md">
+          <div className="relative w-full max-w-lg rounded-[28px] border border-white/10 bg-slate-950/95 p-6 shadow-[0_30px_120px_rgba(2,6,23,0.7)]">
+            <button
+              type="button"
+              aria-label="Close feedback modal"
+              onClick={() => setFeedbackModalOpen(false)}
+              className="absolute right-4 top-4 text-sm text-slate-400 transition hover:text-white"
+            >
+              &times;
+            </button>
+            <h3 className="text-lg font-semibold text-white">Share your feedback</h3>
+            <p className="mt-1 text-xs text-slate-400">Tell us how the forum or apps helped your kosher setup.</p>
+            <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4 text-left">
+              <div>
+                <label htmlFor="context-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                  Setup context
+                </label>
+                <input
+                  id="context-modal"
+                  name="context"
+                  type="text"
+                  value={feedbackForm.context}
+                  onChange={handleFeedbackInput}
+                  placeholder="ex. Pixel 8a + TAG Guardian"
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-2 text-sm text-white outline-none transition focus:border-white/40"
+                />
+              </div>
+              <div>
+                <label htmlFor="quote-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                  Feedback
+                </label>
+                <textarea
+                  id="quote-modal"
+                  name="quote"
+                  rows={4}
+                  value={feedbackForm.quote}
+                  onChange={handleFeedbackInput}
+                  placeholder="Share the story (at least 20 characters)…"
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-sm text-white outline-none transition focus:border-white/40"
+                />
+                {remainingChars > 0 && (
+                  <p className="mt-1 text-xs text-slate-500">{`Add ${remainingChars} more characters so others get the full picture.`}</p>
+                )}
+              </div>
+              <div className="space-y-2 text-center">
+                <button
+                  type="submit"
+                  disabled={!canSubmitFeedback || feedbackSubmitting}
+                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-slate-500"
+                >
+                  {feedbackSubmitting ? 'Sending…' : 'Submit feedback'}
+                </button>
+                {feedbackMessage && <p className="text-xs text-slate-300">{feedbackMessage}</p>}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
