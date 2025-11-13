@@ -6,6 +6,7 @@ functions/.env.*
 .firebase/
 dist
 .env
+.env.local
 .DS_Store
 firebase-debug.log
 firebase-service-account.txt

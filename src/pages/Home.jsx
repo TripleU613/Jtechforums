@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
 
 const heroLines = [
   'Welcome to JTech Forums.',
@@ -35,6 +36,17 @@ const adminProfiles = [
   },
 ];
 
+const LEADERBOARD_ID = 6;
+const LEADERBOARD_PERIOD = 'monthly';
+const LEADERBOARD_LIMIT = 3;
+const forumBaseUrl = getForumWebBase();
+const cheersFormatter = new Intl.NumberFormat('en-US');
+const placementAccentClasses = [
+  'border-amber-400/50 bg-gradient-to-br from-amber-500/20 to-amber-300/5 text-amber-100',
+  'border-sky-400/40 bg-gradient-to-br from-sky-500/15 to-sky-300/5 text-sky-100',
+  'border-emerald-400/40 bg-gradient-to-br from-emerald-500/15 to-emerald-300/5 text-emerald-100',
+];
+
 const HERO_PORTION = 0.6; // 60% of the journey for hero copy
 const CARD_STAGE_END = 0.85; // point in the journey when the card is fully in place
 const PREVIEW_END = 1; // second screen fully rendered
@@ -55,6 +67,11 @@ const PREVIEW_SCROLL_SCALE =
 export default function Home() {
   const [progress, setProgress] = useState(0); // 0 - hero start, 1 - preview finished
   const autoDisabledRef = useRef(false);
+  const [leaderboardState, setLeaderboardState] = useState({
+    entries: [],
+    status: 'idle',
+    error: '',
+  });
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -110,6 +127,56 @@ export default function Home() {
     return () => cancelAnimationFrame(rafId);
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    let cancelled = false;
+
+    const loadLeaderboard = async () => {
+      setLeaderboardState((prev) => ({
+        ...prev,
+        status: 'loading',
+        error: '',
+      }));
+
+      try {
+        const init = { signal: controller.signal };
+        const response = await fetchForumApi(
+          `/forum/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`,
+          init
+        );
+
+        if (!response.ok) {
+          throw new Error('Leaderboard request failed.');
+        }
+
+        const payload = await response.json();
+        const entries = normalizeLeaderboardUsers(payload?.users);
+
+        if (!cancelled) {
+          setLeaderboardState({
+            entries,
+            status: 'ready',
+            error: '',
+          });
+        }
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setLeaderboardState({
+          entries: [],
+          status: 'error',
+          error: error?.message || 'Unable to load leaderboard right now.',
+        });
+      }
+    };
+
+    loadLeaderboard();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, []);
+
   const backgroundStyles = useMemo(
     () => ({
       backgroundImage: 'url(/img/home/reseller.png)',
@@ -124,6 +191,11 @@ const previewProgress =
   progress <= CARD_STAGE_END ? 0 : clamp((progress - CARD_STAGE_END) / (PREVIEW_END - CARD_STAGE_END), 0, 1);
 const adminStageProgress =
   progress <= ADMIN_STAGE_START ? 0 : clamp((progress - ADMIN_STAGE_START) / (ADMIN_STAGE_END - ADMIN_STAGE_START), 0, 1);
+
+const leaderboardEntries = leaderboardState.entries;
+const leaderboardStatus = leaderboardState.status;
+const leaderboardError = leaderboardState.error;
+const leaderboardLink = `${forumBaseUrl}/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`;
 
 const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
 const previewLineCharacters = useMemo(() => buildLineCharacters(previewLines, previewProgress), [previewProgress]);
@@ -220,32 +292,101 @@ const cardSlideProgress =
                   transform: `translateX(${(1 - adminStageProgress) * 180}px)`,
                 }}
               >
-                <div className="flex flex-col gap-2">
-                  <p className="text-xs uppercase tracking-[0.65em] text-slate-400">Community</p>
-                  <div className="flex flex-wrap items-baseline gap-3">
-                    <h2 className="text-3xl font-semibold text-white sm:text-4xl">Meet our admins</h2>
-                    <span className="text-sm text-slate-400">Dedicated volunteers keeping things kosher-friendly</span>
-                  </div>
-                </div>
-                <div className="grid gap-6 md:grid-cols-3">
-                  {adminProfiles.map((admin) => (
-                    <a
-                      key={admin.name}
-                      href={admin.profileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 backdrop-blur transition hover:border-white/30 hover:bg-slate-900/80"
-                    >
-                      <div className="mb-5">
-                        <div className="h-16 w-16 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
-                          <img src={admin.avatar} alt={`${admin.handle} avatar`} className="h-full w-full object-cover" loading="lazy" />
-                        </div>
-                      </div>
-                      <p className="text-xl font-semibold text-white">{admin.name}</p>
-                      <p className="text-sm text-slate-400">{admin.handle}</p>
-                      <p className="mt-3 text-sm text-slate-300">{admin.role}</p>
-                    </a>
-                  ))}
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
+                  <section className="flex-1 rounded-[28px] border border-white/10 bg-slate-950/85 p-5 sm:p-6">
+                    <div className="mb-4 space-y-1">
+                      <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">Admins</p>
+                      <p className="text-sm text-slate-400">Forum shepherds who moderate threads, guides, and submissions daily.</p>
+                    </div>
+                    <div className="flex flex-col divide-y divide-white/5 border-t border-white/10 pt-2">
+                      {adminProfiles.map((admin, index) => (
+                        <a
+                          key={admin.name}
+                          href={admin.profileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`flex items-center gap-4 py-4 transition hover:text-white ${index === 0 ? 'pt-1' : ''}`}
+                        >
+                          <div className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10">
+                            <img src={admin.avatar} alt={`${admin.handle} avatar`} className="h-full w-full object-cover" loading="lazy" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-white">{admin.name}</p>
+                            <p className="text-[11px] text-slate-400">{admin.handle}</p>
+                            <p className="mt-1.5 text-xs text-slate-300">{admin.role}</p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="w-full rounded-[28px] border border-white/10 bg-slate-950/90 p-5 sm:p-6 lg:max-w-sm">
+                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.4em] text-slate-400">
+                      <span>Leaderboard</span>
+                      <a
+                        href={leaderboardLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-2xl border border-white/20 px-3 py-1 text-[10px] font-semibold text-white transition hover:border-white/50 hover:bg-white/10"
+                      >
+                        View
+                      </a>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-400">Top cheers this month from the JTech Champions board.</p>
+                    <div className="mt-4 flex flex-col gap-2">
+                      {leaderboardStatus === 'loading' &&
+                        Array.from({ length: LEADERBOARD_LIMIT }).map((_, index) => (
+                          <div
+                            key={`leaderboard-skeleton-${index}`}
+                            className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-3"
+                          >
+                            <div className="h-10 w-10 animate-pulse rounded-xl bg-white/10" />
+                            <div className="flex flex-1 flex-col gap-1">
+                              <div className="h-3 w-28 animate-pulse rounded bg-white/10" />
+                              <div className="h-2.5 w-36 animate-pulse rounded bg-white/5" />
+                            </div>
+                          </div>
+                        ))}
+                      {leaderboardStatus === 'error' && (
+                        <p className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-3 text-xs text-rose-100">
+                          {leaderboardError || 'Unable to load the leaderboard right now.'}
+                        </p>
+                      )}
+                      {leaderboardEntries.map((entry, index) => (
+                        <a
+                          key={entry.id || entry.username || index}
+                          href={entry.profileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/85 p-3 transition hover:border-white/30 hover:bg-slate-900/80"
+                        >
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-semibold uppercase tracking-[0.3em] ${getPlacementBadgeClass(
+                              index
+                            )}`}
+                          >
+                            #{entry.position}
+                          </div>
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-slate-900/60">
+                              <img src={entry.avatar} alt={`${entry.username} avatar`} className="h-full w-full object-cover" loading="lazy" />
+                            </div>
+                            <div className="min-w-0 text-xs">
+                              <p className="truncate font-semibold text-white">@{entry.username}</p>
+                              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
+                                Cheers • {cheersFormatter.format(entry.cheers)}
+                              </p>
+                            </div>
+                          </div>
+                        </a>
+                      ))}
+                      {leaderboardStatus === 'ready' && leaderboardEntries.length === 0 && (
+                        <p className="rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
+                          Nobody has logged cheers yet—check back soon!
+                        </p>
+                      )}
+                    </div>
+                  </section>
                 </div>
               </div>
             </div>
@@ -254,6 +395,46 @@ const cardSlideProgress =
       </div>
     </div>
   );
+}
+
+function normalizeLeaderboardUsers(users) {
+  if (!Array.isArray(users)) return [];
+
+  return users
+    .filter(Boolean)
+    .slice(0, LEADERBOARD_LIMIT)
+    .map((user, index) => {
+      const username = user.username || `member-${index + 1}`;
+      const cheers = Number(user.total_score);
+      return {
+        id: user.id ?? `${username}-${index}`,
+        username,
+        position: user.position || index + 1,
+        cheers: Number.isFinite(cheers) ? cheers : 0,
+        avatar: buildAvatarUrl(user.avatar_template),
+        profileUrl: buildProfileUrl(username),
+      };
+    });
+}
+
+function buildProfileUrl(username = '') {
+  if (!username) return forumBaseUrl;
+  return `${forumBaseUrl}/u/${encodeURIComponent(username)}`;
+}
+
+function buildAvatarUrl(template = '', size = 160) {
+  if (!template) {
+    return `${forumBaseUrl}/letter_avatar_proxy/v4/letter/j/ce7236/${size}.png`;
+  }
+  const resolved = template.replace('{size}', size);
+  if (/^https?:\/\//i.test(resolved)) {
+    return resolved;
+  }
+  return `${forumBaseUrl}${resolved}`;
+}
+
+function getPlacementBadgeClass(index = 0) {
+  return placementAccentClasses[index] || 'border-white/15 bg-white/5 text-white';
 }
 
 function Cursor({ active, className = '' }) {

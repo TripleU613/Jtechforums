@@ -1,3 +1,7 @@
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '.env.local') });
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -17,8 +21,21 @@ const getUsername = () => process.env.DISCOURSE_API_USERNAME || DEFAULT_DISCOURS
 
 const sanitizeCategory = (value = '') => value.replace(/[^a-z0-9/-]/gi, '').replace(/\.\./g, '');
 
+const getDiscourseApiKey = () => {
+  if (process.env.DISCOURSE_API_KEY) {
+    return process.env.DISCOURSE_API_KEY;
+  }
+
+  try {
+    return DISCOURSE_API_KEY.value();
+  } catch (error) {
+    logger.warn('Discourse API secret unavailable via Secret Manager', error);
+    return '';
+  }
+};
+
 const proxyJson = async (res, endpoint, cacheSeconds = 300) => {
-  const apiKey = DISCOURSE_API_KEY.value();
+  const apiKey = getDiscourseApiKey();
   if (!apiKey) {
     res.status(500).json({ error: 'Forum API secret is not configured.' });
     return;
@@ -230,6 +247,17 @@ forumRouter.get('/forum/topic/:id', async (req, res) => {
     return;
   }
   await proxyJson(res, `/t/${topicId}.json`, 120);
+});
+
+forumRouter.get('/forum/leaderboard/:id', async (req, res) => {
+  const leaderboardId = Number(req.params.id);
+  if (!leaderboardId) {
+    res.status(400).json({ error: 'Invalid leaderboard id' });
+    return;
+  }
+  const period = typeof req.query.period === 'string' ? req.query.period : '';
+  const periodSegment = period ? `?period=${encodeURIComponent(period)}` : '';
+  await proxyJson(res, `/leaderboard/${leaderboardId}.json${periodSegment}`, 600);
 });
 
 app.use('/', forumRouter);
