@@ -787,27 +787,25 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                     </article>
                   ))}
                 </div>
+                <div className="mt-8 flex flex-col items-center gap-2 text-center">
+                  <button
+                    type="button"
+                    onClick={user ? () => setFeedbackModalOpen(true) : undefined}
+                    className="inline-flex items-center justify-center rounded-2xl border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
+                  >
+                    {user ? 'Share your feedback' : 'Sign in to share feedback'}
+                  </button>
+                  {!user && (
+                    <p className="text-xs text-slate-400">
+                      <Link to="/signin" className="text-sky-300 underline">
+                        Log in
+                      </Link>{' '}
+                      to share your experience and help the next member.
+                    </p>
+                  )}
+                  {feedbackMessage && <p className="text-xs text-slate-300">{feedbackMessage}</p>}
+                </div>
               </section>
-            </div>
-            <div className="absolute inset-x-0 bottom-6 flex justify-center" aria-hidden={feedbackStageProgress === 0}>
-              <div className="w-full max-w-3xl rounded-[24px] border border-white/10 bg-slate-950/85 px-5 py-4 text-center shadow-[0_20px_80px_rgba(2,6,23,0.6)]">
-                <button
-                  type="button"
-                  onClick={user ? () => setFeedbackModalOpen(true) : undefined}
-                  className="inline-flex items-center justify-center rounded-2xl border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
-                >
-                  {user ? 'Share your feedback' : 'Sign in to share feedback'}
-                </button>
-                {!user && (
-                  <p className="mt-2 text-xs text-slate-400">
-                    <Link to="/signin" className="text-sky-300 underline">
-                      Log in
-                    </Link>{' '}
-                    to share your experience and help the next member.
-                  </p>
-                )}
-                {feedbackMessage && <p className="mt-1 text-xs text-slate-300">{feedbackMessage}</p>}
-              </div>
             </div>
 
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0 && terminalStageProgress === 0}>
