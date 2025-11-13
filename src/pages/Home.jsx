@@ -36,6 +36,9 @@ const adminProfiles = [
   },
 ];
 
+const topCaption = 'How it is all possible';
+const bottomCaption = "You're in good hands";
+
 const LEADERBOARD_ID = 6;
 const LEADERBOARD_PERIOD = 'monthly';
 const LEADERBOARD_LIMIT = 3;
@@ -51,10 +54,17 @@ const HERO_PORTION = 0.6; // 60% of the journey for hero copy
 const CARD_STAGE_END = 0.85; // point in the journey when the card is fully in place
 const PREVIEW_END = 1; // second screen fully rendered
 const ADMIN_PAUSE = 0.15; // dead zone after preview before admin section
-const ADMIN_STAGE_LENGTH = 0.3;
+const ADMIN_STAGE_LENGTH = 0.6;
 const ADMIN_STAGE_START = PREVIEW_END + ADMIN_PAUSE;
 const ADMIN_STAGE_END = ADMIN_STAGE_START + ADMIN_STAGE_LENGTH;
-const MAX_PROGRESS = ADMIN_STAGE_END;
+const ADMIN_PANEL_ANCHOR = 0.8;
+const CAPTION_PAUSE = 0.05;
+const CAPTION_STAGE_LENGTH = 0.7;
+const CAPTION_STAGE_START = ADMIN_STAGE_END + CAPTION_PAUSE;
+const CAPTION_STAGE_END = CAPTION_STAGE_START + CAPTION_STAGE_LENGTH;
+const CAPTION_TOP_DURATION = 0.6;
+const TEXT_SLOWNESS = 7;
+const MAX_PROGRESS = CAPTION_STAGE_END;
 
 const AUTO_SPEED = 0.0008;
 const PREVIEW_AUTO_SPEED = 0.0006;
@@ -191,6 +201,8 @@ const previewProgress =
   progress <= CARD_STAGE_END ? 0 : clamp((progress - CARD_STAGE_END) / (PREVIEW_END - CARD_STAGE_END), 0, 1);
 const adminStageProgress =
   progress <= ADMIN_STAGE_START ? 0 : clamp((progress - ADMIN_STAGE_START) / (ADMIN_STAGE_END - ADMIN_STAGE_START), 0, 1);
+const captionStageProgress =
+  progress <= CAPTION_STAGE_START ? 0 : clamp((progress - CAPTION_STAGE_START) / (CAPTION_STAGE_END - CAPTION_STAGE_START), 0, 1);
 
 const leaderboardEntries = leaderboardState.entries;
 const leaderboardStatus = leaderboardState.status;
@@ -212,6 +224,31 @@ const cardSlideProgress =
   cardProgress <= CARD_ENTRY_START
     ? 0
     : clamp((cardProgress - CARD_ENTRY_START) / (1 - CARD_ENTRY_START), 0, 1);
+const revealPhase = clamp(
+  (adminStageProgress - ADMIN_PANEL_ANCHOR) / Math.max(1 - ADMIN_PANEL_ANCHOR, 0.0001),
+  0,
+  1
+);
+const textRevealProgress = captionStageProgress;
+const slowTypedProgress = Math.pow(textRevealProgress, TEXT_SLOWNESS);
+const topCaptionProgress = clamp(
+  slowTypedProgress / Math.max(CAPTION_TOP_DURATION, 0.0001),
+  0,
+  1
+);
+const bottomCaptionProgress =
+  slowTypedProgress <= CAPTION_TOP_DURATION
+    ? 0
+    : clamp((slowTypedProgress - CAPTION_TOP_DURATION) / (1 - CAPTION_TOP_DURATION), 0, 1);
+const adminPanelStyle = {
+  opacity: adminStageProgress,
+  transform: `translateX(${(1 - adminStageProgress) * 180}px) scale(${0.9 + Math.min(adminStageProgress, ADMIN_PANEL_ANCHOR) * 0.1})`,
+  pointerEvents: adminStageProgress > 0.05 ? 'auto' : 'none',
+};
+const typedTopCaption = typeWriter(topCaption, topCaptionProgress);
+const typedBottomCaption = typeWriter(bottomCaption, bottomCaptionProgress);
+const topCaptionChars = buildLineCharacters([typedTopCaption], topCaptionProgress)[0];
+const bottomCaptionChars = buildLineCharacters([typedBottomCaption], bottomCaptionProgress)[0];
 
   return (
     <div className="relative h-full overflow-hidden bg-slate-950 text-white">
@@ -286,11 +323,20 @@ const cardSlideProgress =
 
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0}>
               <div
-                className="flex w-full max-w-[min(1500px,86vw)] flex-col gap-8 rounded-[32px] border border-white/10 bg-slate-900/90 p-6 sm:p-10 lg:p-14 shadow-[0_40px_160px_rgba(2,6,23,0.7)] transition duration-700"
-                style={{
-                  opacity: adminStageProgress,
-                  transform: `translateX(${(1 - adminStageProgress) * 180}px)`,
-                }}
+                className="pointer-events-none absolute left-1/2 top-[5%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center text-2xl uppercase tracking-[0.4em] text-white transition duration-300"
+                style={{ opacity: textRevealProgress }}
+              >
+                <LineCharacters chars={topCaptionChars} />
+              </div>
+              <div
+                className="pointer-events-none absolute left-1/2 bottom-[5%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center text-base uppercase tracking-[0.35em] text-slate-100 transition duration-300"
+                style={{ opacity: textRevealProgress }}
+              >
+                <LineCharacters chars={bottomCaptionChars} />
+              </div>
+              <div
+                className="flex w-full max-w-[min(1500px,86vw)] flex-col gap-6 rounded-[32px] border border-white/10 bg-slate-900/90 p-5 sm:p-9 lg:p-12 shadow-[0_40px_160px_rgba(2,6,23,0.7)] transition duration-700"
+                style={adminPanelStyle}
               >
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
                   <section className="flex-1 rounded-[28px] border border-white/10 bg-slate-950/85 p-5 sm:p-6">
@@ -299,24 +345,32 @@ const cardSlideProgress =
                       <p className="text-sm text-slate-400">Forum shepherds who moderate threads, guides, and submissions daily.</p>
                     </div>
                     <div className="flex flex-col divide-y divide-white/5 border-t border-white/10 pt-2">
-                      {adminProfiles.map((admin, index) => (
-                        <a
-                          key={admin.name}
-                          href={admin.profileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`flex items-center gap-4 py-4 transition hover:text-white ${index === 0 ? 'pt-1' : ''}`}
-                        >
-                          <div className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10">
-                            <img src={admin.avatar} alt={`${admin.handle} avatar`} className="h-full w-full object-cover" loading="lazy" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white">{admin.name}</p>
-                            <p className="text-[11px] text-slate-400">{admin.handle}</p>
-                            <p className="mt-1.5 text-xs text-slate-300">{admin.role}</p>
-                          </div>
-                        </a>
-                      ))}
+                      {adminProfiles.map((admin, index) => {
+                        const reveal = staggerReveal(revealPhase, index, adminProfiles.length);
+                        return (
+                          <a
+                            key={admin.name}
+                            href={admin.profileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`flex items-center gap-4 py-4 transition hover:text-white ${index === 0 ? 'pt-1' : ''}`}
+                            style={{
+                              opacity: reveal,
+                              transform: `translateY(${(1 - reveal) * 18}px)`,
+                              pointerEvents: reveal > 0.2 ? 'auto' : 'none',
+                            }}
+                          >
+                            <div className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10">
+                              <img src={admin.avatar} alt={`${admin.handle} avatar`} className="h-full w-full object-cover" loading="lazy" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-white">{admin.name}</p>
+                              <p className="text-[11px] text-slate-400">{admin.handle}</p>
+                              <p className="mt-1.5 text-xs text-slate-300">{admin.role}</p>
+                            </div>
+                          </a>
+                        );
+                      })}
                     </div>
                   </section>
 
@@ -352,34 +406,42 @@ const cardSlideProgress =
                           {leaderboardError || 'Unable to load the leaderboard right now.'}
                         </p>
                       )}
-                      {leaderboardEntries.map((entry, index) => (
-                        <a
-                          key={entry.id || entry.username || index}
-                          href={entry.profileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/85 p-3 transition hover:border-white/30 hover:bg-slate-900/80"
-                        >
-                          <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-semibold uppercase tracking-[0.3em] ${getPlacementBadgeClass(
-                              index
-                            )}`}
+                      {leaderboardEntries.map((entry, index) => {
+                        const reveal = staggerReveal(revealPhase, index, leaderboardEntries.length || LEADERBOARD_LIMIT);
+                        return (
+                          <a
+                            key={entry.id || entry.username || index}
+                            href={entry.profileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/85 p-3 transition hover:border-white/30 hover:bg-slate-900/80"
+                            style={{
+                              opacity: reveal,
+                              transform: `translateY(${(1 - reveal) * 18}px)`,
+                              pointerEvents: reveal > 0.2 ? 'auto' : 'none',
+                            }}
                           >
-                            #{entry.position}
-                          </div>
-                          <div className="flex min-w-0 flex-1 items-center gap-3">
-                            <div className="h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-slate-900/60">
-                              <img src={entry.avatar} alt={`${entry.username} avatar`} className="h-full w-full object-cover" loading="lazy" />
+                            <div
+                              className={`flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-semibold uppercase tracking-[0.3em] ${getPlacementBadgeClass(
+                                index
+                              )}`}
+                            >
+                              #{entry.position}
                             </div>
-                            <div className="min-w-0 text-xs">
-                              <p className="truncate font-semibold text-white">@{entry.username}</p>
-                              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
-                                Cheers • {cheersFormatter.format(entry.cheers)}
-                              </p>
+                            <div className="flex min-w-0 flex-1 items-center gap-3">
+                              <div className="h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-slate-900/60">
+                                <img src={entry.avatar} alt={`${entry.username} avatar`} className="h-full w-full object-cover" loading="lazy" />
+                              </div>
+                              <div className="min-w-0 text-xs">
+                                <p className="truncate font-semibold text-white">@{entry.username}</p>
+                                <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
+                                  Cheers • {cheersFormatter.format(entry.cheers)}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </a>
-                      ))}
+                          </a>
+                        );
+                      })}
                       {leaderboardStatus === 'ready' && leaderboardEntries.length === 0 && (
                         <p className="rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
                           Nobody has logged cheers yet—check back soon!
@@ -460,6 +522,18 @@ function activeLineIndex(lines, ratio) {
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function staggerReveal(progress, index, total) {
+  if (total <= 0) return progress;
+  const perItem = 1 / total;
+  return clamp((progress - perItem * index) / perItem, 0, 1);
+}
+
+function typeWriter(text, progress) {
+  if (progress <= 0) return '';
+  const length = Math.floor(text.length * clamp(progress, 0, 1));
+  return text.slice(0, Math.min(length, text.length));
 }
 
 function buildLineCharacters(lines, ratio) {

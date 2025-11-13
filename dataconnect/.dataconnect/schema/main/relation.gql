@@ -115,6 +115,10 @@ extend type Movie {
     """
     distinct: Boolean = false
   ): Int! @fdc_generated(from: "Movie.title", purpose: QUERY_COUNT)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "Movie.id", purpose: GLOBAL_ID)
 }
 extend type MovieMetadata {
   """
@@ -222,6 +226,10 @@ extend type MovieMetadata {
   ✨ Maximum of the `releaseYear` field in the `MovieMetadata` table.
   """
   releaseYear_max: Int @fdc_generated(from: "MovieMetadata.releaseYear", purpose: QUERY_MAX)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "MovieMetadata.id", purpose: GLOBAL_ID)
 }
 extend type Review {
   """
@@ -311,6 +319,10 @@ extend type Review {
   ✨ Maximum of the `reviewDate` field in the `Review` table.
   """
   reviewDate_max: Date @fdc_generated(from: "Review.reviewDate", purpose: QUERY_MAX)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "Review.movieId,userId", purpose: GLOBAL_ID)
 }
 extend type User {
   """
@@ -407,4 +419,8 @@ extend type User {
     """
     distinct: Boolean = false
   ): Int! @fdc_generated(from: "User.username", purpose: QUERY_COUNT)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "User.id", purpose: GLOBAL_ID)
 }
