@@ -65,8 +65,9 @@ const CAPTION_STAGE_END = CAPTION_STAGE_START + CAPTION_STAGE_LENGTH;
 const CAPTION_TOP_STAGE = 0.55;
 const CAPTION_BOTTOM_STAGE = 0.25;
 const CAPTION_FAKE_STAGE = 0.2;
+const CAPTION_POST_PAUSE = 0.15; // dead-scroll window after captions finish
 const TERMINAL_STAGE_LENGTH = 0.4;
-const TERMINAL_STAGE_START = CAPTION_STAGE_END + 0.05;
+const TERMINAL_STAGE_START = CAPTION_STAGE_END + CAPTION_POST_PAUSE;
 const TERMINAL_STAGE_END = TERMINAL_STAGE_START + TERMINAL_STAGE_LENGTH;
 const TERMINAL_TYPE_TRAIL = 0.8;
 const TERMINAL_CHAR_SCROLL_MULT = 40;
@@ -449,15 +450,6 @@ const revealPhase = clamp(
   1
 );
 const textRevealProgress = captionStageProgress;
-const topStageProgress = clamp(captionStageProgress / Math.max(CAPTION_TOP_STAGE, 0.0001), 0, 1);
-const bottomStageProgress =
-  captionStageProgress <= CAPTION_TOP_STAGE
-    ? 0
-    : clamp(
-        (captionStageProgress - CAPTION_TOP_STAGE) / Math.max(CAPTION_BOTTOM_STAGE, 0.0001),
-        0,
-        1
-      );
 const fakeStageProgress =
   captionStageProgress <= CAPTION_TOP_STAGE + CAPTION_BOTTOM_STAGE
     ? 0
@@ -466,15 +458,38 @@ const fakeStageProgress =
         0,
         1
       );
-const topCaptionProgress = Math.pow(topStageProgress, TEXT_SLOWNESS);
-const bottomCaptionProgress = Math.pow(bottomStageProgress, TEXT_SLOWNESS);
+const topTypingPhase = Math.pow(
+  clamp(captionStageProgress / Math.max(CAPTION_TOP_STAGE, 0.0001), 0, 1),
+  TEXT_SLOWNESS
+);
+const bottomTypingPhase =
+  captionStageProgress <= CAPTION_TOP_STAGE
+    ? 0
+    : Math.pow(
+        clamp(
+          (captionStageProgress - CAPTION_TOP_STAGE) / Math.max(CAPTION_BOTTOM_STAGE, 0.0001),
+          0,
+          1
+        ),
+        TEXT_SLOWNESS
+      );
+const totalCaptionChars = topCaption.length + bottomCaption.length;
+const topCharShare = totalCaptionChars > 0 ? topCaption.length / totalCaptionChars : 0;
+const bottomCharShare = totalCaptionChars > 0 ? bottomCaption.length / totalCaptionChars : 0;
+let captionTypingProgress = topTypingPhase * topCharShare;
+if (captionStageProgress > CAPTION_TOP_STAGE && bottomCharShare > 0) {
+  captionTypingProgress = topCharShare + bottomTypingPhase * bottomCharShare;
+}
+captionTypingProgress = clamp(captionTypingProgress, 0, 1);
 const adminPanelStyle = {
   opacity: adminStageProgress * clamp(1 - terminalStageProgress * 1.1, 0, 1),
   transform: `translateX(${(1 - adminStageProgress) * 180 - terminalStageProgress * 300}px) scale(${0.9 + Math.min(adminStageProgress, ADMIN_PANEL_ANCHOR) * 0.1})`,
   pointerEvents: adminStageProgress > 0.05 && terminalStageProgress < 0.1 ? 'auto' : 'none',
 };
-const topCaptionChars = buildLineCharacters([topCaption], topCaptionProgress)[0] || [];
-const bottomCaptionChars = buildLineCharacters([bottomCaption], bottomCaptionProgress)[0] || [];
+const [topCaptionChars = [], bottomCaptionChars = []] = useMemo(
+  () => buildLineCharacters([topCaption, bottomCaption], captionTypingProgress),
+  [captionTypingProgress]
+);
 const fakeTypingChars = buildLineCharacters(['â–ˆ'.repeat(100)], fakeStageProgress)[0] || [];
 const showFakeLine = fakeStageProgress > 0 && fakeStageProgress < 1;
 const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 2, 0, 1);
