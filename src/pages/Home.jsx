@@ -59,12 +59,152 @@ const ADMIN_STAGE_START = PREVIEW_END + ADMIN_PAUSE;
 const ADMIN_STAGE_END = ADMIN_STAGE_START + ADMIN_STAGE_LENGTH;
 const ADMIN_PANEL_ANCHOR = 0.8;
 const CAPTION_PAUSE = 0.05;
-const CAPTION_STAGE_LENGTH = 0.7;
+const CAPTION_STAGE_LENGTH = 0.9;
 const CAPTION_STAGE_START = ADMIN_STAGE_END + CAPTION_PAUSE;
 const CAPTION_STAGE_END = CAPTION_STAGE_START + CAPTION_STAGE_LENGTH;
-const CAPTION_TOP_DURATION = 0.6;
+const CAPTION_TOP_STAGE = 0.55;
+const CAPTION_BOTTOM_STAGE = 0.25;
+const CAPTION_FAKE_STAGE = 0.2;
+const TERMINAL_STAGE_LENGTH = 0.4;
+const TERMINAL_STAGE_START = CAPTION_STAGE_END + 0.05;
+const TERMINAL_STAGE_END = TERMINAL_STAGE_START + TERMINAL_STAGE_LENGTH;
+const TERMINAL_TYPE_TRAIL = 0.8;
+const TERMINAL_CHAR_SCROLL_MULT = 40;
+const TERMINAL_SCROLL_HEADROOM = 0.02; // start auto-scroll slightly before text would clip
 const TEXT_SLOWNESS = 7;
-const MAX_PROGRESS = CAPTION_STAGE_END;
+const MAX_PROGRESS = TERMINAL_STAGE_END + TERMINAL_TYPE_TRAIL;
+const terminalEntries = [
+  {
+    command: 'whoami',
+    output: ['Community member. Here because something on your phone went boom.'],
+  },
+  {
+    command: 'hostname',
+    output: ['forums.jtechforums.org'],
+  },
+  {
+    command: 'uname -a',
+    output: ['Linux JTech-Server #1 running stable since the last "how do I block WhatsApp Status" post.'],
+  },
+  {
+    command: 'uptime',
+    output: ['Forum active for years. Repeat questions answered: too many to count.'],
+  },
+  {
+    command: 'id',
+    output: ['uid=1000(you) groups=android_help,filters,mdm,panic-posters'],
+  },
+  {
+    command: 'df -h',
+    output: ['87% space used by screenshots people uploaded instead of describing the issue.'],
+  },
+  {
+    command: 'free -h',
+    output: ['RAM consumed by filter debates: 99%', '   RAM available for patience: questionable'],
+  },
+  {
+    command: 'ls ~/Forums',
+    output: ['Guides/ Android/ Filters/ KosherPhones/ "Help-I-broke-my-device"/'],
+  },
+  {
+    command: 'cat Guides/mission.txt',
+    output: [
+      'Provide precise, up-to-date tech & filtering help to the Jewish community.',
+      '   Practical, kosher, zero balagan.',
+    ],
+  },
+  {
+    command: 'faq --question="What is JTech Forums?"',
+    output: [
+      'A safe community for filtered tech, kosher phones, apps, MDM help,',
+      '   and level-headed troubleshooting.',
+    ],
+  },
+  {
+    command: 'faq --question="Is everything kosher here?"',
+    output: [
+      'Yes. Strict content standards. No inappropriate links.',
+      '   This forum is built for families -- and indexed by Google.',
+      '   Keep it clean.',
+    ],
+  },
+  {
+    command: 'faq --question="Can I post any random files?"',
+    output: ['No Google Drive dumps.', '   No mystery APKs.', '   Only trusted, safe sources allowed.'],
+  },
+  {
+    command: 'faq --question="Why was my post removed?"',
+    output: [
+      'Probably:',
+      '   - off-topic',
+      '   - not family-safe',
+      '   - linked to who-knows-where',
+      '   - or your cousin\'s "hack" wasn\'t actually a hack.',
+    ],
+  },
+  {
+    command: 'grep -R "Whatsapp" ./Android',
+    output: ['182 results... mostly "how block Status???"', '   Solutions exist. Take a deep breath.'],
+  },
+  {
+    command: 'grep -R "MDM" ./Filters',
+    output: ['Found: install guides, fix guides, and "pls help my kid found Developer Options"'],
+  },
+  {
+    command: 'curl https://forums.jtechforums.org/api/stats',
+    output: [
+      'signups_last_30_days: 305+',
+      '   page_visits: 100000+',
+      '   posts: 15000+',
+      '   people_helped: countless',
+    ],
+  },
+  {
+    command: 'top -b -n1 | head',
+    output: [
+      'PID   TASK         CPU   DESCRIPTION',
+      '101   mods          98%   deleting nonsense',
+      '203   helpers       75%   answering same question for 12th time',
+      '404   panicd        60%   "I factory reset and now nothing works plz help"',
+    ],
+  },
+  {
+    command: 'sudo -l',
+    output: ['Sorry, you don\'t have moderator permissions. Nice try though.'],
+  },
+  {
+    command: 'dmesg | tail',
+    output: ['ALERT: new thread detected about FIG phones being "hacked"', 'RESPONSE: highly unlikely. They\'re not magic, relax.'],
+  },
+  {
+    command: 'stat ~/first_post.txt',
+    output: ['size: 0 bytes', 'meaning: please include details when asking for help.'],
+  },
+  {
+    command: 'join --mode=read',
+    output: ['Browse guides. Absorb knowledge. Enjoy the calm.'],
+  },
+  {
+    command: 'join --mode=ask',
+    output: ['Provide device, model, filter, and what you tried.', '   The more info you give, the faster you\'ll get helped.'],
+  },
+  {
+    command: 'join --mode=help-others',
+    output: ['Share your fixes. Share your setups.', '   Someone out there needs exactly what you figured out.'],
+  },
+  {
+    command: 'exit',
+    output: ['JTech Forums -- keeping your tech smooth, your phones kosher,', '   and your sanity intact.'],
+  },
+];
+
+const terminalTabs = [
+  {
+    id: 'tab-primary',
+    label: 'C:\\WINDOWS\\system32\\cmd.exe',
+    active: true,
+  },
+];
 
 const AUTO_SPEED = 0.0008;
 const PREVIEW_AUTO_SPEED = 0.0006;
@@ -77,11 +217,26 @@ const PREVIEW_SCROLL_SCALE =
 export default function Home() {
   const [progress, setProgress] = useState(0); // 0 - hero start, 1 - preview finished
   const autoDisabledRef = useRef(false);
+  const [terminalTypedChars, setTerminalTypedChars] = useState(0);
+  const typingAccumulatorRef = useRef(0);
+  const terminalTypedCharsRef = useRef(0);
+  const terminalScrollingRef = useRef(null);
   const [leaderboardState, setLeaderboardState] = useState({
     entries: [],
     status: 'idle',
     error: '',
   });
+  const totalTerminalChars = useMemo(
+    () =>
+      terminalEntries.reduce(
+        (sum, entry) =>
+          sum +
+          (entry.command?.length || 0) +
+          entry.output.reduce((acc, line) => acc + (line?.length || 0), 0),
+        0
+      ),
+    [terminalEntries]
+  );
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -115,6 +270,29 @@ export default function Home() {
       setProgress((prev) => {
         const virtualPrev = expandProgressForScroll(prev);
         const virtualNext = virtualPrev + delta;
+
+        if (totalTerminalChars > 0 && (virtualPrev >= TERMINAL_STAGE_START || virtualNext >= TERMINAL_STAGE_START)) {
+          typingAccumulatorRef.current += delta * TERMINAL_CHAR_SCROLL_MULT;
+          let charDelta = 0;
+          while (
+            typingAccumulatorRef.current >= 1 &&
+            terminalTypedCharsRef.current + charDelta < totalTerminalChars
+          ) {
+            typingAccumulatorRef.current -= 1;
+            charDelta += 1;
+          }
+          while (
+            typingAccumulatorRef.current <= -1 &&
+            terminalTypedCharsRef.current + charDelta > 0
+          ) {
+            typingAccumulatorRef.current += 1;
+            charDelta -= 1;
+          }
+          if (charDelta !== 0) {
+            setTerminalTypedChars((prevChars) => clamp(prevChars + charDelta, 0, totalTerminalChars));
+          }
+        }
+
         const next = collapseProgressForScroll(virtualNext);
         return clamp(next, 0, MAX_PROGRESS);
       });
@@ -122,7 +300,19 @@ export default function Home() {
 
     window.addEventListener('wheel', handleWheel, { passive: false });
     return () => window.removeEventListener('wheel', handleWheel);
-  }, []);
+  }, [totalTerminalChars]);
+
+  useEffect(() => {
+    terminalTypedCharsRef.current = terminalTypedChars;
+  }, [terminalTypedChars]);
+
+  useEffect(() => {
+    if (progress <= TERMINAL_STAGE_START && (terminalTypedCharsRef.current !== 0 || typingAccumulatorRef.current !== 0)) {
+      typingAccumulatorRef.current = 0;
+      setTerminalTypedChars(0);
+    }
+  }, [progress]);
+
 
   useEffect(() => {
     let rafId;
@@ -203,6 +393,35 @@ const adminStageProgress =
   progress <= ADMIN_STAGE_START ? 0 : clamp((progress - ADMIN_STAGE_START) / (ADMIN_STAGE_END - ADMIN_STAGE_START), 0, 1);
 const captionStageProgress =
   progress <= CAPTION_STAGE_START ? 0 : clamp((progress - CAPTION_STAGE_START) / (CAPTION_STAGE_END - CAPTION_STAGE_START), 0, 1);
+const terminalStageProgress =
+  progress <= TERMINAL_STAGE_START ? 0 : clamp((progress - TERMINAL_STAGE_START) / (TERMINAL_STAGE_LENGTH || 0.0001), 0, 1);
+const terminalTypingProgress = totalTerminalChars > 0 ? terminalTypedChars / totalTerminalChars : 0;
+
+useEffect(() => {
+  const scroller = terminalScrollingRef.current;
+  if (!scroller) return undefined;
+
+  const syncScrollPosition = () => {
+    const totalHeight = scroller.scrollHeight;
+    const viewportHeight = scroller.clientHeight;
+    const available = totalHeight - viewportHeight;
+    if (available <= 0) {
+      scroller.scrollTop = 0;
+      return;
+    }
+    const visibleRatio = clamp(viewportHeight / (totalHeight || 1), 0, 1);
+    const scrollStart = clamp(visibleRatio - TERMINAL_SCROLL_HEADROOM, 0, 0.99);
+    const effectiveRange = Math.max(1 - scrollStart, 0.0001);
+    const effective = clamp((terminalTypingProgress - scrollStart) / effectiveRange, 0, 1);
+    scroller.scrollTop = available * effective;
+  };
+
+  syncScrollPosition();
+  const observer = new ResizeObserver(syncScrollPosition);
+  observer.observe(scroller);
+
+  return () => observer.disconnect();
+}, [terminalTypingProgress]);
 
 const leaderboardEntries = leaderboardState.entries;
 const leaderboardStatus = leaderboardState.status;
@@ -230,25 +449,39 @@ const revealPhase = clamp(
   1
 );
 const textRevealProgress = captionStageProgress;
-const slowTypedProgress = Math.pow(textRevealProgress, TEXT_SLOWNESS);
-const topCaptionProgress = clamp(
-  slowTypedProgress / Math.max(CAPTION_TOP_DURATION, 0.0001),
-  0,
-  1
-);
-const bottomCaptionProgress =
-  slowTypedProgress <= CAPTION_TOP_DURATION
+const topStageProgress = clamp(captionStageProgress / Math.max(CAPTION_TOP_STAGE, 0.0001), 0, 1);
+const bottomStageProgress =
+  captionStageProgress <= CAPTION_TOP_STAGE
     ? 0
-    : clamp((slowTypedProgress - CAPTION_TOP_DURATION) / (1 - CAPTION_TOP_DURATION), 0, 1);
+    : clamp(
+        (captionStageProgress - CAPTION_TOP_STAGE) / Math.max(CAPTION_BOTTOM_STAGE, 0.0001),
+        0,
+        1
+      );
+const fakeStageProgress =
+  captionStageProgress <= CAPTION_TOP_STAGE + CAPTION_BOTTOM_STAGE
+    ? 0
+    : clamp(
+        (captionStageProgress - CAPTION_TOP_STAGE - CAPTION_BOTTOM_STAGE) / Math.max(CAPTION_FAKE_STAGE, 0.0001),
+        0,
+        1
+      );
+const topCaptionProgress = Math.pow(topStageProgress, TEXT_SLOWNESS);
+const bottomCaptionProgress = Math.pow(bottomStageProgress, TEXT_SLOWNESS);
 const adminPanelStyle = {
-  opacity: adminStageProgress,
-  transform: `translateX(${(1 - adminStageProgress) * 180}px) scale(${0.9 + Math.min(adminStageProgress, ADMIN_PANEL_ANCHOR) * 0.1})`,
-  pointerEvents: adminStageProgress > 0.05 ? 'auto' : 'none',
+  opacity: adminStageProgress * clamp(1 - terminalStageProgress * 1.1, 0, 1),
+  transform: `translateX(${(1 - adminStageProgress) * 180 - terminalStageProgress * 300}px) scale(${0.9 + Math.min(adminStageProgress, ADMIN_PANEL_ANCHOR) * 0.1})`,
+  pointerEvents: adminStageProgress > 0.05 && terminalStageProgress < 0.1 ? 'auto' : 'none',
 };
-const typedTopCaption = typeWriter(topCaption, topCaptionProgress);
-const typedBottomCaption = typeWriter(bottomCaption, bottomCaptionProgress);
-const topCaptionChars = buildLineCharacters([typedTopCaption], topCaptionProgress)[0];
-const bottomCaptionChars = buildLineCharacters([typedBottomCaption], bottomCaptionProgress)[0];
+const topCaptionChars = buildLineCharacters([topCaption], topCaptionProgress)[0] || [];
+const bottomCaptionChars = buildLineCharacters([bottomCaption], bottomCaptionProgress)[0] || [];
+const fakeTypingChars = buildLineCharacters(['â–ˆ'.repeat(100)], fakeStageProgress)[0] || [];
+const showFakeLine = fakeStageProgress > 0 && fakeStageProgress < 1;
+const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 2, 0, 1);
+const terminalTypingState = useMemo(
+  () => buildTerminalTypingState(terminalEntries, terminalTypingProgress),
+  [terminalEntries, terminalTypingProgress]
+);
 
   return (
     <div className="relative h-full overflow-hidden bg-slate-950 text-white">
@@ -321,19 +554,27 @@ const bottomCaptionChars = buildLineCharacters([typedBottomCaption], bottomCapti
               </div>
             </div>
 
-            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0}>
+            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0 && terminalStageProgress === 0}>
               <div
                 className="pointer-events-none absolute left-1/2 top-[5%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center text-2xl uppercase tracking-[0.4em] text-white transition duration-300"
-                style={{ opacity: textRevealProgress }}
+                style={{ opacity: textLayerOpacity }}
               >
                 <LineCharacters chars={topCaptionChars} />
               </div>
               <div
                 className="pointer-events-none absolute left-1/2 bottom-[5%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center text-base uppercase tracking-[0.35em] text-slate-100 transition duration-300"
-                style={{ opacity: textRevealProgress }}
+                style={{ opacity: textLayerOpacity }}
               >
                 <LineCharacters chars={bottomCaptionChars} />
               </div>
+              {showFakeLine && (
+                <div
+                  className="pointer-events-none absolute left-1/2 bottom-[8%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center font-mono text-xs tracking-[0.3em] text-transparent"
+                  style={{ opacity: textLayerOpacity * 0.2 }}
+                >
+                  <LineCharacters chars={fakeTypingChars} />
+                </div>
+              )}
               <div
                 className="flex w-full max-w-[min(1500px,86vw)] flex-col gap-6 rounded-[32px] border border-white/10 bg-slate-900/90 p-5 sm:p-9 lg:p-12 shadow-[0_40px_160px_rgba(2,6,23,0.7)] transition duration-700"
                 style={adminPanelStyle}
@@ -435,7 +676,7 @@ const bottomCaptionChars = buildLineCharacters([typedBottomCaption], bottomCapti
                               <div className="min-w-0 text-xs">
                                 <p className="truncate font-semibold text-white">@{entry.username}</p>
                                 <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
-                                  Cheers • {cheersFormatter.format(entry.cheers)}
+                                  Cheers â€¢ {cheersFormatter.format(entry.cheers)}
                                 </p>
                               </div>
                             </div>
@@ -444,11 +685,92 @@ const bottomCaptionChars = buildLineCharacters([typedBottomCaption], bottomCapti
                       })}
                       {leaderboardStatus === 'ready' && leaderboardEntries.length === 0 && (
                         <p className="rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
-                          Nobody has logged cheers yet—check back soon!
+                          Nobody has logged cheers yetâ€”check back soon!
                         </p>
                       )}
                     </div>
                   </section>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={terminalStageProgress === 0}>
+              <div
+                className="w-full max-w-[min(1100px,80vw)] rounded-[18px] border border-[#1d2231] bg-[#0b0f1d] shadow-[0_40px_140px_rgba(5,7,15,0.8)] transition duration-700"
+                style={{
+                  opacity: terminalStageProgress,
+                  transform: `translateX(${(1 - terminalStageProgress) * 220}px)`,
+                }}
+              >
+                <div className="flex items-center justify-between rounded-t-[18px] border-b border-[#151926] bg-[#0f131f] px-3 pt-2 pb-1">
+                  <div className="flex items-end gap-1.5">
+                    {terminalTabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        className={`group hidden items-center gap-2 rounded-t-2xl border px-3.5 text-[11px] font-semibold transition-all sm:flex ${
+                          tab.active
+                            ? 'mb-[-1px] rounded-b-none border-[#323b54] border-b-0 bg-gradient-to-b from-[#1f2538] to-[#141a27] pb-2 pt-1 text-white shadow-[0_12px_24px_rgba(3,4,10,0.55)]'
+                            : 'border-transparent bg-transparent pb-1.5 pt-1 text-[#7a8098] hover:border-[#242938] hover:bg-[#151a27] hover:text-[#d7dcf9]'
+                        }`}
+                      >
+                        <span
+                          className={`flex h-5 w-5 items-center justify-center rounded-md border text-[9px] font-mono ${
+                            tab.active
+                              ? 'border-[#444a63] bg-[#06080d] text-[#f4f5ff]'
+                              : 'border-[#2f3444] bg-[#0a0e16] text-[#b8bed9]'
+                          }`}
+                        >
+                          C:
+                        </span>
+                        <span className="whitespace-nowrap">{tab.label}</span>
+                        <span
+                          className={`text-sm text-[#7c829d] transition ${
+                            tab.active ? 'opacity-100 group-hover:text-white' : 'opacity-0 group-hover:opacity-100 group-hover:text-[#f5f6ff]'
+                          }`}
+                        >
+                          ×
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1 text-[#d0d3e0]">
+                    <button
+                      type="button"
+                      aria-label="Minimize"
+                      className="inline-flex h-6 w-9 items-center justify-center rounded-sm text-lg leading-none hover:bg-[#1f222b]"
+                    >
+                      &#8722;
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Maximize"
+                      className="inline-flex h-6 w-9 items-center justify-center rounded-sm text-sm leading-none hover:bg-[#1f222b]"
+                    >
+                      &#9634;
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Close"
+                      className="inline-flex h-6 w-9 items-center justify-center rounded-sm text-base leading-none hover:bg-[#40242c] hover:text-[#ffd8dd]"
+                    >
+                      &#10005;
+                    </button>
+                  </div>
+                </div>
+                <div
+                  ref={terminalScrollingRef}
+                  className="max-h-[58vh] space-y-4 overflow-y-auto px-6 py-6 font-mono text-[13px] leading-relaxed text-[#d9d9e3] sm:text-[14px] scroll-smooth scrollbar-hide"
+                >
+                  {terminalEntries.map((entry, index) => (
+                    <TerminalBlock
+                      key={`${entry.command}-${index}`}
+                      command={entry.command}
+                      output={entry.output}
+                      commandChars={terminalTypingState[index]?.command}
+                      outputChars={terminalTypingState[index]?.outputs}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -458,7 +780,6 @@ const bottomCaptionChars = buildLineCharacters([typedBottomCaption], bottomCapti
     </div>
   );
 }
-
 function normalizeLeaderboardUsers(users) {
   if (!Array.isArray(users)) return [];
 
@@ -530,12 +851,6 @@ function staggerReveal(progress, index, total) {
   return clamp((progress - perItem * index) / perItem, 0, 1);
 }
 
-function typeWriter(text, progress) {
-  if (progress <= 0) return '';
-  const length = Math.floor(text.length * clamp(progress, 0, 1));
-  return text.slice(0, Math.min(length, text.length));
-}
-
 function buildLineCharacters(lines, ratio) {
   const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
   if (totalChars === 0) return lines.map(() => []);
@@ -554,6 +869,31 @@ function buildLineCharacters(lines, ratio) {
   });
 }
 
+function TerminalBlock({ command, output, commandChars = [], outputChars = [] }) {
+  const showPrompt = commandChars && commandChars.length > 0;
+  return (
+    <div className="space-y-1">
+      <p className="text-[#d9d9e3]">
+        <span
+          className={`text-[#7dd3fc] font-semibold transition-opacity duration-150 ${
+            showPrompt ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          jtech@forums:~$
+        </span>
+        <span className="ml-3 inline-flex min-h-[1.2em] flex-wrap">
+          <LineCharacters chars={commandChars} />
+        </span>
+      </p>
+      {output.map((line, idx) => (
+        <p key={`${command}-${idx}`} className="text-[#d9d9e3]/90">
+          <LineCharacters chars={(outputChars && outputChars[idx]) || []} />
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function LineCharacters({ chars }) {
   if (!chars || chars.length === 0) {
     return <span className="inline-block opacity-0">&nbsp;</span>;
@@ -567,6 +907,60 @@ function LineCharacters({ chars }) {
       {char === ' ' ? '\u00A0' : char}
     </span>
   ));
+}
+
+function buildTerminalTypingState(entries, ratio = 0) {
+  const safeRatio = clamp(ratio, 0, 1);
+  const descriptors = [];
+  let totalChars = 0;
+
+  entries.forEach((entry, entryIndex) => {
+    const commandText = entry.command || '';
+    descriptors.push({ entryIndex, type: 'command', text: commandText });
+    totalChars += commandText.length;
+    entry.output.forEach((line, lineIndex) => {
+      const lineText = line || '';
+      descriptors.push({ entryIndex, type: 'output', lineIndex, text: lineText });
+      totalChars += lineText.length;
+    });
+  });
+
+  const baseState = entries.map((entry) => ({
+    command: [],
+    outputs: entry.output.map(() => []),
+  }));
+
+  if (totalChars === 0 || safeRatio <= 0) {
+    return baseState;
+  }
+
+  let remaining = Math.floor(totalChars * safeRatio);
+
+  descriptors.forEach((item) => {
+    if (remaining <= 0) return;
+    if (item.type === 'command') {
+      baseState[item.entryIndex].command = buildSolidCharacters(item.text, item.text.length);
+      remaining -= item.text.length;
+      return;
+    }
+
+    const take = Math.min(item.text.length, remaining);
+    const chars = buildSolidCharacters(item.text, take);
+    if (typeof item.lineIndex === 'number') {
+      baseState[item.entryIndex].outputs[item.lineIndex] = chars;
+    }
+    remaining -= take;
+  });
+
+  return baseState;
+}
+
+function buildSolidCharacters(text = '', length) {
+  if (!text || length <= 0) return [];
+  return text
+    .slice(0, length)
+    .split('')
+    .map((char) => ({ char, opacity: 1 }));
 }
 
 const PREVIEW_SECTION_LENGTH = PREVIEW_END - CARD_STAGE_END;
@@ -606,5 +1000,15 @@ function collapseProgressForScroll(value) {
   }
   return collapsed;
 }
+
+
+
+
+
+
+
+
+
+
 
 
