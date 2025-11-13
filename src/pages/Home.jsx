@@ -51,8 +51,14 @@ const placementAccentClasses = [
 ];
 
 const HERO_PORTION = 0.6; // 60% of the journey for hero copy
-const CARD_STAGE_END = 0.85; // point in the journey when the card is fully in place
-const PREVIEW_END = 1; // second screen fully rendered
+const HERO_TO_CARD_PAUSE = 0.08; // dead-scroll between hero and feature card
+const CARD_TO_PREVIEW_PAUSE = 0.08; // dead-scroll between feature card and preview copy
+const CARD_STAGE_LENGTH = 0.25; // duration of the card animation itself
+const PREVIEW_STAGE_LENGTH = 0.15; // duration of the preview copy animation
+const CARD_STAGE_START = HERO_PORTION + HERO_TO_CARD_PAUSE;
+const CARD_STAGE_END = CARD_STAGE_START + CARD_STAGE_LENGTH; // point when the card is fully in place
+const PREVIEW_STAGE_START = CARD_STAGE_END + CARD_TO_PREVIEW_PAUSE;
+const PREVIEW_END = PREVIEW_STAGE_START + PREVIEW_STAGE_LENGTH; // second screen fully rendered
 const ADMIN_PAUSE = 0.15; // dead zone after preview before admin section
 const ADMIN_STAGE_LENGTH = 0.6;
 const ADMIN_STAGE_START = PREVIEW_END + ADMIN_PAUSE;
@@ -70,7 +76,7 @@ const TERMINAL_STAGE_LENGTH = 0.4;
 const TERMINAL_STAGE_START = CAPTION_STAGE_END + CAPTION_POST_PAUSE;
 const TERMINAL_STAGE_END = TERMINAL_STAGE_START + TERMINAL_STAGE_LENGTH;
 const TERMINAL_TYPE_TRAIL = 0.8;
-const TERMINAL_CHAR_SCROLL_MULT = 40;
+const TERMINAL_CHAR_SCROLL_MULT = 20;
 const TERMINAL_SCROLL_HEADROOM = 0.02; // start auto-scroll slightly before text would clip
 const TEXT_SLOWNESS = 7;
 const MAX_PROGRESS = TERMINAL_STAGE_END + TERMINAL_TYPE_TRAIL;
@@ -207,9 +213,9 @@ const terminalTabs = [
   },
 ];
 
-const AUTO_SPEED = 0.0008;
-const PREVIEW_AUTO_SPEED = 0.0006;
-const SCROLL_FACTOR = 0.0009;
+const AUTO_SPEED = 0.0004;
+const PREVIEW_AUTO_SPEED = 0.0003;
+const SCROLL_FACTOR = 0.00045;
 const PREVIEW_SCROLL_STRETCH = 6; // makes preview text require more scroll distance
 const PAUSE_SCROLL_STRETCH = 4; // makes the between-page pause require extra scrolling
 const PREVIEW_SCROLL_SCALE =
@@ -387,9 +393,13 @@ export default function Home() {
 
 const heroProgress = clamp(progress / HERO_PORTION, 0, 1);
 const cardProgress =
-  progress <= HERO_PORTION ? 0 : clamp((progress - HERO_PORTION) / (CARD_STAGE_END - HERO_PORTION), 0, 1);
+  progress <= CARD_STAGE_START
+    ? 0
+    : clamp((progress - CARD_STAGE_START) / Math.max(CARD_STAGE_END - CARD_STAGE_START, 0.0001), 0, 1);
 const previewProgress =
-  progress <= CARD_STAGE_END ? 0 : clamp((progress - CARD_STAGE_END) / (PREVIEW_END - CARD_STAGE_END), 0, 1);
+  progress <= PREVIEW_STAGE_START
+    ? 0
+    : clamp((progress - PREVIEW_STAGE_START) / Math.max(PREVIEW_END - PREVIEW_STAGE_START, 0.0001), 0, 1);
 const adminStageProgress =
   progress <= ADMIN_STAGE_START ? 0 : clamp((progress - ADMIN_STAGE_START) / (ADMIN_STAGE_END - ADMIN_STAGE_START), 0, 1);
 const captionStageProgress =
@@ -444,11 +454,6 @@ const cardSlideProgress =
   cardProgress <= CARD_ENTRY_START
     ? 0
     : clamp((cardProgress - CARD_ENTRY_START) / (1 - CARD_ENTRY_START), 0, 1);
-const revealPhase = clamp(
-  (adminStageProgress - ADMIN_PANEL_ANCHOR) / Math.max(1 - ADMIN_PANEL_ANCHOR, 0.0001),
-  0,
-  1
-);
 const textRevealProgress = captionStageProgress;
 const fakeStageProgress =
   captionStageProgress <= CAPTION_TOP_STAGE + CAPTION_BOTTOM_STAGE
@@ -486,6 +491,23 @@ const adminPanelStyle = {
   transform: `translateX(${(1 - adminStageProgress) * 180 - terminalStageProgress * 300}px) scale(${0.9 + Math.min(adminStageProgress, ADMIN_PANEL_ANCHOR) * 0.1})`,
   pointerEvents: adminStageProgress > 0.05 && terminalStageProgress < 0.1 ? 'auto' : 'none',
 };
+const showcaseRevealProgress =
+  captionStageProgress <= CAPTION_TOP_STAGE
+    ? 0
+    : clamp(
+        (captionStageProgress - CAPTION_TOP_STAGE) / Math.max(CAPTION_BOTTOM_STAGE, 0.0001),
+        0,
+        1
+      );
+const leaderboardRevealCount =
+  leaderboardStatus === 'ready' ? Math.min(leaderboardEntries.length, LEADERBOARD_LIMIT) : 0;
+const totalShowcaseItems = adminProfiles.length + leaderboardRevealCount;
+const getAdminReveal = (index) =>
+  totalShowcaseItems === 0 ? 0 : staggerReveal(showcaseRevealProgress, index, totalShowcaseItems);
+const getLeaderboardReveal = (index) =>
+  totalShowcaseItems === 0
+    ? 0
+    : staggerReveal(showcaseRevealProgress, adminProfiles.length + index, totalShowcaseItems);
 const [topCaptionChars = [], bottomCaptionChars = []] = useMemo(
   () => buildLineCharacters([topCaption, bottomCaption], captionTypingProgress),
   [captionTypingProgress]
@@ -602,7 +624,7 @@ const terminalTypingState = useMemo(
                     </div>
                     <div className="flex flex-col divide-y divide-white/5 border-t border-white/10 pt-2">
                       {adminProfiles.map((admin, index) => {
-                        const reveal = staggerReveal(revealPhase, index, adminProfiles.length);
+                        const reveal = getAdminReveal(index);
                         return (
                           <a
                             key={admin.name}
@@ -663,7 +685,7 @@ const terminalTypingState = useMemo(
                         </p>
                       )}
                       {leaderboardEntries.map((entry, index) => {
-                        const reveal = staggerReveal(revealPhase, index, leaderboardEntries.length || LEADERBOARD_LIMIT);
+                        const reveal = getLeaderboardReveal(index);
                         return (
                           <a
                             key={entry.id || entry.username || index}
