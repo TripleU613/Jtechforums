@@ -77,131 +77,93 @@ const TERMINAL_STAGE_START = CAPTION_STAGE_END + CAPTION_POST_PAUSE;
 const TERMINAL_STAGE_END = TERMINAL_STAGE_START + TERMINAL_STAGE_LENGTH;
 const TERMINAL_TYPE_TRAIL = 0.8;
 const TERMINAL_CHAR_SCROLL_MULT = 20;
-const TERMINAL_SCROLL_HEADROOM = 0.02; // start auto-scroll slightly before text would clip
+const TERMINAL_AUTO_CHAR_RATE = 45; // baseline characters per second when auto-typing kicks in
+const TERMINAL_SCROLL_MARGIN_RATIO = 0.12; // keep ~12% of viewport visible above latest line
+const TERMINAL_SCROLL_STICKY_DISTANCE = 80; // px distance from bottom treated as "pinned"
 const TEXT_SLOWNESS = 7;
 const MAX_PROGRESS = TERMINAL_STAGE_END + TERMINAL_TYPE_TRAIL;
 const terminalEntries = [
   {
     command: 'whoami',
-    output: ['Community member. Here because something on your phone went boom.'],
+    output: ['=> Community member. Here because something on your phone went boom.'],
   },
   {
     command: 'hostname',
-    output: ['forums.jtechforums.org'],
+    output: ['=> forums.jtechforums.org'],
   },
   {
     command: 'uname -a',
-    output: ['Linux JTech-Server #1 running stable since the last "how do I block WhatsApp Status" post.'],
-  },
-  {
-    command: 'uptime',
-    output: ['Forum active for years. Repeat questions answered: too many to count.'],
+    output: ['=> Linux JTech-Server #1 running stable since the last “how do I block WhatsApp Status” post.'],
   },
   {
     command: 'id',
-    output: ['uid=1000(you) groups=android_help,filters,mdm,panic-posters'],
+    output: ['=> uid=1000(you) groups=android_linux,windows,mac,panic-posters'],
   },
   {
     command: 'df -h',
-    output: ['87% space used by screenshots people uploaded instead of describing the issue.'],
-  },
-  {
-    command: 'free -h',
-    output: ['RAM consumed by filter debates: 99%', '   RAM available for patience: questionable'],
-  },
-  {
-    command: 'ls ~/Forums',
-    output: ['Guides/ Android/ Filters/ KosherPhones/ "Help-I-broke-my-device"/'],
-  },
-  {
-    command: 'cat Guides/mission.txt',
-    output: [
-      'Provide precise, up-to-date tech & filtering help to the Jewish community.',
-      '   Practical, kosher, zero balagan.',
-    ],
-  },
-  {
-    command: 'faq --question="What is JTech Forums?"',
-    output: [
-      'A safe community for filtered tech, kosher phones, apps, MDM help,',
-      '   and level-headed troubleshooting.',
-    ],
+    output: ['=> 87% space used by screenshots people uploaded instead of describing the situation.'],
   },
   {
     command: 'faq --question="Is everything kosher here?"',
     output: [
-      'Yes. Strict content standards. No inappropriate links.',
-      '   This forum is built for families -- and indexed by Google.',
+      '=> Yes. Strict content standards. No inappropriate links.',
+      '   This forum is built for families — and indexed by Google.',
       '   Keep it clean.',
     ],
   },
   {
     command: 'faq --question="Can I post any random files?"',
-    output: ['No Google Drive dumps.', '   No mystery APKs.', '   Only trusted, safe sources allowed.'],
-  },
-  {
-    command: 'faq --question="Why was my post removed?"',
     output: [
-      'Probably:',
-      '   - off-topic',
-      '   - not family-safe',
-      '   - linked to who-knows-where',
-      '   - or your cousin\'s "hack" wasn\'t actually a hack.',
+      '=> No Google Drive dumps.',
+      '   No mystery APKs.',
+      '   Only trusted, safe sources allowed.',
     ],
   },
   {
-    command: 'grep -R "Whatsapp" ./Android',
-    output: ['182 results... mostly "how block Status???"', '   Solutions exist. Take a deep breath.'],
-  },
-  {
-    command: 'grep -R "MDM" ./Filters',
-    output: ['Found: install guides, fix guides, and "pls help my kid found Developer Options"'],
-  },
-  {
-    command: 'curl https://forums.jtechforums.org/api/stats',
-    output: [
-      'signups_last_30_days: 305+',
-      '   page_visits: 100000+',
-      '   posts: 15000+',
-      '   people_helped: countless',
-    ],
+    command: 'grep -R "MDM" ./Hacking',
+    output: ['=> Found: download and install guides, fix guides, and “pls help my kid found Developer Options”'],
   },
   {
     command: 'top -b -n1 | head',
     output: [
-      'PID   TASK         CPU   DESCRIPTION',
-      '101   mods          98%   deleting nonsense',
-      '203   helpers       75%   answering same question for 12th time',
-      '404   panicd        60%   "I factory reset and now nothing works plz help"',
+      '=> PID   TASK         CPU   DESCRIPTION',
+      '=> 101   mods          98%   deleting nonsense',
+      '=> 203   helpers       75%   answering same question for 12th time',
+      '=> 404   panicd        60%   “I factory reset and now nothing works plz help”',
     ],
   },
   {
     command: 'sudo -l',
-    output: ['Sorry, you don\'t have moderator permissions. Nice try though.'],
+    output: ['=> Sorry, you don’t have moderator permissions. Nice try though.'],
   },
   {
     command: 'dmesg | tail',
-    output: ['ALERT: new thread detected about FIG phones being "hacked"', 'RESPONSE: highly unlikely. They\'re not magic, relax.'],
+    output: [
+      '=> ALERT: new thread detected about FIG phones being “hacked”',
+      '=> RESPONSE: highly unlikely. They’re not magic, relax.',
+    ],
   },
   {
     command: 'stat ~/first_post.txt',
-    output: ['size: 0 bytes', 'meaning: please include details when asking for help.'],
-  },
-  {
-    command: 'join --mode=read',
-    output: ['Browse guides. Absorb knowledge. Enjoy the calm.'],
+    output: ['=> size: 0 bytes', '=> meaning: please include details when asking for help.'],
   },
   {
     command: 'join --mode=ask',
-    output: ['Provide device, model, filter, and what you tried.', '   The more info you give, the faster you\'ll get helped.'],
-  },
-  {
-    command: 'join --mode=help-others',
-    output: ['Share your fixes. Share your setups.', '   Someone out there needs exactly what you figured out.'],
+    output: [
+      '=> Provide device, model, clear issue, and what you tried.',
+      '   The more info you give, the faster you’ll get helped.',
+    ],
   },
   {
     command: 'exit',
-    output: ['JTech Forums -- keeping your tech smooth, your phones kosher,', '   and your sanity intact.'],
+    output: [
+      '=> JTech Forums — keeping your tech smooth, your devices kosher,',
+      '   and your sanity intact.',
+    ],
+  },
+  {
+    command: '',
+    output: [' '],
   },
 ];
 
@@ -228,6 +190,9 @@ export default function Home() {
   const typingAccumulatorRef = useRef(0);
   const terminalTypedCharsRef = useRef(0);
   const terminalScrollingRef = useRef(null);
+  const terminalPinnedRef = useRef(true);
+  const typedLineCountRef = useRef(0);
+  const progressRef = useRef(0);
   const [leaderboardState, setLeaderboardState] = useState({
     entries: [],
     status: 'idle',
@@ -245,13 +210,29 @@ export default function Home() {
     [terminalEntries]
   );
 
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
+useEffect(() => {
+  if (typeof document === 'undefined') return;
+  const previousOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  return () => {
       document.body.style.overflow = previousOverflow;
     };
+  }, []);
+
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  useEffect(() => {
+    const scroller = terminalScrollingRef.current;
+    if (!scroller) return undefined;
+    const handleScroll = () => {
+      const distanceFromBottom = scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop;
+      terminalPinnedRef.current = distanceFromBottom <= TERMINAL_SCROLL_STICKY_DISTANCE;
+    };
+    handleScroll();
+    scroller.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scroller.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -319,6 +300,64 @@ export default function Home() {
       setTerminalTypedChars(0);
     }
   }, [progress]);
+
+useEffect(() => {
+  if (typeof window === 'undefined' || totalTerminalChars <= 0) return undefined;
+  let rafId = null;
+  let lastTime = window.performance.now();
+
+    const tick = (time) => {
+      const deltaSeconds = Math.max(0, (time - lastTime) / 1000);
+      lastTime = time;
+      const autoActive =
+        progressRef.current >= TERMINAL_STAGE_START && terminalTypedCharsRef.current < totalTerminalChars;
+      if (autoActive && deltaSeconds > 0) {
+        const charDelta = deltaSeconds * TERMINAL_AUTO_CHAR_RATE;
+        if (charDelta > 0) {
+          setTerminalTypedChars((prev) => {
+            if (prev >= totalTerminalChars) return prev;
+            return Math.min(totalTerminalChars, prev + charDelta);
+          });
+        }
+      }
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    rafId = window.requestAnimationFrame((time) => {
+      lastTime = time;
+      tick(time);
+    });
+
+  return () => window.cancelAnimationFrame(rafId);
+}, [totalTerminalChars]);
+
+  useEffect(() => {
+    const scroller = terminalScrollingRef.current;
+    if (!scroller || !terminalPinnedRef.current) return;
+    const available = scroller.scrollHeight - scroller.clientHeight;
+    if (available <= 0) {
+      scroller.scrollTop = 0;
+      return;
+    }
+    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
+    scroller.scrollTo({
+      top: Math.max(0, available - margin),
+      behavior: 'smooth',
+    });
+  }, [terminalTypedChars]);
+
+useEffect(() => {
+  const scroller = terminalScrollingRef.current;
+  if (!scroller) return undefined;
+  const observer = new ResizeObserver(() => {
+    if (!terminalPinnedRef.current) return;
+    const available = scroller.scrollHeight - scroller.clientHeight;
+    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
+    scroller.scrollTop = available > 0 ? Math.max(0, available - margin) : 0;
+  });
+  observer.observe(scroller);
+  return () => observer.disconnect();
+}, []);
 
 
   useEffect(() => {
@@ -407,32 +446,59 @@ const captionStageProgress =
 const terminalStageProgress =
   progress <= TERMINAL_STAGE_START ? 0 : clamp((progress - TERMINAL_STAGE_START) / (TERMINAL_STAGE_LENGTH || 0.0001), 0, 1);
 const terminalTypingProgress = totalTerminalChars > 0 ? terminalTypedChars / totalTerminalChars : 0;
+const terminalTypingState = useMemo(
+  () => buildTerminalTypingState(terminalEntries, terminalTypingProgress),
+  [terminalEntries, terminalTypingProgress]
+);
+const typedLineCount = useMemo(() => {
+  let count = 0;
+  terminalTypingState.forEach((entry) => {
+    if (!entry) return;
+    if (entry.command?.length) count += 1;
+    entry.outputs?.forEach((line) => {
+      if (line?.length) count += 1;
+    });
+  });
+  return count;
+}, [terminalTypingState]);
+const terminalTotalLines = useMemo(() => {
+  let total = 0;
+  terminalEntries.forEach((entry) => {
+    if (!entry) return;
+    if (entry.command) total += 1;
+    if (Array.isArray(entry.output)) total += entry.output.length;
+  });
+  return Math.max(total, 1);
+}, []);
 
 useEffect(() => {
   const scroller = terminalScrollingRef.current;
   if (!scroller) return undefined;
 
-  const syncScrollPosition = () => {
-    const totalHeight = scroller.scrollHeight;
-    const viewportHeight = scroller.clientHeight;
-    const available = totalHeight - viewportHeight;
+  const syncScroll = () => {
+    const available = scroller.scrollHeight - scroller.clientHeight;
     if (available <= 0) {
       scroller.scrollTop = 0;
       return;
     }
-    const visibleRatio = clamp(viewportHeight / (totalHeight || 1), 0, 1);
-    const scrollStart = clamp(visibleRatio - TERMINAL_SCROLL_HEADROOM, 0, 0.99);
-    const effectiveRange = Math.max(1 - scrollStart, 0.0001);
-    const effective = clamp((terminalTypingProgress - scrollStart) / effectiveRange, 0, 1);
-    scroller.scrollTop = available * effective;
+
+    const linesBeyondStart = Math.max(typedLineCount - 5, 0);
+    const totalBeyondStart = Math.max(terminalTotalLines - 5, 1);
+    const ratio = clamp(linesBeyondStart / totalBeyondStart, 0, 1);
+
+    const margin = scroller.clientHeight * TERMINAL_SCROLL_MARGIN_RATIO;
+    const maxScrollable = Math.max(available - margin, 0);
+    const target = ratio * maxScrollable;
+
+    scroller.scrollTo({ top: target, behavior: 'smooth' });
   };
 
-  syncScrollPosition();
-  const observer = new ResizeObserver(syncScrollPosition);
+  syncScroll();
+  const observer = new ResizeObserver(syncScroll);
   observer.observe(scroller);
 
   return () => observer.disconnect();
-}, [terminalTypingProgress]);
+}, [typedLineCount, terminalTotalLines]);
 
 const leaderboardEntries = leaderboardState.entries;
 const leaderboardStatus = leaderboardState.status;
@@ -515,11 +581,6 @@ const [topCaptionChars = [], bottomCaptionChars = []] = useMemo(
 const fakeTypingChars = buildLineCharacters(['â–ˆ'.repeat(100)], fakeStageProgress)[0] || [];
 const showFakeLine = fakeStageProgress > 0 && fakeStageProgress < 1;
 const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 2, 0, 1);
-const terminalTypingState = useMemo(
-  () => buildTerminalTypingState(terminalEntries, terminalTypingProgress),
-  [terminalEntries, terminalTypingProgress]
-);
-
   return (
     <div className="relative h-full overflow-hidden bg-slate-950 text-white">
       <div
