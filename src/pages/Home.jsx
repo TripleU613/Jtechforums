@@ -42,6 +42,8 @@ const adminProfiles = [
 
 const topCaption = 'How it is all possible';
 const bottomCaption = "You're in good hands";
+const cardTopCaption = 'Take a look, here me out';
+const cardBottomCaption = 'So you get it?';
 
 const LEADERBOARD_ID = 6;
 const LEADERBOARD_PERIOD = 'monthly';
@@ -55,8 +57,8 @@ const placementAccentClasses = [
 ];
 
 const HERO_PORTION = 0.6; // 60% of the journey for hero copy
-const HERO_TO_CARD_PAUSE = 0.08; // dead-scroll between hero and feature card
-const CARD_TO_PREVIEW_PAUSE = 0.08; // dead-scroll between feature card and preview copy
+const HERO_TO_CARD_PAUSE = 0.04;
+const CARD_TO_PREVIEW_PAUSE = 0.04;
 const CARD_STAGE_LENGTH = 0.25; // duration of the card animation itself
 const PREVIEW_STAGE_LENGTH = 0.15; // duration of the preview copy animation
 const CARD_STAGE_START = HERO_PORTION + HERO_TO_CARD_PAUSE;
@@ -89,6 +91,8 @@ const FEEDBACK_STAGE_LENGTH = 0.4;
 const FEEDBACK_STAGE_START = TERMINAL_STAGE_END + FEEDBACK_STAGE_PAUSE;
 const FEEDBACK_STAGE_END = FEEDBACK_STAGE_START + FEEDBACK_STAGE_LENGTH;
 const TEXT_SLOWNESS = 7;
+const CARD_CAPTION_TOP_PHASE = 0.65;
+const CARD_CAPTION_START = CARD_STAGE_START + 0.1;
 const MAX_PROGRESS = FEEDBACK_STAGE_END + TERMINAL_TYPE_TRAIL;
 const MIN_FEEDBACK_LENGTH = 20;
 const terminalEntries = [
@@ -208,13 +212,12 @@ const terminalTabs = [
   },
 ];
 
-const AUTO_SPEED = 0.0004;
-const PREVIEW_AUTO_SPEED = 0.0003;
 const SCROLL_FACTOR = 0.00045;
 const PREVIEW_SCROLL_STRETCH = 6; // makes preview text require more scroll distance
 const PAUSE_SCROLL_STRETCH = 4; // makes the between-page pause require extra scrolling
 const PREVIEW_SCROLL_SCALE =
   HERO_PORTION > 0 ? Math.max(((PREVIEW_END - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
+const PREVIEW_PRIMARY_SHARE = 0.65;
 
 export default function Home() {
   const navigate = useNavigate();
@@ -363,19 +366,6 @@ useEffect(() => {
     setProgress((prev) => Math.max(prev, FEEDBACK_STAGE_START));
   }, [totalTerminalChars]);
 
-  useEffect(() => {
-    let rafId;
-    const tick = () => {
-      setProgress((prev) => {
-        if (autoDisabledRef.current || prev >= HERO_PORTION) return prev;
-        return Math.min(HERO_PORTION, prev + AUTO_SPEED);
-      });
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, []);
-
 useEffect(() => {
   const handleWheel = (event) => {
     const delta = event.deltaY * SCROLL_FACTOR;
@@ -478,19 +468,6 @@ useEffect(() => {
 
 
   useEffect(() => {
-    let rafId;
-    const tick = () => {
-      setProgress((prev) => {
-        if (autoDisabledRef.current || prev < CARD_STAGE_END || prev >= PREVIEW_END) return prev;
-        return Math.min(PREVIEW_END, prev + PREVIEW_AUTO_SPEED);
-      });
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, []);
-
-  useEffect(() => {
     const controller = new AbortController();
     let cancelled = false;
 
@@ -552,7 +529,7 @@ const cardProgress =
   progress <= CARD_STAGE_START
     ? 0
     : clamp((progress - CARD_STAGE_START) / Math.max(CARD_STAGE_END - CARD_STAGE_START, 0.0001), 0, 1);
-const previewProgress =
+const rawPreviewProgress =
   progress <= PREVIEW_STAGE_START
     ? 0
     : clamp((progress - PREVIEW_STAGE_START) / Math.max(PREVIEW_END - PREVIEW_STAGE_START, 0.0001), 0, 1);
@@ -642,9 +619,7 @@ const leaderboardError = leaderboardState.error;
 const leaderboardLink = `${forumBaseUrl}/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`;
 
 const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
-const previewLineCharacters = useMemo(() => buildLineCharacters(previewLines, previewProgress), [previewProgress]);
 const heroActiveLine = useMemo(() => activeLineIndex(heroLines, heroProgress), [heroProgress]);
-const previewActiveLine = useMemo(() => activeLineIndex(previewLines, previewProgress), [previewProgress]);
 
 const FADE_START = 0.15;
 const CARD_ENTRY_START = 0.8;
@@ -717,6 +692,80 @@ const [topCaptionChars = [], bottomCaptionChars = []] = useMemo(
 const fakeTypingChars = buildLineCharacters(['â–ˆ'.repeat(100)], fakeStageProgress)[0] || [];
 const showFakeLine = fakeStageProgress > 0 && fakeStageProgress < 1;
 const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 2, 0, 1);
+const cardCaptionProgress =
+  progress <= CARD_CAPTION_START
+    ? 0
+    : clamp(
+        (progress - CARD_CAPTION_START) / Math.max(CARD_STAGE_END - CARD_CAPTION_START, 0.0001),
+        0,
+        1
+      );
+const cardTopPhase = Math.pow(
+  clamp(
+    cardCaptionProgress / Math.max(CARD_CAPTION_TOP_PHASE, 0.0001),
+    0,
+    1
+  ),
+  TEXT_SLOWNESS
+);
+const cardBottomPhase =
+  cardCaptionProgress <= CARD_CAPTION_TOP_PHASE
+    ? 0
+    : Math.pow(
+        clamp(
+          (cardCaptionProgress - CARD_CAPTION_TOP_PHASE) / Math.max(1 - CARD_CAPTION_TOP_PHASE, 0.0001),
+          0,
+          1
+        ),
+        TEXT_SLOWNESS
+      );
+const totalCardCaptionChars = cardTopCaption.length + cardBottomCaption.length;
+const cardTopShare = totalCardCaptionChars > 0 ? cardTopCaption.length / totalCardCaptionChars : 0;
+const cardBottomShare = totalCardCaptionChars > 0 ? cardBottomCaption.length / totalCardCaptionChars : 0;
+let cardCaptionTypingProgress = cardTopPhase * cardTopShare;
+if (cardCaptionProgress > CARD_CAPTION_TOP_PHASE && cardBottomShare > 0) {
+  cardCaptionTypingProgress = cardTopShare + cardBottomPhase * cardBottomShare;
+}
+cardCaptionTypingProgress = clamp(cardCaptionTypingProgress, 0, 1);
+const cardCaptionComplete = cardCaptionProgress >= 0.999;
+const previewProgress = cardCaptionComplete ? rawPreviewProgress : 0;
+const cardCaptionOpacity = clamp(cardCaptionProgress * 1.4, 0, 1) * clamp(1 - adminStageProgress * 1.4, 0, 1);
+const [cardTopCaptionChars = [], cardBottomCaptionChars = []] = useMemo(
+  () => buildLineCharacters([cardTopCaption, cardBottomCaption], cardCaptionTypingProgress),
+  [cardCaptionTypingProgress]
+);
+const previewLineProgresses = useMemo(() => {
+  if (!Array.isArray(previewLines) || previewLines.length === 0) return [];
+  const remainderShare = Math.max(1 - PREVIEW_PRIMARY_SHARE, 0);
+  const secondaryShare =
+    previewLines.length <= 1 ? 0 : remainderShare / Math.max(previewLines.length - 1, 1);
+  let start = 0;
+  return previewLines.map((_, index) => {
+    const share = index === 0 ? PREVIEW_PRIMARY_SHARE : secondaryShare;
+    if (share <= 0) {
+      return previewProgress >= start ? 1 : 0;
+    }
+    const lineProgress = clamp((previewProgress - start) / share, 0, 1);
+    start += share;
+    return lineProgress;
+  });
+}, [previewLines, previewProgress]);
+
+const previewLineCharacters = useMemo(
+  () =>
+    previewLines.map((line, index) => {
+      const chars = buildLineCharacters([line], previewLineProgresses[index] || 0);
+      return chars[0] || [];
+    }),
+  [previewLines, previewLineProgresses]
+);
+
+const previewActiveLine = useMemo(() => {
+  for (let i = 0; i < previewLineProgresses.length; i += 1) {
+    if (previewLineProgresses[i] < 1) return i;
+  }
+  return previewLineProgresses.length - 1;
+}, [previewLineProgresses]);
   return (
     <div className="relative h-full overflow-hidden bg-slate-950 text-white">
       <div
@@ -753,9 +802,26 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
               </div>
             </div>
 
+            {cardCaptionOpacity > 0 && (
+              <>
+                <div
+                  className="pointer-events-none absolute left-1/2 top-[6%] z-10 w-full max-w-[min(1200px,88vw)] -translate-x-1/2 text-center text-2xl uppercase tracking-[0.4em] text-white transition duration-300"
+                  style={{ opacity: cardCaptionOpacity }}
+                >
+                  <LineCharacters chars={cardTopCaptionChars} />
+                </div>
+                <div
+                  className="pointer-events-none absolute left-1/2 bottom-[8%] z-10 w-full max-w-[min(1200px,88vw)] -translate-x-1/2 text-center text-base uppercase tracking-[0.35em] text-slate-100 transition duration-300"
+                  style={{ opacity: cardCaptionOpacity }}
+                >
+                  <LineCharacters chars={cardBottomCaptionChars} />
+                </div>
+              </>
+            )}
+
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden={cardSlideProgress === 0}>
               <div
-                className="flex w-full max-w-[min(1700px,88vw)] flex-col rounded-[32px] border border-white/10 bg-slate-950/95 p-4 sm:p-10 lg:p-14 shadow-[0_70px_240px_rgba(2,6,23,0.78)] transition duration-600 ease-out min-h-[34rem] sm:min-h-[42rem] lg:min-h-[52rem]"
+                className="flex w-full max-w-[min(1400px,92vw)] flex-col gap-8 rounded-[32px] border border-white/10 bg-slate-950/95 px-5 py-6 sm:px-10 sm:py-10 lg:flex-row lg:items-center lg:gap-14 lg:px-14 lg:py-16 shadow-[0_70px_240px_rgba(2,6,23,0.78)] transition duration-600 ease-out"
                 style={{
                   opacity: cardSlideProgress * (1 - adminStageProgress * 1.1),
                   transform: `translateY(${(1 - cardSlideProgress) * 80}px) translateX(${-adminStageProgress * 140}px) scale(${
@@ -764,7 +830,7 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                   pointerEvents: cardSlideProgress > 0.05 ? 'auto' : 'none',
                 }}
               >
-                <div className="relative w-full overflow-hidden rounded-[24px] border border-white/15 bg-slate-900 aspect-[16/9.5] mx-auto">
+                <div className="relative mx-auto aspect-[16/9.2] w-full overflow-hidden rounded-[24px] border border-white/15 bg-slate-900 shadow-[0_30px_120px_rgba(2,6,23,0.45)] lg:flex-[1.8]">
                   <img
                     src="/img/forum.png"
                     alt="JTech Forums preview"
@@ -773,12 +839,11 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                     loading="lazy"
                   />
                 </div>
-                <div className="mt-6 space-y-3 text-base font-medium text-slate-100 sm:text-lg">
+                <div className="mx-auto w-full max-w-[580px] text-center text-base font-medium text-slate-100 sm:text-lg lg:flex-1 lg:text-left">
                   {previewLines.map((line, idx) => (
                     <p
                       key={`${idx}-${line}`}
-                      className={`text-slate-200/90 ${previewActiveLine === idx && previewProgress < 1 ? 'text-white' : ''}`}
-                      style={{ minHeight: '2.2rem' }}
+                      className={`mb-2 text-slate-200/90 ${previewActiveLine === idx && previewProgress < 1 ? 'text-white' : ''}`}
                     >
                       <LineCharacters chars={previewLineCharacters[idx]} />
                       <Cursor active={previewProgress < 1 && previewActiveLine === idx} className="h-5" />
