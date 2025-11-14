@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
 import { firestore } from '../lib/firebase';
@@ -217,6 +217,7 @@ const PREVIEW_SCROLL_SCALE =
   HERO_PORTION > 0 ? Math.max(((PREVIEW_END - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
 
 export default function Home() {
+  const navigate = useNavigate();
   const [progress, setProgress] = useState(0); // 0 - hero start, 1 - preview finished
   const autoDisabledRef = useRef(false);
   const [terminalTypedChars, setTerminalTypedChars] = useState(0);
@@ -333,6 +334,24 @@ useEffect(() => {
       }
     },
     [feedbackForm, user]
+  );
+
+  const handleFeedbackCta = useCallback(() => {
+    if (user) {
+      setFeedbackModalOpen(true);
+      return;
+    }
+    navigate('/signin');
+  }, [user, navigate]);
+
+  const handleFeedbackCardKeyDown = useCallback(
+    (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleFeedbackCta();
+      }
+    },
+    [handleFeedbackCta]
   );
 
   const skipTerminalStage = useCallback(() => {
@@ -582,6 +601,10 @@ const feedbackList = feedbackEntries && feedbackEntries.length > 0 ? feedbackEnt
 const trimmedQuote = feedbackForm.quote.trim();
 const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
 const canSubmitFeedback = Boolean(user && remainingChars <= 0);
+const feedbackCtaLabel = user ? 'Share your feedback' : 'Sign in to share feedback';
+const feedbackCtaSupportingText = user
+  ? 'Add your go-to fix or pep talk so someone else feels less alone.'
+  : 'Log in to drop your story and help the next member breathe easier.';
 
 useEffect(() => {
   const scroller = terminalScrollingRef.current;
@@ -786,24 +809,43 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                       <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
                     </article>
                   ))}
-                </div>
-                <div className="mt-8 flex flex-col items-center gap-2 text-center">
-                  <button
-                    type="button"
-                    onClick={user ? () => setFeedbackModalOpen(true) : undefined}
-                    className="inline-flex items-center justify-center rounded-2xl border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
+                  <article
+                    role="button"
+                    tabIndex={0}
+                    onClick={handleFeedbackCta}
+                    onKeyDown={handleFeedbackCardKeyDown}
+                    className="group flex h-full flex-col justify-between rounded-2xl border border-dashed border-sky-400/40 bg-gradient-to-b from-slate-900/70 to-slate-900/50 p-5 text-left transition hover:border-sky-300/80 hover:bg-slate-900/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 cursor-pointer"
                   >
-                    {user ? 'Share your feedback' : 'Sign in to share feedback'}
-                  </button>
-                  {!user && (
-                    <p className="text-xs text-slate-400">
-                      <Link to="/signin" className="text-sky-300 underline">
-                        Log in
-                      </Link>{' '}
-                      to share your experience and help the next member.
-                    </p>
-                  )}
-                  {feedbackMessage && <p className="text-xs text-slate-300">{feedbackMessage}</p>}
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Your turn</p>
+                      <p className="mt-3 text-lg font-semibold text-white">{feedbackCtaLabel}</p>
+                      <p className="mt-2 text-sm text-slate-300">{feedbackCtaSupportingText}</p>
+                    </div>
+                    <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-sky-300">
+                      <span>{user ? 'Open feedback form' : 'Go to sign in'}</span>
+                      <svg
+                        aria-hidden="true"
+                        className="h-4 w-4 transition group-hover:translate-x-1"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                    {!user && (
+                      <p className="mt-3 text-xs text-slate-400">
+                        <Link to="/signin" className="text-sky-300 underline" onClick={(event) => event.stopPropagation()}>
+                          Log in
+                        </Link>{' '}
+                        to share your experience.
+                      </p>
+                    )}
+                    {!isFeedbackModalOpen && feedbackMessage && (
+                      <p className="mt-3 text-xs text-slate-300">{feedbackMessage}</p>
+                    )}
+                  </article>
                 </div>
               </section>
             </div>
@@ -1018,7 +1060,7 @@ const textLayerOpacity = textRevealProgress * clamp(1 - terminalStageProgress * 
                 </div>
                 <div
                   ref={terminalScrollingRef}
-                  className="max-h-[58vh] space-y-4 overflow-y-auto px-6 py-6 font-mono text-[13px] leading-relaxed text-[#d9d9e3] sm:text-[14px] scroll-smooth scrollbar-hide"
+                  className="max-h-[58vh] space-y-4 overflow-hidden px-6 py-6 font-mono text-[13px] leading-relaxed text-[#d9d9e3] sm:text-[14px] scroll-smooth"
                 >
                   {terminalEntries.map((entry, index) => (
                     <TerminalBlock
