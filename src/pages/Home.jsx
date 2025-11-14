@@ -1142,13 +1142,13 @@ const previewActiveLine = useMemo(() => {
                         {feedbackStatus === 'idle' && 'Live pull from the share wall.'}
                       </div>
                     </div>
-                    <div className="flex w-full flex-col gap-5">
+                    <div className="flex w-full flex-col gap-5 lg:pr-8">
                       <article
                         role="button"
                         tabIndex={0}
                         onClick={handleFeedbackCta}
                         onKeyDown={handleFeedbackCardKeyDown}
-                        className="group cursor-pointer rounded-[24px] border border-white/10 bg-gradient-to-br from-slate-950/90 to-slate-900/60 p-5 text-left shadow-[0_24px_90px_rgba(2,6,23,0.4)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                        className="group w-full cursor-pointer rounded-[24px] border border-white/10 bg-gradient-to-br from-slate-950/90 to-slate-900/60 p-5 text-left shadow-[0_24px_90px_rgba(2,6,23,0.4)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 lg:mr-8"
                       >
                         <div className="space-y-2">
                           <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">Share your feedback</p>
@@ -1174,7 +1174,7 @@ const previewActiveLine = useMemo(() => {
                           </p>
                         )}
                       </article>
-                      <div className="rounded-[24px] border border-white/10 bg-slate-950/75 p-4 shadow-[0_20px_70px_rgba(2,6,23,0.3)]">
+                      <div className="w-full rounded-[24px] border border-white/10 bg-slate-950/75 p-4 shadow-[0_20px_70px_rgba(2,6,23,0.3)] lg:mr-8">
                         <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400">Snapshot</p>
                         <ul className="mt-3 grid gap-3 sm:grid-cols-2">
                           {feedbackHighlights.map((stat) => (
