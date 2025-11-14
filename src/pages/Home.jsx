@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
 import { firestore } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
@@ -95,6 +95,7 @@ const CARD_CAPTION_TOP_PHASE = 0.65;
 const CARD_CAPTION_START = CARD_STAGE_START + 0.1;
 const MAX_PROGRESS = FEEDBACK_STAGE_END + TERMINAL_TYPE_TRAIL;
 const MIN_FEEDBACK_LENGTH = 20;
+const MAX_FEEDBACK_NAME = 32;
 const terminalEntries = [
   {
     command: 'whoami',
@@ -187,6 +188,7 @@ const feedbackShowcase = [
     handle: '@kosherandroid',
     context: 'Galaxy A14 + TAG Guardian',
     quote: '“The apps section walked me through every step. My phone is locked down, but still useful.”',
+    fromFirestore: false,
   },
   {
     id: 'fb-2',
@@ -194,6 +196,7 @@ const feedbackShowcase = [
     handle: '@flipguy',
     context: 'Nokia 2780 & Kosher config',
     quote: '“Every time I break something, the forum already has the answer. Huge time saver.”',
+    fromFirestore: false,
   },
   {
     id: 'fb-3',
@@ -201,6 +204,7 @@ const feedbackShowcase = [
     handle: '@techmom',
     context: 'Moto G Pure for the family',
     quote: '“Needed a safe phone setup for our teens. The guidance here kept it calm, kosher, and doable.”',
+    fromFirestore: false,
   },
 ];
 
@@ -230,9 +234,10 @@ export default function Home() {
   const terminalScrollingRef = useRef(null);
   const progressRef = useRef(0);
   const { user } = useAuth();
+  const isAdmin = Boolean(user?.email === 'tripleuworld@gmail.com');
   const [feedbackEntries, setFeedbackEntries] = useState(feedbackShowcase);
   const [feedbackStatus, setFeedbackStatus] = useState('idle');
-  const [feedbackForm, setFeedbackForm] = useState({ context: '', quote: '' });
+  const [feedbackForm, setFeedbackForm] = useState({ name: '', context: '', quote: '' });
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
@@ -268,10 +273,11 @@ export default function Home() {
           const data = doc.data() || {};
           return {
             id: doc.id,
-            name: data.authorName || 'Forum member',
+            name: data.authorDisplayName || data.authorName || 'Forum member',
             handle: data.authorHandle || '@community',
             context: data.context || 'Shared setup',
             quote: data.quote || '',
+            fromFirestore: true,
           };
         });
         setFeedbackEntries(docs);
@@ -301,18 +307,26 @@ useEffect(() => {
 
   const handleFeedbackInput = (event) => {
     const { name, value } = event.target;
-    setFeedbackForm((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === 'name' ? value.slice(0, MAX_FEEDBACK_NAME) : value;
+    setFeedbackForm((prev) => ({ ...prev, [name]: nextValue }));
     setFeedbackMessage('');
   };
 
   const handleFeedbackSubmit = useCallback(
     async (event) => {
       event.preventDefault();
+      const nameValue = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
+      const quoteValue = feedbackForm.quote.trim();
+      const contextValue = feedbackForm.context.trim();
       if (!user) {
         setFeedbackMessage('Sign in first so we can link your feedback to the right account.');
         return;
       }
-      if (!feedbackForm.quote.trim()) {
+      if (!nameValue) {
+        setFeedbackMessage('Add the name you want other members to see.');
+        return;
+      }
+      if (!quoteValue) {
         setFeedbackMessage('Share a short quote before submitting.');
         return;
       }
@@ -322,12 +336,13 @@ useEffect(() => {
         await addDoc(collection(firestore, 'feedback'), {
           uid: user.uid,
           authorName: user.displayName || user.email?.split('@')[0] || 'Forum member',
+          authorDisplayName: nameValue || user.displayName || user.email?.split('@')[0] || 'Forum member',
           authorHandle: user.email ? `@${user.email.split('@')[0]}` : `@${user.uid.slice(0, 6)}`,
-          context: feedbackForm.context.trim() || 'Custom setup',
-          quote: feedbackForm.quote.trim(),
+          context: contextValue || 'Custom setup',
+          quote: quoteValue,
           createdAt: serverTimestamp(),
         });
-        setFeedbackForm({ context: '', quote: '' });
+        setFeedbackForm({ name: '', context: '', quote: '' });
         setFeedbackMessage('Submitted! A moderator will publish it shortly.');
         setFeedbackModalOpen(false);
       } catch (error) {
@@ -355,6 +370,20 @@ useEffect(() => {
       }
     },
     [handleFeedbackCta]
+  );
+
+  const handleDeleteFeedback = useCallback(
+    async (entryId) => {
+      if (!entryId || !isAdmin) return;
+      try {
+        await deleteDoc(doc(firestore, 'feedback', entryId));
+        setFeedbackEntries((prev) => prev.filter((entry) => entry.id !== entryId));
+        setFeedbackMessage('Feedback removed.');
+      } catch (error) {
+        setFeedbackMessage(error?.message || 'Unable to remove feedback right now.');
+      }
+    },
+    [firestore, isAdmin]
   );
 
   const skipTerminalStage = useCallback(() => {
@@ -576,9 +605,12 @@ const terminalTotalLines = useMemo(() => {
   return Math.max(total, 1);
 }, []);
 const feedbackList = feedbackEntries && feedbackEntries.length > 0 ? feedbackEntries : feedbackShowcase;
+const trimmedName = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
+const trimmedContext = feedbackForm.context.trim();
 const trimmedQuote = feedbackForm.quote.trim();
 const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
-const canSubmitFeedback = Boolean(user && remainingChars <= 0);
+const remainingNameChars = Math.max(MAX_FEEDBACK_NAME - feedbackForm.name.length, 0);
+const canSubmitFeedback = Boolean(user && trimmedName && remainingChars <= 0);
 const feedbackCtaLabel = user ? 'Share your feedback' : 'Sign in to share feedback';
 const feedbackCtaSupportingText = user
   ? 'Add your go-to fix or pep talk so someone else feels less alone.'
@@ -874,8 +906,21 @@ const previewActiveLine = useMemo(() => {
                       key={entry.id}
                       className="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left transition hover:border-white/30"
                     >
-                      <p className="text-base font-semibold text-white">{entry.name}</p>
-                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-base font-semibold text-white">{entry.name}</p>
+                          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
+                        </div>
+                        {isAdmin && entry.fromFirestore && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteFeedback(entry.id)}
+                            className="text-xs uppercase tracking-[0.2em] text-rose-300 hover:text-rose-200"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
                       <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
                       <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
                     </article>
@@ -1164,6 +1209,22 @@ const previewActiveLine = useMemo(() => {
             <h3 className="text-lg font-semibold text-white">Share your feedback</h3>
             <p className="mt-1 text-xs text-slate-400">Tell us how the forum or apps helped your kosher setup.</p>
             <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4 text-left">
+              <div>
+                <label htmlFor="name-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                  Display name
+                </label>
+                <input
+                  id="name-modal"
+                  name="name"
+                  type="text"
+                  value={feedbackForm.name}
+                  onChange={handleFeedbackInput}
+                  placeholder="ex. Usher W."
+                  maxLength={MAX_FEEDBACK_NAME}
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-2 text-sm text-white outline-none transition focus:border-white/40"
+                />
+                <p className="mt-1 text-xs text-slate-500">{`${remainingNameChars} characters left`}</p>
+              </div>
               <div>
                 <label htmlFor="context-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
                   Setup context

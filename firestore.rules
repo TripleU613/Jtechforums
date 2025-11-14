@@ -14,5 +14,14 @@ service cloud.firestore {
       allow update, delete: if request.auth != null
         && request.auth.token.email == "tripleuworld@gmail.com";
     }
+
+    match /users/{emailKey} {
+      function normalizedEmail(email) {
+        return email != null ? lower(email) : '';
+      }
+
+      allow read, write: if request.auth != null
+        && normalizedEmail(request.auth.token.email) == emailKey;
+    }
   }
 }
