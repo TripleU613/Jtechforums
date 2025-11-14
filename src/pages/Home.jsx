@@ -1115,78 +1115,77 @@ const previewActiveLine = useMemo(() => {
                   <p className="text-sm text-slate-400">Stories pulled straight from the feedback wall so you never feel stuck alone.</p>
                 </div>
                 <div className="mt-8 flex-1 space-y-6">
-                  <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.7fr)]">
-                    <div className="flex flex-col gap-6">
-                      {showFeedbackCarousel ? (
-                        <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-4 shadow-inner">
-                          <motion.div
-                            className="flex gap-4"
-                            animate={{ x: ['0%', '-50%'] }}
-                            transition={{
-                              duration: Math.max(feedbackList.length * 4, 16),
-                              repeat: Infinity,
-                              ease: 'linear',
-                            }}
-                          >
-                            {[...feedbackList, ...feedbackList].map((entry, index) => renderFeedbackCard(entry, index))}
-                          </motion.div>
-                        </div>
-                      ) : (
-                        <div className="grid gap-4 md:grid-cols-2">{feedbackList.map((entry, index) => renderFeedbackCard(entry, index))}</div>
-                      )}
-                      <div className="text-center text-xs text-slate-500 lg:text-left">
-                        {feedbackStatus === 'loading' && 'Syncing the latest shout-outs...'}
-                        {feedbackStatus === 'ready' && 'Updated whenever someone shares a win or fix.'}
-                        {feedbackStatus === 'empty' && 'Be the first to leave a note for the next member.'}
-                        {feedbackStatus === 'error' && !visibleFeedbackMessage && 'Forum stories are offline right now.'}
-                        {feedbackStatus === 'idle' && 'Live pull from the share wall.'}
+                  <div className="flex flex-col gap-6 pr-3 sm:pr-4 lg:pr-6">
+                    {showFeedbackCarousel ? (
+                      <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-4 shadow-inner">
+                        <motion.div
+                          className="flex gap-4"
+                          animate={{ x: ['0%', '-50%'] }}
+                          transition={{
+                            duration: Math.max(feedbackList.length * 4, 16),
+                            repeat: Infinity,
+                            ease: 'linear',
+                          }}
+                        >
+                          {[...feedbackList, ...feedbackList].map((entry, index) => renderFeedbackCard(entry, index))}
+                        </motion.div>
                       </div>
+                    ) : (
+                      <div className="grid gap-4 md:grid-cols-2">{feedbackList.map((entry, index) => renderFeedbackCard(entry, index))}</div>
+                    )}
+                    <div className="text-center text-xs text-slate-500 lg:text-left">
+                      {feedbackStatus === 'loading' && 'Syncing the latest shout-outs...'}
+                      {feedbackStatus === 'ready' && 'Updated whenever someone shares a win or fix.'}
+                      {feedbackStatus === 'empty' && 'Be the first to leave a note for the next member.'}
+                      {feedbackStatus === 'error' && !visibleFeedbackMessage && 'Forum stories are offline right now.'}
+                      {feedbackStatus === 'idle' && 'Live pull from the share wall.'}
                     </div>
-                    <div className="flex w-full flex-col gap-5 lg:pr-8">
-                      <article
-                        role="button"
-                        tabIndex={0}
-                        onClick={handleFeedbackCta}
-                        onKeyDown={handleFeedbackCardKeyDown}
-                        className="group w-full cursor-pointer rounded-[24px] border border-white/10 bg-gradient-to-br from-slate-950/90 to-slate-900/60 p-5 text-left shadow-[0_24px_90px_rgba(2,6,23,0.4)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 lg:mr-8"
+                  </div>
+                  <article
+                    role="button"
+                    tabIndex={0}
+                    onClick={handleFeedbackCta}
+                    onKeyDown={handleFeedbackCardKeyDown}
+                    className="group mx-auto w-full max-w-[min(1150px,90vw)] cursor-pointer rounded-[24px] border border-white/10 bg-gradient-to-b from-slate-950/90 to-slate-900/60 p-5 text-left shadow-[0_24px_90px_rgba(2,6,23,0.4)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                  >
+                    <div className="space-y-2">
+                      <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">Share your feedback</p>
+                      <h3 className="text-[1.35rem] font-semibold text-white">Drop a fix for the next member</h3>
+                      <p className="text-sm text-slate-300">{feedbackCtaSupportingText}</p>
+                    </div>
+                    <div className="mt-5 flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleFeedbackCta();
+                        }}
+                        className="inline-flex flex-1 items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10 sm:flex-none sm:px-5"
                       >
-                        <div className="space-y-2">
-                          <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">Share your feedback</p>
-                          <h3 className="text-[1.35rem] font-semibold text-white">Drop a fix for the next member</h3>
-                          <p className="text-sm text-slate-300">{feedbackCtaSupportingText}</p>
-                        </div>
-                        <div className="mt-5 flex flex-wrap items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleFeedbackCta();
-                            }}
-                            className="inline-flex flex-1 items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10 sm:flex-none sm:px-5"
-                          >
-                            {feedbackCtaLabel}
-                          </button>
-                          {!user && <span className="text-xs text-slate-400">Log in to share feedback.</span>}
-                        </div>
-                        {visibleFeedbackMessage && (
-                          <p className="mt-4 text-xs text-slate-300" aria-live="polite">
-                            {visibleFeedbackMessage}
-                          </p>
-                        )}
-                      </article>
-                      <div className="w-full rounded-[24px] border border-white/10 bg-slate-950/75 p-4 shadow-[0_20px_70px_rgba(2,6,23,0.3)] lg:mr-8">
-                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400">Snapshot</p>
-                        <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-                          {feedbackHighlights.map((stat) => (
-                            <li key={stat.label} className="rounded-2xl border border-white/5 bg-white/5 px-3 py-2 text-left">
-                              <p className="text-[9px] uppercase tracking-[0.35em] text-slate-400">{stat.label}</p>
-                              <p className="text-base font-semibold text-white">{stat.value}</p>
-                              <p className="text-xs text-slate-400">{stat.detail}</p>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                        {feedbackCtaLabel}
+                      </button>
+                      {!user && <span className="text-xs text-slate-400">Log in to share feedback.</span>}
                     </div>
+                    {visibleFeedbackMessage && (
+                      <p className="mt-4 text-xs text-slate-300" aria-live="polite">
+                        {visibleFeedbackMessage}
+                      </p>
+                    )}
+                  </article>
+                  <div className="mx-auto w-full max-w-[min(1150px,90vw)] rounded-[24px] border border-white/10 bg-slate-950/80 p-4 shadow-[0_20px_70px_rgba(2,6,23,0.35)]">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400">Snapshot</p>
+                      <span className="text-xs text-slate-400">Live pulse of the feedback wall</span>
+                    </div>
+                    <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+                      {feedbackHighlights.map((stat) => (
+                        <li key={stat.label} className="rounded-2xl border border-white/5 bg-white/5 px-3 py-2 text-left">
+                          <p className="text-[9px] uppercase tracking-[0.35em] text-slate-400">{stat.label}</p>
+                          <p className="text-base font-semibold text-white">{stat.value}</p>
+                          <p className="text-xs text-slate-400">{stat.detail}</p>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                   <article className="mx-auto w-full max-w-[min(100%,960px)] rounded-[26px] border border-white/10 bg-slate-950/80 p-5 shadow-[0_25px_90px_rgba(2,6,23,0.35)]">
                     <div className="flex flex-wrap items-start justify-between gap-4">
