@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import Footer from '../components/Footer';
@@ -324,6 +324,8 @@ export default function Home() {
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [activeFaqIndex, setActiveFaqIndex] = useState(null);
+  const [visibleFaqIndices, setVisibleFaqIndices] = useState([0, 1, 2]);
+  const [nextFaqIndex, setNextFaqIndex] = useState(3);
   const [leaderboardState, setLeaderboardState] = useState({
     entries: [],
     status: 'idle',
@@ -446,9 +448,33 @@ export default function Home() {
     [handleFeedbackCta]
   );
 
-  const toggleFaq = useCallback((index) => {
-    setActiveFaqIndex((prev) => (prev === index ? null : index));
-  }, []);
+  const toggleFaq = useCallback((clickedIndex) => {
+    const isClosing = activeFaqIndex === clickedIndex;
+    const previouslyActive = activeFaqIndex;
+    
+    setActiveFaqIndex(isClosing ? null : clickedIndex);
+
+    if (previouslyActive !== null && !isClosing) {
+      setVisibleFaqIndices(currentIndices => {
+        const newIndices = [...currentIndices];
+        const indexToReplace = newIndices.indexOf(previouslyActive);
+
+        if (indexToReplace !== -1) {
+          let nextIndexToInsert = nextFaqIndex;
+          const otherVisibleIndices = newIndices.filter(i => i !== previouslyActive);
+          while(otherVisibleIndices.includes(nextIndexToInsert)) {
+            nextIndexToInsert = (nextIndexToInsert + 1) % faqEntries.length;
+          }
+          
+          newIndices[indexToReplace] = nextIndexToInsert;
+          
+          setNextFaqIndex((nextIndexToInsert + 1) % faqEntries.length);
+          return newIndices;
+        }
+        return currentIndices;
+      });
+    }
+  }, [activeFaqIndex, nextFaqIndex]);
 
   const handleDeleteFeedback = useCallback(
     async (entryId) => {
@@ -1081,7 +1107,7 @@ const previewActiveLine = useMemo(() => {
                   )}
                 </div>
                 <div
-                  className="mt-12 flex flex-col items-center gap-4 text-center"
+                  className="mt-6 flex flex-col items-center gap-4 text-center"
                 >
                   <button
                     type="button"
@@ -1122,27 +1148,34 @@ const previewActiveLine = useMemo(() => {
                       <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Need-to-know</p>
                       <h3 className="text-2xl font-semibold text-white">Q&A from the community charter</h3>
                     </div>
-                    <p className="text-xs text-slate-400">
-                      Straight from the onboarding page so you never wonder about the rules.
-                    </p>
                   </div>
                   <div className="mt-6 divide-y divide-white/5">
-                    {faqEntries.map((faq, index) => {
-                      const open = activeFaqIndex === index;
-                      return (
-                        <div key={faq.question} className="py-4">
-                          <button
-                            type="button"
-                            onClick={() => toggleFaq(index)}
-                            className="flex w-full items-center justify-between text-left"
+                    <AnimatePresence initial={false}>
+                      {visibleFaqIndices.map((faqIndex) => {
+                        const faq = faqEntries[faqIndex];
+                        const open = activeFaqIndex === faqIndex;
+                        return (
+                          <motion.div
+                            key={faqIndex}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            className="py-4 overflow-hidden"
                           >
-                            <span className="text-sm font-semibold text-white">{faq.question}</span>
-                            {faqToggleIcon(open)}
-                          </button>
-                          {open && <p className="mt-2 text-xs text-slate-300">{faq.answer}</p>}
-                        </div>
-                      );
-                    })}
+                            <button
+                              type="button"
+                              onClick={() => toggleFaq(faqIndex)}
+                              className="flex w-full items-center justify-between text-left"
+                            >
+                              <span className="text-sm font-semibold text-white">{faq.question}</span>
+                              {faqToggleIcon(open)}
+                            </button>
+                            {open && <p className="mt-2 text-xs text-slate-300">{faq.answer}</p>}
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
                   </div>
                 </div>
                 <div
