@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import Footer from '../components/Footer';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
 import { firestore } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
@@ -233,6 +234,62 @@ const feedbackShowcase = [
   },
 ];
 
+const faqEntries = [
+  {
+    question: 'What is JTech Forums?',
+    answer:
+      "This forum meets the diverse tech needs of the Jewish Orthodox community—from kosher phones to coding tips—so you can find everything in one respectful space.",
+  },
+  {
+    question: 'What type of information can be found here?',
+    answer:
+      'Guides, walkthroughs, shared apps, troubleshooting threads, and beginner questions all contributed by the community to help each other out.',
+  },
+  {
+    question: 'What if I’m not sure if my post is kosher or allowed?',
+    answer: 'Ask before you publish. Moderators will gladly clarify so we keep every thread appropriate and on-mission.',
+  },
+  {
+    question: 'Can I share random download links?',
+    answer: 'Please don’t. To keep members safe, only link to trusted, verifiable sources—never anonymous drives or file dumps.',
+  },
+  {
+    question: 'How do I keep my posts helpful?',
+    answer:
+      'Use clear titles, stay on-topic, search before posting, and add real value—tips, steps, or lessons learned.',
+  },
+  {
+    question: 'What if I see spam or inappropriate content?',
+    answer: 'Flag it and move on. Enough flags alert moderators quickly, and we’ll handle the cleanup.',
+  },
+  {
+    question: 'Are disagreements allowed?',
+    answer:
+      'Absolutely. Just challenge ideas, not people. Be respectful so discussions stay productive and family-friendly.',
+  },
+  {
+    question: 'What counts as unacceptable content?',
+    answer: 'Anything obscene, offensive, hateful, or unsafe for families. Search engines index us, so keep it clean.',
+  },
+  {
+    question: 'Can I post things I didn’t create?',
+    answer: 'No. Avoid copyrighted, pirated, or mystery files unless you have permission and can vouch for them.',
+  },
+  {
+    question: 'Who runs this site?',
+    answer:
+      'You do. Moderators guide the tone, but every member keeps the platform running by sharing and reporting responsibly.',
+  },
+  {
+    question: 'Where do I go if I have forum questions?',
+    answer: 'Open a topic in Site Feedback or reach out to staff directly if it’s urgent.',
+  },
+  {
+    question: 'Do I need to agree to the Terms of Service?',
+    answer: 'Yes. Using the forum means you accept the TOS, which protects both you and the community.',
+  },
+];
+
 const terminalTabs = [
   {
     id: 'tab-primary',
@@ -266,6 +323,7 @@ export default function Home() {
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [activeFaqIndex, setActiveFaqIndex] = useState(null);
   const [leaderboardState, setLeaderboardState] = useState({
     entries: [],
     status: 'idle',
@@ -316,15 +374,6 @@ export default function Home() {
     );
     return unsubscribe;
   }, []);
-
-useEffect(() => {
-  if (typeof document === 'undefined') return;
-  const previousOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
-  return () => {
-    document.body.style.overflow = previousOverflow;
-  };
-}, []);
 
   useEffect(() => {
     progressRef.current = progress;
@@ -397,6 +446,10 @@ useEffect(() => {
     [handleFeedbackCta]
   );
 
+  const toggleFaq = useCallback((index) => {
+    setActiveFaqIndex((prev) => (prev === index ? null : index));
+  }, []);
+
   const handleDeleteFeedback = useCallback(
     async (entryId) => {
       if (!entryId || !isAdmin) return;
@@ -420,64 +473,73 @@ useEffect(() => {
     setProgress((prev) => Math.max(prev, FEEDBACK_STAGE_START));
   }, [totalTerminalChars]);
 
-useEffect(() => {
-  const handleWheel = (event) => {
-    const delta = event.deltaY * SCROLL_FACTOR;
-    const isTerminalContext = progressRef.current >= TERMINAL_STAGE_START && progressRef.current < FEEDBACK_STAGE_START;
-    const insideTerminal = terminalContainerRef.current?.contains(event.target);
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
-    if (isTerminalContext) {
-      event.preventDefault();
-    }
+  useEffect(() => {
+    const handleWheel = (event) => {
+      const delta = event.deltaY * SCROLL_FACTOR;
+      const isTerminalContext = progressRef.current >= TERMINAL_STAGE_START && progressRef.current < FEEDBACK_STAGE_START;
+      const insideTerminal = terminalContainerRef.current?.contains(event.target);
 
-    if (delta < 0) {
-      autoDisabledRef.current = true;
-    }
-
-    setProgress((prev) => {
-      const isCurrentlyTerminal = prev >= TERMINAL_STAGE_START && prev < FEEDBACK_STAGE_START;
-      if (isCurrentlyTerminal && delta > 0 && !insideTerminal) {
-        if (totalTerminalChars > 0) {
-          typingAccumulatorRef.current = 0;
-          terminalTypedCharsRef.current = totalTerminalChars;
-          setTerminalTypedChars(totalTerminalChars);
-        }
-        return clamp(Math.max(prev, FEEDBACK_STAGE_START), 0, MAX_PROGRESS);
+      if (isTerminalContext) {
+        event.preventDefault();
       }
 
-      const virtualPrev = expandProgressForScroll(prev);
-      const virtualNext = virtualPrev + delta;
-
-      if (totalTerminalChars > 0 && (virtualPrev >= TERMINAL_STAGE_START || virtualNext >= TERMINAL_STAGE_START)) {
-        typingAccumulatorRef.current += delta * TERMINAL_CHAR_SCROLL_MULT;
-        let charDelta = 0;
-        while (
-          typingAccumulatorRef.current >= 1 &&
-          terminalTypedCharsRef.current + charDelta < totalTerminalChars
-        ) {
-          typingAccumulatorRef.current -= 1;
-          charDelta += 1;
-        }
-        while (
-          typingAccumulatorRef.current <= -1 &&
-          terminalTypedCharsRef.current + charDelta > 0
-        ) {
-          typingAccumulatorRef.current += 1;
-          charDelta -= 1;
-        }
-        if (charDelta !== 0) {
-          setTerminalTypedChars((prevChars) => clamp(prevChars + charDelta, 0, totalTerminalChars));
-        }
+      if (delta < 0) {
+        autoDisabledRef.current = true;
       }
 
-      const next = collapseProgressForScroll(virtualNext);
-      return clamp(next, 0, MAX_PROGRESS);
-    });
-  };
+      setProgress((prev) => {
+        const isCurrentlyTerminal = prev >= TERMINAL_STAGE_START && prev < FEEDBACK_STAGE_START;
+        if (isCurrentlyTerminal && delta > 0 && !insideTerminal) {
+          if (totalTerminalChars > 0) {
+            typingAccumulatorRef.current = 0;
+            terminalTypedCharsRef.current = totalTerminalChars;
+            setTerminalTypedChars(totalTerminalChars);
+          }
+          return clamp(Math.max(prev, FEEDBACK_STAGE_START), 0, MAX_PROGRESS);
+        }
 
-  window.addEventListener('wheel', handleWheel, { passive: false });
-  return () => window.removeEventListener('wheel', handleWheel);
-}, [totalTerminalChars]);
+        const virtualPrev = expandProgressForScroll(prev);
+        const virtualNext = virtualPrev + delta;
+
+        if (totalTerminalChars > 0 && (virtualPrev >= TERMINAL_STAGE_START || virtualNext >= TERMINAL_STAGE_START)) {
+          typingAccumulatorRef.current += delta * TERMINAL_CHAR_SCROLL_MULT;
+          let charDelta = 0;
+          while (
+            typingAccumulatorRef.current >= 1 &&
+            terminalTypedCharsRef.current + charDelta < totalTerminalChars
+          ) {
+            typingAccumulatorRef.current -= 1;
+            charDelta += 1;
+          }
+          while (
+            typingAccumulatorRef.current <= -1 &&
+            terminalTypedCharsRef.current + charDelta > 0
+          ) {
+            typingAccumulatorRef.current += 1;
+            charDelta -= 1;
+          }
+          if (charDelta !== 0) {
+            setTerminalTypedChars((prevChars) => clamp(prevChars + charDelta, 0, totalTerminalChars));
+          }
+        }
+
+        const next = collapseProgressForScroll(virtualNext);
+        return clamp(next, 0, MAX_PROGRESS);
+      });
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [totalTerminalChars]);
 
   useEffect(() => {
     terminalTypedCharsRef.current = terminalTypedChars;
@@ -610,8 +672,8 @@ const terminalFocusScale = 1 + feedbackStageProgress * 0.35;
 const terminalFocusTranslateY = feedbackStageProgress * -20;
 const feedbackSectionStyle = {
   opacity: feedbackStageProgress,
-  transform: `translateY(${(1 - feedbackStageProgress) * 140}px) scale(${0.9 + feedbackStageProgress * 0.12})`,
-  pointerEvents: feedbackStageProgress > 0.05 ? 'auto' : 'none',
+  transform: `translateY(${(1 - feedbackStageProgress) * 520}px) scale(${0.9 + feedbackStageProgress * 0.12})`,
+  pointerEvents: feedbackStageProgress > 0.02 ? 'auto' : 'none',
 };
 const terminalTypingState = useMemo(
   () => buildTerminalTypingState(terminalEntries, terminalTypingProgress),
@@ -652,6 +714,17 @@ const feedbackCtaSupportingText = user
 const feedbackCardMessage = feedbackMessage && !feedbackMessage.includes('Missing or insufficient permissions')
   ? feedbackMessage
   : '';
+const faqToggleIcon = (open) => (
+  <svg
+    className={`h-4 w-4 transition ${open ? 'rotate-45 text-sky-300' : 'text-white/70'}`}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
+  </svg>
+);
 
 useEffect(() => {
   const scroller = terminalScrollingRef.current;
@@ -805,6 +878,7 @@ const [cardTopCaptionChars = [], cardBottomCaptionChars = []] = useMemo(
   [cardCaptionTypingProgress]
 );
 const feedbackInteractive = feedbackStageProgress > 0.05;
+const footerReveal = clamp((feedbackStageProgress - 0.65) / 0.35, 0, 1);
 const previewLineProgresses = useMemo(() => {
   if (!Array.isArray(previewLines) || previewLines.length === 0) return [];
   const remainderShare = Math.max(1 - PREVIEW_PRIMARY_SHARE, 0);
@@ -933,32 +1007,63 @@ const previewActiveLine = useMemo(() => {
                 className="w-full max-w-[min(1200px,90vw)] rounded-[32px] border border-white/10 bg-slate-950/92 p-6 sm:p-10 shadow-[0_60px_160px_rgba(2,6,23,0.68)] transition duration-500"
                 style={{ ...feedbackSectionStyle }}
               >
-                <div className="text-center space-y-3">
+                <div
+                  className="text-center space-y-3"
+                >
                   <p className="text-xs uppercase tracking-[0.4em] text-slate-400">What our users say</p>
                   <h2 className="text-2xl font-semibold text-white sm:text-3xl">Real voices from the JTech forums</h2>
                 </div>
-                {showFeedbackCarousel ? (
-                  <div className="mt-8 overflow-hidden">
-                    <motion.div
-                      className="flex gap-4"
-                      animate={{ x: ['0%', '-50%'] }}
-                      transition={{
-                        duration: feedbackList.length * 4,
-                        repeat: Infinity,
-                        ease: 'linear',
-                      }}
-                    >
-                      {[...feedbackList, ...feedbackList].map((entry, index) => (
+                <div>
+                  {showFeedbackCarousel ? (
+                    <div className="mt-8 overflow-hidden">
+                      <motion.div
+                        className="flex gap-4"
+                        animate={{ x: ['0%', '-50%'] }}
+                        transition={{
+                          duration: feedbackList.length * 4,
+                          repeat: Infinity,
+                          ease: 'linear',
+                        }}
+                      >
+                        {[...feedbackList, ...feedbackList].map((entry, index) => (
+                          <article
+                            key={`${entry.id}-${index}`}
+                            className="w-72 shrink-0 rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <p className="text-base font-semibold text-white">{entry.name}</p>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
+                              </div>
+                              {isAdmin && entry.fromFirestore && index < feedbackList.length && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteFeedback(entry.id)}
+                                  className="text-xs uppercase tracking-[0.2em] text-rose-300 hover:text-rose-200"
+                                >
+                                  Remove
+                                </button>
+                              )}
+                            </div>
+                            <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
+                            <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
+                          </article>
+                        ))}
+                      </motion.div>
+                    </div>
+                  ) : (
+                    <div className="mt-8 grid gap-4 md:grid-cols-3">
+                      {feedbackList.map((entry) => (
                         <article
-                          key={`${entry.id}-${index}`}
-                          className="w-72 shrink-0 rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left"
+                          key={entry.id}
+                          className="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left transition hover:border-white/30"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-base font-semibold text-white">{entry.name}</p>
                               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
                             </div>
-                            {isAdmin && entry.fromFirestore && index < feedbackList.length && (
+                            {isAdmin && entry.fromFirestore && (
                               <button
                                 type="button"
                                 onClick={() => handleDeleteFeedback(entry.id)}
@@ -972,37 +1077,12 @@ const previewActiveLine = useMemo(() => {
                           <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
                         </article>
                       ))}
-                    </motion.div>
-                  </div>
-                ) : (
-                  <div className="mt-8 grid gap-4 md:grid-cols-3">
-                    {feedbackList.map((entry) => (
-                      <article
-                        key={entry.id}
-                        className="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left transition hover:border-white/30"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <p className="text-base font-semibold text-white">{entry.name}</p>
-                            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
-                          </div>
-                          {isAdmin && entry.fromFirestore && (
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteFeedback(entry.id)}
-                              className="text-xs uppercase tracking-[0.2em] text-rose-300 hover:text-rose-200"
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                        <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
-                        <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
-                      </article>
-                    ))}
-                  </div>
-                )}
-                <div className="mt-12 flex flex-col items-center gap-4 text-center">
+                    </div>
+                  )}
+                </div>
+                <div
+                  className="mt-12 flex flex-col items-center gap-4 text-center"
+                >
                   <button
                     type="button"
                     onClick={handleFeedbackCta}
@@ -1032,6 +1112,47 @@ const previewActiveLine = useMemo(() => {
                   {!isFeedbackModalOpen && feedbackCardMessage && (
                     <p className="text-xs text-amber-300">{feedbackCardMessage}</p>
                   )}
+                </div>
+
+                <div
+                  className="mt-10 rounded-[28px] border border-white/10 bg-slate-900/70 p-6 sm:p-8"
+                >
+                  <div className="flex flex-col gap-2 text-left sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Need-to-know</p>
+                      <h3 className="text-2xl font-semibold text-white">Q&A from the community charter</h3>
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      Straight from the onboarding page so you never wonder about the rules.
+                    </p>
+                  </div>
+                  <div className="mt-6 divide-y divide-white/5">
+                    {faqEntries.map((faq, index) => {
+                      const open = activeFaqIndex === index;
+                      return (
+                        <div key={faq.question} className="py-4">
+                          <button
+                            type="button"
+                            onClick={() => toggleFaq(index)}
+                            className="flex w-full items-center justify-between text-left"
+                          >
+                            <span className="text-sm font-semibold text-white">{faq.question}</span>
+                            {faqToggleIcon(open)}
+                          </button>
+                          {open && <p className="mt-2 text-xs text-slate-300">{faq.answer}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div
+                  className="mt-10 rounded-[28px] border border-white/10 bg-slate-900/60 p-4 sm:p-6 transition"
+                  style={{
+                    opacity: footerReveal,
+                    transform: `translateY(${(1 - footerReveal) * 220}px)`,
+                  }}
+                >
+                  <Footer />
                 </div>
               </section>
             </div>
@@ -1343,6 +1464,7 @@ const previewActiveLine = useMemo(() => {
           </div>
         </div>
       )}
+
     </div>
   );
 }
