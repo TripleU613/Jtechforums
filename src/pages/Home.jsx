@@ -549,6 +549,7 @@ const terminalFocusTranslateY = feedbackStageProgress * -20;
 const feedbackSectionStyle = {
   opacity: feedbackStageProgress,
   transform: `translateY(${(1 - feedbackStageProgress) * 140}px) scale(${0.9 + feedbackStageProgress * 0.12})`,
+  pointerEvents: feedbackStageProgress > 0.05 ? 'auto' : 'none',
 };
 const terminalTypingState = useMemo(
   () => buildTerminalTypingState(terminalEntries, terminalTypingProgress),
@@ -734,6 +735,7 @@ const [cardTopCaptionChars = [], cardBottomCaptionChars = []] = useMemo(
   () => buildLineCharacters([cardTopCaption, cardBottomCaption], cardCaptionTypingProgress),
   [cardCaptionTypingProgress]
 );
+const feedbackInteractive = feedbackStageProgress > 0.05;
 const previewLineProgresses = useMemo(() => {
   if (!Array.isArray(previewLines) || previewLines.length === 0) return [];
   const remainderShare = Math.max(1 - PREVIEW_PRIMARY_SHARE, 0);
@@ -827,7 +829,7 @@ const previewActiveLine = useMemo(() => {
                   transform: `translateY(${(1 - cardSlideProgress) * 80}px) translateX(${-adminStageProgress * 140}px) scale(${
                     1 - adminStageProgress * 0.05
                   })`,
-                  pointerEvents: cardSlideProgress > 0.05 ? 'auto' : 'none',
+                  pointerEvents: feedbackInteractive ? 'none' : cardSlideProgress > 0.05 ? 'auto' : 'none',
                 }}
               >
                 <div className="relative mx-auto aspect-[16/9.2] w-full overflow-hidden rounded-[24px] border border-white/15 bg-slate-900 shadow-[0_30px_120px_rgba(2,6,23,0.45)] lg:flex-[1.8]">
@@ -853,10 +855,14 @@ const previewActiveLine = useMemo(() => {
               </div>
             </div>
 
-            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={feedbackStageProgress === 0}>
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              aria-hidden={feedbackStageProgress === 0}
+              style={{ zIndex: feedbackStageProgress > 0 ? 10 : 'auto' }}
+            >
               <section
                 className="w-full max-w-[min(1200px,90vw)] rounded-[32px] border border-white/10 bg-slate-950/92 p-6 sm:p-10 shadow-[0_60px_160px_rgba(2,6,23,0.68)] transition duration-500"
-                style={{ ...feedbackSectionStyle, pointerEvents: feedbackStageProgress > 0.2 ? 'auto' : 'none' }}
+                style={{ ...feedbackSectionStyle }}
               >
                 <div className="text-center space-y-3">
                   <p className="text-xs uppercase tracking-[0.4em] text-slate-400">What our users say</p>
@@ -874,48 +880,49 @@ const previewActiveLine = useMemo(() => {
                       <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
                     </article>
                   ))}
-                  <article
-                    role="button"
-                    tabIndex={0}
+                </div>
+                <div className="mt-12 flex flex-col items-center gap-4 text-center">
+                  <div>
+                    <p className="text-lg font-semibold text-white">{feedbackCtaLabel}</p>
+                    <p className="mt-1 text-sm text-slate-300">{feedbackCtaSupportingText}</p>
+                  </div>
+                  <button
+                    type="button"
                     onClick={handleFeedbackCta}
-                    onKeyDown={handleFeedbackCardKeyDown}
-                    className="group flex h-full flex-col justify-between rounded-2xl border border-dashed border-sky-400/40 bg-gradient-to-b from-slate-900/70 to-slate-900/50 p-5 text-left transition hover:border-sky-300/80 hover:bg-slate-900/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 cursor-pointer"
+                    className="group inline-flex items-center gap-3 rounded-full bg-sky-500/90 px-8 py-3 text-base font-semibold text-white transition hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
                   >
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Your turn</p>
-                      <p className="mt-3 text-lg font-semibold text-white">{feedbackCtaLabel}</p>
-                      <p className="mt-2 text-sm text-slate-300">{feedbackCtaSupportingText}</p>
-                    </div>
-                    <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-sky-300">
-                      <span>{user ? 'Open feedback form' : 'Go to sign in'}</span>
-                      <svg
-                        aria-hidden="true"
-                        className="h-4 w-4 transition group-hover:translate-x-1"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                    {!user && (
-                      <p className="mt-3 text-xs text-slate-400">
-                        <Link to="/signin" className="text-sky-300 underline" onClick={(event) => event.stopPropagation()}>
-                          Log in
-                        </Link>{' '}
-                        to share your experience.
-                      </p>
-                    )}
-                    {!isFeedbackModalOpen && feedbackMessage && (
-                      <p className="mt-3 text-xs text-slate-300">{feedbackMessage}</p>
-                    )}
-                  </article>
+                    <span>{user ? 'Open feedback form' : 'Go to sign in'}</span>
+                    <svg
+                      aria-hidden="true"
+                      className="h-5 w-5 transition group-hover:translate-x-1"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  {!user && (
+                    <p className="text-xs text-slate-400">
+                      <Link to="/signin" className="text-sky-300 underline">
+                        Log in
+                      </Link>{' '}
+                      to share your experience.
+                    </p>
+                  )}
+                  {!isFeedbackModalOpen && feedbackMessage && (
+                    <p className="mt-1 text-xs text-slate-300">{feedbackMessage}</p>
+                  )}
                 </div>
               </section>
             </div>
 
-            <div className="absolute inset-0 flex items-center justify-center" aria-hidden={adminStageProgress === 0 && terminalStageProgress === 0}>
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              aria-hidden={adminStageProgress === 0 && terminalStageProgress === 0}
+              style={{ pointerEvents: feedbackInteractive ? 'none' : adminStageProgress > 0.05 ? 'auto' : 'none' }}
+            >
               <div
                 className="pointer-events-none absolute left-1/2 top-[5%] z-10 w-full max-w-[min(1400px,88vw)] -translate-x-1/2 text-center text-2xl uppercase tracking-[0.4em] text-white transition duration-300"
                 style={{ opacity: textLayerOpacity }}
@@ -1062,6 +1069,7 @@ const previewActiveLine = useMemo(() => {
                 style={{
                   opacity: terminalFocusOpacity,
                   transform: `translateX(${(1 - terminalStageProgress) * 220}px) translateY(${terminalFocusTranslateY}px) scale(${terminalFocusScale})`,
+                  pointerEvents: feedbackInteractive ? 'none' : 'auto',
                 }}
               >
                 <div className="flex items-center justify-between rounded-t-[18px] border-b border-[#151926] bg-[#0f131f] px-3 pt-2 pb-1">
