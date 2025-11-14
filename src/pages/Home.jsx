@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
@@ -206,6 +207,30 @@ const feedbackShowcase = [
     quote: '“Needed a safe phone setup for our teens. The guidance here kept it calm, kosher, and doable.”',
     fromFirestore: false,
   },
+  {
+    id: 'fb-4',
+    name: 'Binyomin S.',
+    handle: '@flipfixer',
+    context: 'CAT S22 + KosherOS',
+    quote: '“Followed the sticky, flashed the profile, phone runs smooth with zero loopholes.”',
+    fromFirestore: false,
+  },
+  {
+    id: 'fb-5',
+    name: 'Rivky P.',
+    handle: '@momtech',
+    context: 'iPhone + ScreenTime',
+    quote: '“Shared our ScreenTime recipe—already helped two other families calm the chaos.”',
+    fromFirestore: false,
+  },
+  {
+    id: 'fb-6',
+    name: 'Chaim L.',
+    handle: '@appscoach',
+    context: 'TAG Guardian tips',
+    quote: '“We posted our Guardian checklist; now the bochurim set up phones in 5 minutes.”',
+    fromFirestore: false,
+  },
 ];
 
 const terminalTabs = [
@@ -233,8 +258,8 @@ export default function Home() {
   const terminalContainerRef = useRef(null);
   const terminalScrollingRef = useRef(null);
   const progressRef = useRef(0);
-  const { user } = useAuth();
-  const isAdmin = Boolean(user?.email === 'tripleuworld@gmail.com');
+  const { user, profile } = useAuth();
+  const isAdmin = Boolean(profile?.isAdmin);
   const [feedbackEntries, setFeedbackEntries] = useState(feedbackShowcase);
   const [feedbackStatus, setFeedbackStatus] = useState('idle');
   const [feedbackForm, setFeedbackForm] = useState({ name: '', context: '', quote: '' });
@@ -459,6 +484,14 @@ useEffect(() => {
   }, [terminalTypedChars]);
 
   useEffect(() => {
+    const handleFeedbackModalRequest = () => {
+      handleFeedbackCta();
+    };
+    window.addEventListener('openFeedbackModal', handleFeedbackModalRequest);
+    return () => window.removeEventListener('openFeedbackModal', handleFeedbackModalRequest);
+  }, [handleFeedbackCta]);
+
+  useEffect(() => {
     if (progress <= TERMINAL_STAGE_START && (terminalTypedCharsRef.current !== 0 || typingAccumulatorRef.current !== 0)) {
       typingAccumulatorRef.current = 0;
       setTerminalTypedChars(0);
@@ -605,16 +638,20 @@ const terminalTotalLines = useMemo(() => {
   return Math.max(total, 1);
 }, []);
 const feedbackList = feedbackEntries && feedbackEntries.length > 0 ? feedbackEntries : feedbackShowcase;
+const showFeedbackCarousel = feedbackList.length > 3;
 const trimmedName = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
 const trimmedContext = feedbackForm.context.trim();
 const trimmedQuote = feedbackForm.quote.trim();
 const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
 const remainingNameChars = Math.max(MAX_FEEDBACK_NAME - feedbackForm.name.length, 0);
 const canSubmitFeedback = Boolean(user && trimmedName && remainingChars <= 0);
-const feedbackCtaLabel = user ? 'Share your feedback' : 'Sign in to share feedback';
+const feedbackCtaLabel = user ? 'Share your story' : 'Sign in to share feedback';
 const feedbackCtaSupportingText = user
-  ? 'Add your go-to fix or pep talk so someone else feels less alone.'
+  ? 'Turn your fix or pep talk into relief for the next member.'
   : 'Log in to drop your story and help the next member breathe easier.';
+const feedbackCardMessage = feedbackMessage && !feedbackMessage.includes('Missing or insufficient permissions')
+  ? feedbackMessage
+  : '';
 
 useEffect(() => {
   const scroller = terminalScrollingRef.current;
@@ -900,46 +937,81 @@ const previewActiveLine = useMemo(() => {
                   <p className="text-xs uppercase tracking-[0.4em] text-slate-400">What our users say</p>
                   <h2 className="text-2xl font-semibold text-white sm:text-3xl">Real voices from the JTech forums</h2>
                 </div>
-                <div className="mt-8 grid gap-4 md:grid-cols-3">
-                  {feedbackList.map((entry) => (
-                    <article
-                      key={entry.id}
-                      className="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left transition hover:border-white/30"
+                {showFeedbackCarousel ? (
+                  <div className="mt-8 overflow-hidden">
+                    <motion.div
+                      className="flex gap-4"
+                      animate={{ x: ['0%', '-50%'] }}
+                      transition={{
+                        duration: feedbackList.length * 4,
+                        repeat: Infinity,
+                        ease: 'linear',
+                      }}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-base font-semibold text-white">{entry.name}</p>
-                          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
-                        </div>
-                        {isAdmin && entry.fromFirestore && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteFeedback(entry.id)}
-                            className="text-xs uppercase tracking-[0.2em] text-rose-300 hover:text-rose-200"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                      <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
-                      <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
-                    </article>
-                  ))}
-                </div>
-                <div className="mt-12 flex flex-col items-center gap-4 text-center">
-                  <div>
-                    <p className="text-lg font-semibold text-white">{feedbackCtaLabel}</p>
-                    <p className="mt-1 text-sm text-slate-300">{feedbackCtaSupportingText}</p>
+                      {[...feedbackList, ...feedbackList].map((entry, index) => (
+                        <article
+                          key={`${entry.id}-${index}`}
+                          className="w-72 shrink-0 rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-base font-semibold text-white">{entry.name}</p>
+                              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
+                            </div>
+                            {isAdmin && entry.fromFirestore && index < feedbackList.length && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteFeedback(entry.id)}
+                                className="text-xs uppercase tracking-[0.2em] text-rose-300 hover:text-rose-200"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                          <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
+                          <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
+                        </article>
+                      ))}
+                    </motion.div>
                   </div>
+                ) : (
+                  <div className="mt-8 grid gap-4 md:grid-cols-3">
+                    {feedbackList.map((entry) => (
+                      <article
+                        key={entry.id}
+                        className="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-900/60 p-5 text-left transition hover:border-white/30"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-base font-semibold text-white">{entry.name}</p>
+                            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{entry.context}</p>
+                          </div>
+                          {isAdmin && entry.fromFirestore && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteFeedback(entry.id)}
+                              className="text-xs uppercase tracking-[0.2em] text-rose-300 hover:text-rose-200"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <p className="mt-4 text-sm text-slate-200">{entry.quote}</p>
+                        <p className="mt-4 text-xs text-slate-400">{entry.handle}</p>
+                      </article>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-12 flex flex-col items-center gap-4 text-center">
                   <button
                     type="button"
                     onClick={handleFeedbackCta}
-                    className="group inline-flex items-center gap-3 rounded-full bg-sky-500/90 px-8 py-3 text-base font-semibold text-white transition hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                    className="group flex w-full max-w-xs items-center justify-between rounded-2xl border border-sky-400/40 bg-slate-900/80 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:border-sky-300 hover:bg-slate-900"
                   >
-                    <span>{user ? 'Open feedback form' : 'Go to sign in'}</span>
+                    <span>{feedbackCtaLabel}</span>
                     <svg
                       aria-hidden="true"
-                      className="h-5 w-5 transition group-hover:translate-x-1"
+                      className="h-4 w-4 text-sky-300 transition group-hover:translate-x-1"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -948,16 +1020,17 @@ const previewActiveLine = useMemo(() => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
+                  <p className="text-xs text-slate-400">{feedbackCtaSupportingText}</p>
                   {!user && (
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500">
                       <Link to="/signin" className="text-sky-300 underline">
                         Log in
                       </Link>{' '}
-                      to share your experience.
+                      to post.
                     </p>
                   )}
-                  {!isFeedbackModalOpen && feedbackMessage && (
-                    <p className="mt-1 text-xs text-slate-300">{feedbackMessage}</p>
+                  {!isFeedbackModalOpen && feedbackCardMessage && (
+                    <p className="text-xs text-amber-300">{feedbackCardMessage}</p>
                   )}
                 </div>
               </section>

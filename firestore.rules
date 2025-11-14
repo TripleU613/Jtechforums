@@ -15,13 +15,8 @@ service cloud.firestore {
         && request.auth.token.email == "tripleuworld@gmail.com";
     }
 
-    match /users/{emailKey} {
-      function normalizedEmail(email) {
-        return email != null ? lower(email) : '';
-      }
-
-      allow read, write: if request.auth != null
-        && normalizedEmail(request.auth.token.email) == emailKey;
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
@@ -21,6 +21,8 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setProfileOpen(false);
@@ -49,6 +51,18 @@ export default function Header() {
     await signOut(auth);
     setProfileOpen(false);
     setOpen(false);
+  };
+
+  const handleFeedbackShortcut = () => {
+    setProfileOpen(false);
+    setOpen(false);
+    const trigger = () => window.dispatchEvent(new CustomEvent('openFeedbackModal'));
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(trigger, 150);
+    } else {
+      trigger();
+    }
   };
 
   return (
@@ -110,6 +124,13 @@ export default function Header() {
                       >
                         Apps dashboard
                       </NavLink>
+                      <button
+                        type="button"
+                        className="mt-2 w-full rounded-full border border-sky-500/40 px-3 py-2 font-semibold text-sky-300 hover:border-sky-300"
+                        onClick={handleFeedbackShortcut}
+                      >
+                        Share feedback
+                      </button>
                       <button
                         type="button"
                         className="mt-2 w-full rounded-full bg-slate-800 px-3 py-2 font-semibold hover:bg-slate-700"

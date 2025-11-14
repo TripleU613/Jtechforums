@@ -28,7 +28,7 @@ const initialForm = {
 };
 
 export default function Apps() {
-  const { user, loading } = useAuth();
+  const { user, loading, profile } = useAuth();
   const [approvedApps, setApprovedApps] = useState([]);
   const [pendingApps, setPendingApps] = useState([]);
   const [formValues, setFormValues] = useState(initialForm);
@@ -41,6 +41,8 @@ export default function Apps() {
   const [catalogReady, setCatalogReady] = useState(false);
   const [catalogLoading, setCatalogLoading] = useState(true);
 
+  const isAdmin = Boolean(profile?.isAdmin || user?.email === ADMIN_EMAIL);
+
   useEffect(() => {
     setCatalogReady(false);
     setCatalogLoading(true);
@@ -52,7 +54,7 @@ export default function Apps() {
     });
 
     let unsubPending = () => {};
-    if (user?.email === ADMIN_EMAIL) {
+    if (isAdmin) {
       const pendingQuery = query(appsRef, where('status', '==', 'pending'), orderBy('createdAt', 'asc'));
       unsubPending = onSnapshot(pendingQuery, (snapshot) => {
         setPendingApps(snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })));
@@ -65,7 +67,7 @@ export default function Apps() {
       unsubApproved();
       unsubPending();
     };
-  }, [user?.email]);
+  }, [user?.email, isAdmin]);
 
   const approvedAppCards = useMemo(
     () =>
