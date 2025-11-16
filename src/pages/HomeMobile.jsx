@@ -164,7 +164,8 @@ const forumBaseUrl = getForumWebBase();
 const cheersFormatter = new Intl.NumberFormat('en-US');
 
 const MAX_FEEDBACK_NAME = 32;
-const MIN_FEEDBACK_LENGTH = 20;
+const MIN_FEEDBACK_LENGTH = 40;
+const MAX_FEEDBACK_LENGTH = 600;
 const SUPPRESSED_FEEDBACK_MESSAGES = ['Missing or insufficient permissions', 'We could not save that just yet'];
 
 export default function HomeMobile() {
@@ -254,7 +255,8 @@ export default function HomeMobile() {
 
   const handleFeedbackInput = (event) => {
     const { name, value } = event.target;
-    const nextValue = name === 'name' ? value.slice(0, MAX_FEEDBACK_NAME) : value;
+    const limit = name === 'name' ? MAX_FEEDBACK_NAME : name === 'quote' ? MAX_FEEDBACK_LENGTH : undefined;
+    const nextValue = typeof limit === 'number' ? value.slice(0, limit) : value;
     setFeedbackForm((prev) => ({ ...prev, [name]: nextValue }));
     setFeedbackMessage('');
   };
@@ -267,14 +269,14 @@ export default function HomeMobile() {
         return;
       }
       const nameValue = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
-      const quoteValue = feedbackForm.quote.trim();
+      const quoteValue = feedbackForm.quote.trim().slice(0, MAX_FEEDBACK_LENGTH);
       const contextValue = feedbackForm.context.trim();
       if (!nameValue) {
         setFeedbackMessage('Add the name you want other members to see.');
         return;
       }
       if (quoteValue.length < MIN_FEEDBACK_LENGTH) {
-        setFeedbackMessage('Share a short quote before submitting.');
+        setFeedbackMessage(`Share at least ${MIN_FEEDBACK_LENGTH} characters before submitting.`);
         return;
       }
       setFeedbackSubmitting(true);
@@ -795,7 +797,8 @@ export default function HomeMobile() {
                   rows={4}
                   value={feedbackForm.quote}
                   onChange={handleFeedbackInput}
-                  placeholder="Share the story (at least 20 characters)…"
+                  placeholder={`Share the story (max ${MAX_FEEDBACK_LENGTH} characters)…`}
+                  maxLength={MAX_FEEDBACK_LENGTH}
                   className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-sm text-white outline-none transition focus:border-white/40"
                 />
               </div>

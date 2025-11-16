@@ -19,6 +19,13 @@ import { useAuth } from '../context/AuthContext';
 import PageLoader from '../components/PageLoader';
 
 const ADMIN_EMAIL = 'tripleuworld@gmail.com';
+const MAX_FORM_LIMITS = {
+  name: 72,
+  username: 32,
+  header: 160,
+  description: 1200,
+};
+
 const initialForm = {
   name: '',
   username: '',
@@ -99,7 +106,9 @@ export default function Apps() {
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+    const limit = MAX_FORM_LIMITS[name];
+    const nextValue = typeof limit === 'number' ? value.slice(0, limit) : value;
+    setFormValues((prev) => ({ ...prev, [name]: nextValue }));
   };
 
   const handleFileChange = (event) => {
@@ -317,6 +326,7 @@ export default function Apps() {
                   autoComplete="off"
                   autoCapitalize="words"
                   enterKeyHint="next"
+                maxLength={MAX_FORM_LIMITS.header}
                 />
                 <InputField
                   label="JTech username"
@@ -351,6 +361,9 @@ export default function Apps() {
                   onChange={handleFormChange}
                   className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
                 />
+                <p className="mt-1 text-xs text-slate-400">
+                  {formValues.description.length}/{MAX_FORM_LIMITS.description} characters
+                </p>
               </div>
               <InputField
                 label="Guide or forum link"

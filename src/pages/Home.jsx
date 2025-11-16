@@ -101,7 +101,8 @@ const TEXT_SLOWNESS = 7;
 const CARD_CAPTION_TOP_PHASE = 0.65;
 const CARD_CAPTION_START = CARD_STAGE_START + 0.1;
 const MAX_PROGRESS = FEEDBACK_STAGE_END + TERMINAL_TYPE_TRAIL;
-const MIN_FEEDBACK_LENGTH = 20;
+const MIN_FEEDBACK_LENGTH = 40;
+const MAX_FEEDBACK_LENGTH = 600;
 const MAX_FEEDBACK_NAME = 32;
 const SUPPRESSED_FEEDBACK_MESSAGES = [
   'Missing or insufficient permissions',
@@ -385,7 +386,7 @@ useEffect(() => {
     async (event) => {
       event.preventDefault();
       const nameValue = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
-      const quoteValue = feedbackForm.quote.trim();
+      const quoteValue = feedbackForm.quote.trim().slice(0, MAX_FEEDBACK_LENGTH);
       const contextValue = feedbackForm.context.trim();
       if (!user) {
         setFeedbackMessage('Sign in first so we can link your feedback to the right account.');
@@ -395,8 +396,8 @@ useEffect(() => {
         setFeedbackMessage('Add the name you want other members to see.');
         return;
       }
-      if (!quoteValue) {
-        setFeedbackMessage('Share a short quote before submitting.');
+      if (quoteValue.length < MIN_FEEDBACK_LENGTH) {
+        setFeedbackMessage(`Share at least ${MIN_FEEDBACK_LENGTH} characters before submitting.`);
         return;
       }
       setFeedbackSubmitting(true);
@@ -800,8 +801,9 @@ const feedbackCarouselDuration =
   feedbackList.length > 0 ? Math.max(feedbackList.length * 6, 24) : 24;
 const trimmedName = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
 const trimmedContext = feedbackForm.context.trim();
-const trimmedQuote = feedbackForm.quote.trim();
+  const trimmedQuote = feedbackForm.quote.trim().slice(0, MAX_FEEDBACK_LENGTH);
 const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
+const remainingQuoteChars = Math.max(MAX_FEEDBACK_LENGTH - feedbackForm.quote.length, 0);
 const remainingNameChars = Math.max(MAX_FEEDBACK_NAME - feedbackForm.name.length, 0);
 const canSubmitFeedback = Boolean(user && trimmedName && remainingChars <= 0);
 const feedbackCtaLabel = user ? 'Share Feedback' : 'Log in to share feedback';
@@ -1182,7 +1184,6 @@ const previewActiveLine = useMemo(() => {
                     >
                       {feedbackCtaLabel}
                     </button>
-                    {!user && <span className="text-xs text-slate-400">Log in to share feedback.</span>}
                     {visibleFeedbackMessage && (
                       <p className="text-xs text-slate-300" aria-live="polite">
                         {visibleFeedbackMessage}
@@ -1568,12 +1569,15 @@ const previewActiveLine = useMemo(() => {
                   rows={4}
                   value={feedbackForm.quote}
                   onChange={handleFeedbackInput}
-                  placeholder="Share the story (at least 20 characters)…"
+                  placeholder={`Share the story (max ${MAX_FEEDBACK_LENGTH} characters)…`}
+                  maxLength={MAX_FEEDBACK_LENGTH}
                   className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-sm text-white outline-none transition focus:border-white/40"
                 />
-                {remainingChars > 0 && (
-                  <p className="mt-1 text-xs text-slate-500">{`Add ${remainingChars} more characters so others get the full picture.`}</p>
-                )}
+                <p className="mt-1 text-xs text-slate-500">
+                  {remainingChars > 0
+                    ? `Add ${remainingChars} more characters so others get the full picture.`
+                    : `${remainingQuoteChars} characters remaining`}
+                </p>
               </div>
               <div className="space-y-2 text-center">
                 <button
