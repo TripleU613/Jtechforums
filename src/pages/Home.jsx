@@ -64,27 +64,27 @@ const placementAccentClasses = [
 const HERO_PORTION = 0.6; // 60% of the journey for hero copy
 const HERO_NARRATIVE_START = 0.7;
 const HERO_NARRATIVE_SLOWNESS = 1.8;
-const HERO_TO_CARD_PAUSE = 0.04;
-const CARD_TO_PREVIEW_PAUSE = 0.04;
+const HERO_TO_CARD_PAUSE = 0.02;
+const CARD_TO_PREVIEW_PAUSE = 0.05;
 const CARD_STAGE_LENGTH = 0.25; // duration of the card animation itself
 const PREVIEW_STAGE_LENGTH = 0.15; // duration of the preview copy animation
 const CARD_STAGE_START = HERO_PORTION + HERO_TO_CARD_PAUSE;
 const CARD_STAGE_END = CARD_STAGE_START + CARD_STAGE_LENGTH; // point when the card is fully in place
 const PREVIEW_STAGE_START = CARD_STAGE_END + CARD_TO_PREVIEW_PAUSE;
 const PREVIEW_END = PREVIEW_STAGE_START + PREVIEW_STAGE_LENGTH; // second screen fully rendered
-const ADMIN_PAUSE = 0.15; // dead zone after preview before admin section
+const ADMIN_PAUSE = 0.08; // dead zone after preview before admin section
 const ADMIN_STAGE_LENGTH = 0.6;
 const ADMIN_STAGE_START = PREVIEW_END + ADMIN_PAUSE;
 const ADMIN_STAGE_END = ADMIN_STAGE_START + ADMIN_STAGE_LENGTH;
 const ADMIN_PANEL_ANCHOR = 0.8;
-const CAPTION_PAUSE = 0.05;
+const CAPTION_PAUSE = 0.03;
 const CAPTION_STAGE_LENGTH = 0.9;
 const CAPTION_STAGE_START = ADMIN_STAGE_END + CAPTION_PAUSE;
 const CAPTION_STAGE_END = CAPTION_STAGE_START + CAPTION_STAGE_LENGTH;
 const CAPTION_TOP_STAGE = 0.55;
 const CAPTION_BOTTOM_STAGE = 0.25;
 const CAPTION_FAKE_STAGE = 0.2;
-const CAPTION_POST_PAUSE = 0.15; // dead-scroll window after captions finish
+const CAPTION_POST_PAUSE = 0.08; // dead-scroll window after captions finish
 const TERMINAL_STAGE_LENGTH = 0.4;
 const TERMINAL_STAGE_START = CAPTION_STAGE_END + CAPTION_POST_PAUSE;
 const TERMINAL_STAGE_END = TERMINAL_STAGE_START + TERMINAL_STAGE_LENGTH;
@@ -93,7 +93,7 @@ const TERMINAL_CHAR_SCROLL_MULT = 20;
 const TERMINAL_AUTO_CHAR_RATE = 45; // baseline characters per second when auto-typing kicks in
 const TERMINAL_SCROLL_MARGIN_RATIO = 0.12; // keep ~12% of viewport visible above latest line
 const TERMINAL_SCROLL_LINE_STEP = 28; // px advance per revealed line when pinned
-const FEEDBACK_STAGE_PAUSE = 0.05;
+const FEEDBACK_STAGE_PAUSE = 0.03;
 const FEEDBACK_STAGE_LENGTH = 0.4;
 const FEEDBACK_STAGE_START = TERMINAL_STAGE_END + FEEDBACK_STAGE_PAUSE;
 const FEEDBACK_STAGE_END = FEEDBACK_STAGE_START + FEEDBACK_STAGE_LENGTH;
@@ -253,8 +253,8 @@ const terminalTabs = [
 ];
 
 const SCROLL_FACTOR = 0.00045;
-const PREVIEW_SCROLL_STRETCH = 6; // makes preview text require more scroll distance
-const PAUSE_SCROLL_STRETCH = 4; // makes the between-page pause require extra scrolling
+const PREVIEW_SCROLL_STRETCH = 4; // makes preview text require more scroll distance
+const PAUSE_SCROLL_STRETCH = 2.5; // makes the between-page pause require extra scrolling
 const PREVIEW_SCROLL_SCALE =
   HERO_PORTION > 0 ? Math.max(((PREVIEW_END - CARD_STAGE_END) / HERO_PORTION) / PREVIEW_SCROLL_STRETCH, 0.0001) : 1;
 const PREVIEW_PRIMARY_SHARE = 0.65;
@@ -767,7 +767,7 @@ const trimmedQuote = feedbackForm.quote.trim();
 const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
 const remainingNameChars = Math.max(MAX_FEEDBACK_NAME - feedbackForm.name.length, 0);
 const canSubmitFeedback = Boolean(user && trimmedName && remainingChars <= 0);
-const feedbackCtaLabel = user ? 'Open feedback form' : 'Log in to share feedback';
+const feedbackCtaLabel = user ? 'Share Feedback' : 'Log in to share feedback';
 const visibleFeedbackMessage =
   feedbackMessage && !SUPPRESSED_FEEDBACK_MESSAGES.some((phrase) => feedbackMessage?.includes(phrase))
     ? feedbackMessage
@@ -834,8 +834,8 @@ const leaderboardStatus = leaderboardState.status;
 const leaderboardError = leaderboardState.error;
 const leaderboardLink = `${forumBaseUrl}/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`;
 
-const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
 const heroActiveLine = useMemo(() => activeLineIndex(heroLines, heroProgress), [heroProgress]);
+const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
 const rawHeroNarrativeProgress =
   heroProgress <= HERO_NARRATIVE_START
     ? 0
@@ -1025,22 +1025,40 @@ const previewActiveLine = useMemo(() => {
             >
               <span className="block text-xs uppercase tracking-[0.6em] text-slate-300/80">Hey there</span>
               <div className="min-h-[12rem] space-y-4 text-3xl font-medium leading-tight text-slate-100 sm:text-4xl">
-                {heroLines.map((line, idx) => (
-                  <span
-                    key={`${idx}-${line}`}
-                    className={`block ${
-                      idx === 1 ? 'text-sky-300' : idx === 2 ? 'text-slate-200/80' : 'text-slate-100'
-                    }`}
-                  >
-                    <LineCharacters chars={heroLineCharacters[idx]} />
-                    <Cursor active={heroProgress < 1 && heroActiveLine === idx} />
-                  </span>
-                ))}
+                {heroLines.map((line, idx) => {
+                  const isActive = heroProgress < 1 && heroActiveLine === idx;
+                  const hasTypedChars = heroLineCharacters[idx]?.length > 0;
+                  if (!hasTypedChars && !isActive) {
+                    return (
+                      <span
+                        key={`${idx}-${line}`}
+                        className={`block min-h-[1.6rem] ${
+                          idx === 1 ? 'text-sky-300' : idx === 2 ? 'text-slate-200/80' : 'text-slate-100'
+                        }`}
+                      >
+                        &nbsp;
+                      </span>
+                    );
+                  }
+                  return (
+                    <span
+                      key={`${idx}-${line}`}
+                      className={`block ${
+                        idx === 1 ? 'text-sky-300' : idx === 2 ? 'text-slate-200/80' : 'text-slate-100'
+                      }`}
+                    >
+                      <LineCharacters chars={heroLineCharacters[idx]} />
+                      <Cursor active={isActive} />
+                    </span>
+                  );
+                })}
               </div>
               <div className="mt-8 space-y-4 text-left">
                 <p className="max-w-4xl text-lg leading-relaxed text-slate-100 sm:text-xl lg:text-[1.4rem] lg:leading-[2.1rem]">
                   <LineCharacters chars={heroNarrativeCharacters[0] || []} allowWrap />
-                  <Cursor active={heroNarrativeProgress < 1} className="ml-1 h-6 align-middle" />
+                  {heroNarrativeProgress > 0 && heroNarrativeProgress < 1 && (
+                    <Cursor active className="ml-1 h-6 align-middle" />
+                  )}
                 </p>
                 <div
                   className="flex flex-wrap gap-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-400"
