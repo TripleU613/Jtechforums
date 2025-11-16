@@ -960,10 +960,19 @@ cardCaptionTypingProgress = clamp(cardCaptionTypingProgress, 0, 1);
 const cardCaptionComplete = cardCaptionProgress >= 0.999;
 const previewProgress = cardCaptionComplete ? rawPreviewProgress : 0;
 const cardCaptionOpacity = clamp(cardCaptionProgress * 1.4, 0, 1) * clamp(1 - adminStageProgress * 1.4, 0, 1);
-const [cardTopCaptionChars = [], cardBottomCaptionChars = []] = useMemo(
-  () => buildLineCharacters([cardTopCaption, cardBottomCaption], cardCaptionTypingProgress),
+const cardTopCaptionChars = useMemo(
+  () => buildLineCharacters([cardTopCaption], cardCaptionTypingProgress)[0] || [],
   [cardCaptionTypingProgress]
 );
+const cardBottomCaptionChars = useMemo(() => {
+  if (cardCaptionProgress <= CARD_CAPTION_TOP_PHASE) return [];
+  const bottomProgress = clamp(
+    (cardCaptionTypingProgress - cardTopShare) / Math.max(cardBottomShare, 0.0001),
+    0,
+    1
+  );
+  return buildLineCharacters([cardBottomCaption], bottomProgress)[0] || [];
+}, [cardCaptionTypingProgress, cardCaptionProgress, cardTopShare, cardBottomShare]);
 const feedbackInteractive = feedbackStageProgress > 0.05;
 const footerReveal = clamp((feedbackStageProgress - 0.65) / 0.35, 0, 1);
 const previewLineProgresses = useMemo(() => {
@@ -1085,11 +1094,11 @@ const previewActiveLine = useMemo(() => {
                     loading="lazy"
                   />
                 </div>
-                <div className="mx-auto w-full max-w-[580px] text-center text-base font-medium text-slate-100 sm:text-lg lg:flex-1 lg:text-left">
+                <div className="mx-auto w-full max-w-[580px] text-base font-medium leading-relaxed text-slate-100 sm:text-lg lg:flex-1">
                   {previewLines.map((line, idx) => (
                     <p
                       key={`${idx}-${line}`}
-                      className={`mb-2 text-slate-200/90 ${previewActiveLine === idx && previewProgress < 1 ? 'text-white' : ''}`}
+                      className={`mb-2 text-left text-slate-200/90 ${previewActiveLine === idx && previewProgress < 1 ? 'text-white' : ''}`}
                     >
                       <LineCharacters chars={previewLineCharacters[idx]} />
                       <Cursor active={previewProgress < 1 && previewActiveLine === idx} className="h-5" />
