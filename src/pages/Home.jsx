@@ -931,12 +931,8 @@ const cardCaptionProgress =
         1
       );
 const cardTopPhase = Math.pow(
-  clamp(
-    cardCaptionProgress / Math.max(CARD_CAPTION_TOP_PHASE, 0.0001),
-    0,
-    1
-  ),
-  TEXT_SLOWNESS
+  clamp(cardCaptionProgress / Math.max(CARD_CAPTION_TOP_PHASE, 0.0001), 0, 1),
+  TEXT_SLOWNESS * 1.6
 );
 const cardBottomPhase =
   cardCaptionProgress <= CARD_CAPTION_TOP_PHASE
@@ -947,7 +943,7 @@ const cardBottomPhase =
           0,
           1
         ),
-        TEXT_SLOWNESS
+        TEXT_SLOWNESS * 1.6
       );
 const totalCardCaptionChars = cardTopCaption.length + cardBottomCaption.length;
 const cardTopShare = totalCardCaptionChars > 0 ? cardTopCaption.length / totalCardCaptionChars : 0;
