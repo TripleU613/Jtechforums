@@ -102,8 +102,8 @@ export default function About() {
   );
 
   return (
-    <Reveal as="div" className="space-y-20" amount={0.1}>
-      <section className="relative isolate overflow-hidden px-6 pb-20 pt-16 text-center">
+    <Reveal as="div" className="space-y-16 sm:space-y-20" amount={0.1}>
+      <section className="relative isolate overflow-hidden px-4 pb-14 pt-16 text-center sm:px-6 sm:pb-20">
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-60">
           <img src="/img/phonegrid.png" alt="" className="h-full w-full object-cover opacity-15" />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 to-slate-950" />
@@ -112,7 +112,7 @@ export default function About() {
           <p className="section-label text-xs uppercase text-sky-200">About JTech</p>
           <h1 className="text-4xl font-semibold text-white sm:text-6xl">Built by and for the Jewish tech community</h1>
           <p className="text-lg text-slate-300">
-            The original About page celebrated this idea. We rebuilt it here with the same stories and sections—just with better typography and glassmorphism.
+            We keep the stories and statistics grounded in what actually ships: vetted guidance, verified rollouts, and real families protected every week.
           </p>
         </div>
         <div className="mt-12 flex flex-wrap justify-center gap-6 text-center text-slate-300">
@@ -129,9 +129,9 @@ export default function About() {
         </p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading label="Mission" title="Everything kosher mobile in one trusted playbook" align="center" />
-        <div className="mt-8 space-y-5 rounded-3xl border border-white/10 bg-slate-900/70 p-8">
+        <div className="mt-8 space-y-5 rounded-3xl border border-white/10 bg-slate-900/70 p-6 sm:p-8">
           {missionParagraphs.map((paragraph) => (
             <p key={paragraph} className="text-base text-slate-200">
               {paragraph}
@@ -139,9 +139,9 @@ export default function About() {
           ))}
         </div>
       </section>
-      <section className="mx-auto max-w-6xl px-6">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading label="Past 30 days" title="Forum activity snapshot" align="center" />
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <GlassCard className="text-center">
             <p className="text-xs uppercase tracking-[0.35em] text-slate-400">New verified members</p>
             <p className="mt-4 text-3xl font-semibold text-white">{formatNumber(forumStats.newMembers30)}</p>
@@ -160,16 +160,16 @@ export default function About() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           label="What we offer"
           title="Everything you need to launch and support kosher devices"
           align="center"
         />
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {offerings.map((item) => (
             <GlassCard key={item.title}>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-sky-300">
                   <i className={`fa-solid ${item.icon} text-xl`}></i>
                 </span>
@@ -185,19 +185,19 @@ export default function About() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading label="Principles" title="How we keep the signal trustworthy" />
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {values.map((value) => (
             <GlassCard key={value.title} title={value.title} description={value.body} />
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6">
-        <div className="rounded-4xl border border-white/10 bg-slate-900/70 p-8">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="rounded-4xl border border-white/10 bg-slate-900/70 p-6 sm:p-8">
           <SectionHeading label="Team" title="Who keeps JTech running" />
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div>
               <h3 className="text-lg font-semibold text-white">Moderators & mechanchim</h3>
               <p className="mt-2 text-sm text-slate-300">
@@ -214,14 +214,14 @@ export default function About() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="glass-panel flex flex-col items-center gap-6 rounded-4xl border border-white/10 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 px-8 py-12 text-center">
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-20">
+        <div className="glass-panel flex flex-col items-center gap-6 rounded-4xl border border-white/10 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 px-6 py-10 text-center sm:px-8 sm:py-12">
           <p className="section-label text-xs uppercase text-sky-200">Get involved</p>
           <h2 className="text-3xl font-semibold text-white">Publish, mentor, or just ask a question</h2>
           <p className="text-base text-slate-200">
-            The About page always closed with an invitation to the forum. That still stands—bring your insight and help the next family ship a safe phone.
+            The About page always closed with an invitation to the forum. That still stands-bring your insight and help the next family ship a safe phone.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:justify-center">
             <a
               href="https://forums.jtechforums.org"
               target="_blank"

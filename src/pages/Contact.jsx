@@ -7,6 +7,7 @@ const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 export default function Contact() {
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
+  const [supportsTouch, setSupportsTouch] = useState(false);
 
   useEffect(() => {
     if (!RECAPTCHA_SITE_KEY) return;
@@ -17,6 +18,20 @@ export default function Contact() {
     script.defer = true;
     script.dataset.recaptcha = 'true';
     document.body.appendChild(script);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const detectTouch = () => {
+      const coarseQuery = window.matchMedia?.('(pointer: coarse)');
+      const pointerCoarse = coarseQuery ? coarseQuery.matches : false;
+      const hasTouchEvents = 'ontouchstart' in window;
+      setSupportsTouch(pointerCoarse || hasTouchEvents);
+    };
+
+    detectTouch();
+    window.addEventListener('resize', detectTouch);
+    return () => window.removeEventListener('resize', detectTouch);
   }, []);
 
   const waitForRecaptcha = () =>
@@ -95,15 +110,22 @@ export default function Contact() {
     }
   }
 
+  const submitLabel = status === 'loading' ? 'Sending…' : supportsTouch ? 'Tap to send' : 'Send message';
+
   return (
-    <Reveal as="div" className="mx-auto max-w-4xl px-6 py-16" amount={0.15}>
+    <Reveal as="div" className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16" amount={0.15}>
       <div className="text-center">
         <p className="section-label text-xs uppercase text-sky-200">Contact</p>
         <h1 className="mt-4 text-5xl font-semibold text-white">Talk to JTech</h1>
         <p className="mt-3 text-base text-slate-300">Ask for guidance, request a walkthrough, or introduce a new deployment.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-12 glass-panel rounded-3xl border border-white/10 p-8">
+      <form
+        onSubmit={handleSubmit}
+        className="mt-12 glass-panel rounded-3xl border border-white/10 p-6 sm:p-8"
+        autoComplete="on"
+        noValidate={false}
+      >
         <input type="text" name="_honey" tabIndex="-1" autoComplete="off" className="hidden" />
         <div className="grid gap-6 md:grid-cols-2">
           <fieldset>
@@ -114,7 +136,11 @@ export default function Contact() {
               id="name"
               name="name"
               required
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white focus:border-sky-400 focus:outline-none"
+              autoComplete="name"
+              autoCapitalize="words"
+              inputMode="text"
+              enterKeyHint="next"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
               placeholder="Your name"
             />
           </fieldset>
@@ -127,7 +153,10 @@ export default function Contact() {
               name="phone"
               type="tel"
               required
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white focus:border-sky-400 focus:outline-none"
+              autoComplete="tel"
+              inputMode="tel"
+              enterKeyHint="next"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
               placeholder="(123) 456-7890"
             />
           </fieldset>
@@ -140,7 +169,10 @@ export default function Contact() {
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white focus:border-sky-400 focus:outline-none"
+              autoComplete="email"
+              inputMode="email"
+              enterKeyHint="next"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
               placeholder="you@email.com"
             />
           </fieldset>
@@ -153,7 +185,9 @@ export default function Contact() {
               name="message"
               rows="5"
               required
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white focus:border-sky-400 focus:outline-none"
+              inputMode="text"
+              enterKeyHint="send"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
               placeholder="Share context, goals, timelines..."
             ></textarea>
           </fieldset>
@@ -164,11 +198,11 @@ export default function Contact() {
           disabled={status === 'loading'}
           className="w-full rounded-full bg-sky-500 px-6 py-3 text-base font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-wait"
         >
-          {status === 'loading' ? 'Sending...' : 'Send message'}
+          {submitLabel}
         </button>
 
         {message && (
-          <div className="mt-6 flex items-center justify-center">
+          <div className="mt-6 flex items-center justify-center" aria-live="polite">
             <div
               className={`flex items-center gap-3 rounded-2xl px-5 py-3 text-sm font-semibold ${
                 status === 'error'

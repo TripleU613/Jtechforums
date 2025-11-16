@@ -40,6 +40,7 @@ export default function Apps() {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [catalogReady, setCatalogReady] = useState(false);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [supportsTouch, setSupportsTouch] = useState(false);
 
   const isAdmin = Boolean(profile?.isAdmin || user?.email === ADMIN_EMAIL);
 
@@ -68,6 +69,18 @@ export default function Apps() {
       unsubPending();
     };
   }, [user?.email, isAdmin]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const detectTouch = () => {
+      const coarse = window.matchMedia?.('(pointer: coarse)')?.matches;
+      setSupportsTouch(Boolean(coarse || 'ontouchstart' in window));
+    };
+
+    detectTouch();
+    window.addEventListener('resize', detectTouch);
+    return () => window.removeEventListener('resize', detectTouch);
+  }, []);
 
   const approvedAppCards = useMemo(
     () =>
@@ -207,7 +220,7 @@ export default function Apps() {
 
   const renderSubmissionSection = () => {
     if (loading) {
-      return <p className="text-sm text-slate-300">Checking your account…</p>;
+      return <p className="text-sm text-slate-300">Checking your account...</p>;
     }
     if (!user) {
       return (
@@ -260,7 +273,7 @@ export default function Apps() {
           </div>
           <button
             type="button"
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white"
+            className="w-full rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
             onClick={() => setShowSubmissionForm((prev) => !prev)}
           >
             {showSubmissionForm ? 'Hide form' : 'Open submission'}
@@ -268,7 +281,7 @@ export default function Apps() {
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-white">Need to upload an APK?</p>
               <p className="text-xs text-slate-400">
@@ -278,7 +291,7 @@ export default function Apps() {
             <button
               type="button"
               onClick={() => setShowSubmissionForm((prev) => !prev)}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white"
             >
               <span>{showSubmissionForm ? 'Collapse' : 'Expand form'}</span>
               <i className={`fa-solid ${showSubmissionForm ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs`} />
@@ -294,8 +307,17 @@ export default function Apps() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               >
-              <div className="grid gap-4 md:grid-cols-2">
-                <InputField label="App name" name="name" value={formValues.name} onChange={handleFormChange} required />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <InputField
+                  label="App name"
+                  name="name"
+                  value={formValues.name}
+                  onChange={handleFormChange}
+                  required
+                  autoComplete="off"
+                  autoCapitalize="words"
+                  enterKeyHint="next"
+                />
                 <InputField
                   label="JTech username"
                   name="username"
@@ -303,9 +325,19 @@ export default function Apps() {
                   onChange={handleFormChange}
                   placeholder="@you"
                   required
+                  autoComplete="username"
+                  enterKeyHint="next"
                 />
               </div>
-              <InputField label="Header info" name="header" value={formValues.header} onChange={handleFormChange} required />
+              <InputField
+                label="Header info"
+                name="header"
+                value={formValues.header}
+                onChange={handleFormChange}
+                required
+                autoComplete="off"
+                enterKeyHint="next"
+              />
               <div>
                 <label className="text-sm font-semibold text-white" htmlFor="description">
                   More info

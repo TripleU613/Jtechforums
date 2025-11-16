@@ -34,24 +34,6 @@ const featureList = [
   },
 ];
 
-const faqs = [
-  {
-    question: 'What is JTech Forums?',
-    answer:
-      "It's a community built to serve the Jewish Orthodox tech space—guides, kosher phone help, coding help, and product support live together so no one is left guessing.",
-  },
-  {
-    question: 'What kind of help can I find?',
-    answer:
-      'Members post walkthroughs, app bundles, troubleshooting tips, and curated guides. Ask a question, share a win, or get expert help when you’re stuck.',
-  },
-  {
-    question: 'How do I reach moderators or admins?',
-    answer:
-      'Sign into the forum, open the Users tab, and DM any moderator/administrator. They can escalate eGate issues, approve guides, or loop in support.',
-  },
-];
-
 const slowVideoPlayback = (event) => {
   if (event?.currentTarget) {
     event.currentTarget.playbackRate = 0.8;
@@ -86,7 +68,6 @@ export default function EGate() {
       </section>
 
       <Highlights />
-      <FaqSection />
       <Cta />
     </Reveal>
   );
@@ -348,29 +329,6 @@ function ProgressiveGraphic() {
         Weekly policy drops
       </text>
     </svg>
-  );
-}
-
-function FaqSection() {
-  return (
-    <Reveal as="section" className="bg-slate-950/80 py-20" amount={0.15}>
-      <div className="mx-auto max-w-5xl px-6">
-        <h2 className="text-center text-4xl font-semibold text-white sm:text-5xl">Frequently asked questions</h2>
-        <div className="mt-12 space-y-4">
-          {faqs.map((faq) => (
-            <details key={faq.question} className="group rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-white">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold">
-                {faq.question}
-                <span className="text-sky-300 transition group-open:rotate-45">
-                  <i className="fa-solid fa-plus"></i>
-                </span>
-              </summary>
-              <p className="mt-3 text-sm text-slate-300">{faq.answer}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </Reveal>
   );
 }
 

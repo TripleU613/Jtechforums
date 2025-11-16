@@ -318,6 +318,7 @@ export default function Home() {
   const terminalTypedCharsRef = useRef(0);
   const terminalContainerRef = useRef(null);
   const terminalScrollingRef = useRef(null);
+  const touchStateRef = useRef({ active: false, lastY: 0 });
   const progressRef = useRef(0);
   const feedbackSectionRef = useRef(null);
   const { user, profile } = useAuth();
@@ -535,27 +536,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleWheel = (event) => {
-      const delta = event.deltaY * SCROLL_FACTOR;
+    const applyScrollDelta = (delta, event) => {
+      if (!delta) return;
+
+      const eventTarget = event?.target || null;
       const isTerminalContext = progressRef.current >= TERMINAL_STAGE_START && progressRef.current < FEEDBACK_STAGE_START;
-      const insideTerminal = terminalContainerRef.current?.contains(event.target);
+      const insideTerminal = eventTarget ? terminalContainerRef.current?.contains(eventTarget) : false;
       const feedbackNode = feedbackSectionRef.current;
-      const isFeedbackContext = progressRef.current >= FEEDBACK_STAGE_START && feedbackNode?.contains(event.target);
+      const isFeedbackContext = progressRef.current >= FEEDBACK_STAGE_START && feedbackNode?.contains(eventTarget);
 
       if (isFeedbackContext && feedbackNode) {
         const atTop = feedbackNode.scrollTop <= 0;
         const atBottom = Math.ceil(feedbackNode.scrollTop + feedbackNode.clientHeight) >= feedbackNode.scrollHeight;
         const scrollingDown = delta > 0;
         const scrollingUp = delta < 0;
-        const canScrollInside =
-          (scrollingDown && !atBottom) ||
-          (scrollingUp && !atTop);
+        const canScrollInside = (scrollingDown && !atBottom) || (scrollingUp && !atTop);
         if (canScrollInside) {
           return;
         }
       }
 
-      if (isTerminalContext) {
+      if (isTerminalContext && event && event.cancelable !== false) {
         event.preventDefault();
       }
 
@@ -604,8 +605,46 @@ export default function Home() {
       });
     };
 
+    const handleWheel = (event) => {
+      const delta = event.deltaY * SCROLL_FACTOR;
+      applyScrollDelta(delta, event);
+    };
+
+    const handleTouchStart = (event) => {
+      if (event.touches.length !== 1) return;
+      touchStateRef.current = {
+        active: true,
+        lastY: event.touches[0].clientY,
+      };
+    };
+
+    const handleTouchMove = (event) => {
+      const state = touchStateRef.current;
+      if (!state.active || event.touches.length !== 1) return;
+      const currentY = event.touches[0].clientY;
+      const deltaPixels = state.lastY - currentY;
+      state.lastY = currentY;
+      if (deltaPixels === 0) return;
+      applyScrollDelta(deltaPixels * SCROLL_FACTOR, event);
+    };
+
+    const handleTouchEnd = () => {
+      touchStateRef.current.active = false;
+    };
+
     window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('touchcancel', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
+    };
   }, [totalTerminalChars]);
 
   useEffect(() => {
