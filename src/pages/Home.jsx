@@ -1172,21 +1172,6 @@ const previewActiveLine = useMemo(() => {
                       </p>
                     )}
                   </article>
-                  <div className="mx-auto w-full max-w-[min(1150px,90vw)] rounded-[24px] border border-white/10 bg-slate-950/80 p-4 shadow-[0_20px_70px_rgba(2,6,23,0.35)]">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400">Snapshot</p>
-                      <span className="text-xs text-slate-400">Live pulse of the feedback wall</span>
-                    </div>
-                    <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-                      {feedbackHighlights.map((stat) => (
-                        <li key={stat.label} className="rounded-2xl border border-white/5 bg-white/5 px-3 py-2 text-left">
-                          <p className="text-[9px] uppercase tracking-[0.35em] text-slate-400">{stat.label}</p>
-                          <p className="text-base font-semibold text-white">{stat.value}</p>
-                          <p className="text-xs text-slate-400">{stat.detail}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
                   <article className="mx-auto w-full max-w-[min(100%,960px)] rounded-[26px] border border-white/10 bg-slate-950/80 p-5 shadow-[0_25px_90px_rgba(2,6,23,0.35)]">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="space-y-1">
