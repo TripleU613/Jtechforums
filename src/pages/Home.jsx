@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import Footer from '../components/Footer';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
@@ -261,6 +261,7 @@ const PREVIEW_PRIMARY_SHARE = 0.65;
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [progress, setProgress] = useState(0); // 0 - hero start, 1 - preview finished
   const autoDisabledRef = useRef(false);
   const [terminalTypedChars, setTerminalTypedChars] = useState(0);
@@ -270,6 +271,7 @@ export default function Home() {
   const terminalScrollingRef = useRef(null);
   const touchStateRef = useRef({ active: false, lastY: 0 });
   const progressRef = useRef(0);
+  const lastResetTokenRef = useRef(null);
   const feedbackSectionRef = useRef(null);
   const { user, profile } = useAuth();
   const isAdmin = Boolean(profile?.isAdmin);
@@ -298,6 +300,41 @@ export default function Home() {
       ),
     [terminalEntries]
   );
+  const resetHomeJourney = useCallback(() => {
+    autoDisabledRef.current = false;
+    typingAccumulatorRef.current = 0;
+    terminalTypedCharsRef.current = 0;
+    setTerminalTypedChars(0);
+    progressRef.current = 0;
+    setProgress(0);
+    const scroller = terminalScrollingRef.current;
+    if (scroller) scroller.scrollTop = 0;
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (!params.has('home')) return;
+    resetHomeJourney();
+    params.delete('home');
+    const search = params.toString();
+    navigate(
+      `${location.pathname}${search ? `?${search}` : ''}`,
+      { replace: true, state: location.state }
+    );
+  }, [location.search, location.pathname, location.state, navigate, resetHomeJourney]);
+
+useEffect(() => {
+  const token = location.state?.resetHome;
+  if (!token || token === lastResetTokenRef.current) return;
+  lastResetTokenRef.current = token;
+  resetHomeJourney();
+  const { resetHome, ...rest } = location.state || {};
+  const hasRest = Object.keys(rest).length > 0;
+  navigate(`${location.pathname}${location.search}`, {
+    replace: true,
+    state: hasRest ? rest : null,
+  });
+}, [location.state?.resetHome, location.pathname, location.search, navigate, resetHomeJourney]);
   useEffect(() => {
     const feedbackRef = collection(firestore, 'feedback');
     const feedbackQuery = query(feedbackRef, orderBy('createdAt', 'desc'), limit(6));

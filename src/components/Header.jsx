@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { signOut } from 'firebase/auth';
@@ -23,6 +23,9 @@ export default function Header() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const goHome = useCallback(() => {
+    navigate('/', { state: { resetHome: Date.now() } });
+  }, [navigate]);
 
   useEffect(() => {
     setProfileOpen(false);
@@ -68,20 +71,24 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <NavLink to="/" className="flex items-center">
+        <button type="button" className="flex items-center" onClick={goHome}>
           <img src="/img/whitelogo.png" alt="JTech logo" className="h-10 w-auto" />
-        </NavLink>
+        </button>
 
         <div className="hidden items-center gap-8 md:flex">
-          {navLinks.map(({ label, to }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) => `${baseLinkClasses} ${isActive ? 'text-sky-300' : ''}`}
-            >
-              {label}
-            </NavLink>
-          ))}
+          {navLinks.map(({ label, to }) => {
+            const isHome = to === '/';
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={isHome ? (event) => { event.preventDefault(); goHome(); } : undefined}
+                className={({ isActive }) => `${baseLinkClasses} ${isActive ? 'text-sky-300' : ''}`}
+              >
+                {label}
+              </NavLink>
+            );
+          })}
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -158,11 +165,27 @@ export default function Header() {
       {open && (
         <div className="border-t border-white/10 bg-slate-950/95 px-6 py-6 md:hidden">
           <div className="flex flex-col gap-4 text-sm font-semibold text-white">
-            {navLinks.map(({ label, to }) => (
-              <NavLink key={to} to={to} onClick={() => setOpen(false)} className="uppercase tracking-wide">
-                {label}
-              </NavLink>
-            ))}
+            {navLinks.map(({ label, to }) => {
+              const isHome = to === '/';
+              return (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={
+                    isHome
+                      ? (event) => {
+                          event.preventDefault();
+                          setOpen(false);
+                          goHome();
+                        }
+                      : () => setOpen(false)
+                  }
+                  className="uppercase tracking-wide"
+                >
+                  {label}
+                </NavLink>
+              );
+            })}
             {!user ? (
               <NavLink
                 to="/signin"
