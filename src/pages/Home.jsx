@@ -13,9 +13,11 @@ const heroLines = [
   'The leading Jewish filtering & tech forum.',
   'Everything here is written by the community for the community.',
 ];
+const heroNarrative =
+  'JTech Forums is where kosher tech conversations stay focused. Unlike sprawling boards such as Reddit, XDA, or Stack Overflow -- where off-topic noise or inappropriate language slip in -- every thread here is moderated by frum volunteers who understand the exact devices, filters, and scenarios you face. Jump in, share a setup, and see how quickly the community shows up to help.';
 
 const previewLines = [
-  'Every post in this feed is written by real JTech members solving real kosher tech problems.',
+  'Curated setups, moderator tips, and field-tested fixes are published here long before they trend anywhere else.',
   'Browse the latest app drops, FAQs, and walkthroughs, then jump into the thread when you need more.',
 ];
 
@@ -60,6 +62,8 @@ const placementAccentClasses = [
 ];
 
 const HERO_PORTION = 0.6; // 60% of the journey for hero copy
+const HERO_NARRATIVE_START = 0.7;
+const HERO_NARRATIVE_SLOWNESS = 1.8;
 const HERO_TO_CARD_PAUSE = 0.04;
 const CARD_TO_PREVIEW_PAUSE = 0.04;
 const CARD_STAGE_LENGTH = 0.25; // duration of the card animation itself
@@ -832,6 +836,20 @@ const leaderboardLink = `${forumBaseUrl}/leaderboard/${LEADERBOARD_ID}?period=${
 
 const heroLineCharacters = useMemo(() => buildLineCharacters(heroLines, heroProgress), [heroProgress]);
 const heroActiveLine = useMemo(() => activeLineIndex(heroLines, heroProgress), [heroProgress]);
+const rawHeroNarrativeProgress =
+  heroProgress <= HERO_NARRATIVE_START
+    ? 0
+    : clamp(
+        (heroProgress - HERO_NARRATIVE_START) / Math.max(1 - HERO_NARRATIVE_START, 0.0001),
+        0,
+        1
+      );
+const heroNarrativeProgress = Math.pow(rawHeroNarrativeProgress, HERO_NARRATIVE_SLOWNESS);
+const heroNarrativeCharacters = useMemo(
+  () => buildLineCharacters([heroNarrative], heroNarrativeProgress),
+  [heroNarrativeProgress]
+);
+const heroBadgeOpacity = clamp((heroNarrativeProgress - 0.9) / 0.1, 0, 1);
 
 const FADE_START = 0.15;
 const CARD_ENTRY_START = 0.8;
@@ -1013,6 +1031,20 @@ const previewActiveLine = useMemo(() => {
                     <Cursor active={heroProgress < 1 && heroActiveLine === idx} />
                   </span>
                 ))}
+              </div>
+              <div className="mt-8 space-y-4 text-left">
+                <p className="max-w-4xl text-lg leading-relaxed text-slate-100 sm:text-xl lg:text-[1.4rem] lg:leading-[2.1rem]">
+                  <LineCharacters chars={heroNarrativeCharacters[0] || []} allowWrap />
+                  <Cursor active={heroNarrativeProgress < 1} className="ml-1 h-6 align-middle" />
+                </p>
+                <div
+                  className="flex flex-wrap gap-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-400"
+                  style={{ opacity: heroBadgeOpacity, transform: `translateY(${(1 - heroBadgeOpacity) * 12}px)` }}
+                >
+                  <span className="rounded-full border border-white/15 px-4 py-1">Community-run</span>
+                  <span className="rounded-full border border-white/15 px-4 py-1">Kosher-first</span>
+                  <span className="rounded-full border border-white/15 px-4 py-1">Moderated daily</span>
+                </div>
               </div>
             </div>
 
@@ -1614,9 +1646,13 @@ function TerminalBlock({ command, output, commandChars = [], outputChars = [] })
   );
 }
 
-function LineCharacters({ chars }) {
+function LineCharacters({ chars, allowWrap = false }) {
   if (!chars || chars.length === 0) {
     return <span className="inline-block opacity-0">&nbsp;</span>;
+  }
+  if (allowWrap) {
+    const text = chars.map(({ char }) => char).join('');
+    return <span className="whitespace-pre-wrap">{text}</span>;
   }
   return chars.map(({ char, opacity }, idx) => (
     <span

@@ -13,6 +13,8 @@ const heroLines = [
   'The leading Jewish filtering & tech forum.',
   'Everything here is written by the community for the community.',
 ];
+const heroNarrative =
+  'JTech Forums is where kosher tech conversations stay focused. Unlike sprawling boards such as Reddit, XDA, or Stack Overflow -- where off-topic noise or inappropriate language slip in -- every thread here is moderated by frum volunteers who understand the exact devices, filters, and scenarios you face. Jump in, share a setup, and see how quickly the community shows up to help.';
 
 const previewLines = [
   'Every post in this feed is written by real JTech members solving real kosher tech problems.',
@@ -466,12 +468,21 @@ export default function HomeMobile() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <section className={`${sectionContainer} py-12 text-center`}>
-        <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">Hey there</p>
-        <h1 className="mx-auto mt-4 max-w-md text-3xl font-semibold leading-snug text-white sm:text-4xl">{heroLines[0]}</h1>
-        <p className="mx-auto mt-3 max-w-md text-lg text-slate-200 sm:text-xl">{heroLines[1]}</p>
-        <p className="mx-auto mt-2 max-w-md text-sm text-slate-400 sm:text-base">{heroLines[2]}</p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <section className={`${sectionContainer} py-12`}>
+        <div className="space-y-3 text-center">
+          <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400">Hey there</p>
+          <h1 className="mx-auto max-w-md text-3xl font-semibold leading-snug text-white sm:text-4xl">{heroLines[0]}</h1>
+          <p className="mx-auto max-w-xl text-base text-slate-200 sm:text-lg">{heroLines[1]}</p>
+          <p className="mx-auto max-w-xl text-sm text-slate-400 sm:text-base">{heroLines[2]}</p>
+        </div>
+        <div className="mx-auto mt-6 max-w-2xl rounded-[28px] border border-white/10 bg-slate-950/60 p-5 text-left shadow-[0_25px_80px_rgba(2,6,23,0.45)] sm:p-6 sm:text-center">
+          <p className="text-sm leading-relaxed text-slate-200 sm:text-base">{heroNarrative}</p>
+          <div className="mt-4 flex flex-col gap-2 text-xs uppercase tracking-[0.3em] text-slate-400 sm:flex-row sm:justify-center">
+            <span className="rounded-full border border-white/15 px-4 py-1">Community-run</span>
+            <span className="rounded-full border border-white/15 px-4 py-1">Kosher-first</span>
+          </div>
+        </div>
+        <div className="mt-8 flex flex-col gap-3 text-center sm:flex-row sm:justify-center">
           <a
             href="https://forums.jtechforums.org"
             target="_blank"
