@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import Footer from '../components/Footer';
@@ -659,23 +659,25 @@ export default function HomeMobile() {
           )}
           {feedbackLoopEntries.length > 0 ? (
             <div className="relative h-[360px] overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-4 sm:h-[420px] sm:p-5">
-              <motion.div
-                className="flex flex-col gap-4"
-                animate={{ y: ['0%', '-50%'] }}
-                transition={{
-                  duration: feedbackCarouselDuration,
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                  ease: 'linear',
-                }}
-                aria-live="polite"
-              >
-                {feedbackLoopEntries.map((entry, loopIndex) => (
-                  <div key={`${entry?.id || entry?.name || 'feedback'}-${loopIndex}`} className="w-full">
-                    {renderFeedbackCard(entry)}
-                  </div>
-                ))}
-              </motion.div>
+              <MotionConfig reducedMotion="never">
+                <motion.div
+                  className="flex flex-col gap-4"
+                  animate={{ y: ['0%', '-50%'] }}
+                  transition={{
+                    duration: feedbackCarouselDuration,
+                    repeat: Infinity,
+                    repeatType: 'loop',
+                    ease: 'linear',
+                  }}
+                  aria-live="polite"
+                >
+                  {feedbackLoopEntries.map((entry, loopIndex) => (
+                    <div key={`${entry?.id || entry?.name || 'feedback'}-${loopIndex}`} className="w-full">
+                      {renderFeedbackCard(entry)}
+                    </div>
+                  ))}
+                </motion.div>
+              </MotionConfig>
             </div>
           ) : (
             <div className="rounded-3xl border border-dashed border-white/15 bg-slate-900/50 p-6 text-center text-sm text-slate-300">
