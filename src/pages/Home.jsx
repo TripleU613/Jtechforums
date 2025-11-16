@@ -44,8 +44,8 @@ const adminProfiles = [
 
 const topCaption = 'How it is all possible';
 const bottomCaption = "You're in good hands";
-const cardTopCaption = 'Take a look, here me out';
-const cardBottomCaption = 'So you get it?';
+const cardTopCaption = 'Dial in the overview';
+const cardBottomCaption = 'Read. Learn. Post smarter.';
 
 const LEADERBOARD_ID = 6;
 const LEADERBOARD_PERIOD = 'monthly';
@@ -443,43 +443,35 @@ export default function Home() {
     navigate('/signin');
   }, [user, navigate]);
 
-  const handleFeedbackCardKeyDown = useCallback(
-    (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        handleFeedbackCta();
+  const toggleFaq = useCallback(
+    (clickedIndex) => {
+      const isClosing = activeFaqIndex === clickedIndex;
+      const previouslyActive = activeFaqIndex;
+
+      setActiveFaqIndex(isClosing ? null : clickedIndex);
+
+      if (previouslyActive !== null && !isClosing) {
+        setVisibleFaqIndices((current) => {
+          const newIndices = [...current];
+          const indexToReplace = newIndices.indexOf(previouslyActive);
+
+          if (indexToReplace !== -1) {
+            let nextIndexToInsert = nextFaqIndex;
+            const otherVisible = newIndices.filter((value) => value !== previouslyActive);
+            while (otherVisible.includes(nextIndexToInsert)) {
+              nextIndexToInsert = (nextIndexToInsert + 1) % faqEntries.length;
+            }
+
+            newIndices[indexToReplace] = nextIndexToInsert;
+            setNextFaqIndex((nextIndexToInsert + 1) % faqEntries.length);
+            return newIndices;
+          }
+          return current;
+        });
       }
     },
-    [handleFeedbackCta]
+    [activeFaqIndex, nextFaqIndex]
   );
-
-  const toggleFaq = useCallback((clickedIndex) => {
-    const isClosing = activeFaqIndex === clickedIndex;
-    const previouslyActive = activeFaqIndex;
-    
-    setActiveFaqIndex(isClosing ? null : clickedIndex);
-
-    if (previouslyActive !== null && !isClosing) {
-      setVisibleFaqIndices(currentIndices => {
-        const newIndices = [...currentIndices];
-        const indexToReplace = newIndices.indexOf(previouslyActive);
-
-        if (indexToReplace !== -1) {
-          let nextIndexToInsert = nextFaqIndex;
-          const otherVisibleIndices = newIndices.filter(i => i !== previouslyActive);
-          while(otherVisibleIndices.includes(nextIndexToInsert)) {
-            nextIndexToInsert = (nextIndexToInsert + 1) % faqEntries.length;
-          }
-          
-          newIndices[indexToReplace] = nextIndexToInsert;
-          
-          setNextFaqIndex((nextIndexToInsert + 1) % faqEntries.length);
-          return newIndices;
-        }
-        return currentIndices;
-      });
-    }
-  }, [activeFaqIndex, nextFaqIndex]);
 
   const handleDeleteFeedback = useCallback(
     async (entryId) => {
@@ -496,16 +488,12 @@ export default function Home() {
   );
 
   const renderFeedbackCard = useCallback(
-    (entry, index) => {
+    (entry) => {
       if (!entry) return null;
-      const cardKey = entry.id || `${entry.name || 'member'}-${index}`;
       const canRemoveEntry = Boolean(isAdmin && entry.fromFirestore && entry.id);
       return (
-        <article
-          key={cardKey}
-          className="flex min-w-[260px] flex-1 flex-col rounded-[28px] border border-white/10 bg-gradient-to-b from-slate-950/90 via-slate-900/80 to-slate-900/60 p-5 text-left shadow-[0_25px_90px_rgba(2,6,23,0.35)]"
-        >
-          <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.35em] text-slate-400">
+        <article className="flex h-full flex-col rounded-[24px] border border-white/10 bg-slate-900/70 p-5 text-left shadow-[0_22px_70px_rgba(2,6,23,0.4)]">
+          <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-slate-400">
             <span className="truncate">{entry.context || 'Shared setup'}</span>
             {canRemoveEntry && (
               <button
@@ -517,10 +505,7 @@ export default function Home() {
               </button>
             )}
           </div>
-          <p className="mt-4 flex-1 text-lg leading-relaxed text-slate-100">
-            <span className="text-sky-300">“</span>
-            <span className="line-clamp-4">{entry.quote || 'Shared by the community.'}</span>
-          </p>
+          <p className="mt-4 flex-1 text-base leading-relaxed text-slate-100">{entry.quote || 'Shared by the community.'}</p>
           <div className="mt-5 text-sm font-semibold text-white">
             {entry.name || 'Forum member'}
             {entry.handle && <span className="ml-2 text-xs font-normal text-slate-400">{entry.handle}</span>}
@@ -782,18 +767,11 @@ const terminalTotalLines = useMemo(() => {
   });
   return Math.max(total, 1);
 }, []);
-const feedbackList = feedbackEntries && feedbackEntries.length > 0 ? feedbackEntries : feedbackShowcase;
-const showFeedbackCarousel = feedbackList.length > 3;
-const feedbackQuoteLengths = feedbackList.map((entry) => Math.max(entry?.quote?.length || 0, 0));
-const avgFeedbackChars =
-  feedbackQuoteLengths.length > 0
-    ? Math.round(feedbackQuoteLengths.reduce((sum, value) => sum + value, 0) / feedbackQuoteLengths.length)
-    : 0;
-const feedbackHighlights = [
-  { label: 'Live stories', value: `${feedbackList.length}+`, detail: 'Approved community shout-outs' },
-  { label: 'Avg. note length', value: avgFeedbackChars ? `${avgFeedbackChars} chars` : '—', detail: 'Plenty of context without rambling' },
-  { label: 'Mod turnaround', value: 'Under 12h', detail: 'Human review before anything publishes' },
-];
+const hasRealtimeFeedback = feedbackStatus === 'ready';
+const feedbackList = hasRealtimeFeedback ? feedbackEntries : feedbackShowcase;
+const feedbackLoopEntries = feedbackList.length > 0 ? [...feedbackList, ...feedbackList] : [];
+const feedbackCarouselDuration =
+  feedbackList.length > 0 ? Math.max(feedbackList.length * 6, 24) : 24;
 const trimmedName = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
 const trimmedContext = feedbackForm.context.trim();
 const trimmedQuote = feedbackForm.quote.trim();
@@ -801,13 +779,18 @@ const remainingChars = Math.max(MIN_FEEDBACK_LENGTH - trimmedQuote.length, 0);
 const remainingNameChars = Math.max(MAX_FEEDBACK_NAME - feedbackForm.name.length, 0);
 const canSubmitFeedback = Boolean(user && trimmedName && remainingChars <= 0);
 const feedbackCtaLabel = user ? 'Open feedback form' : 'Log in to share feedback';
-const feedbackCtaSupportingText = user
-  ? 'Turn your fix or pep talk into relief for the next member.'
-  : 'Log in to drop your story and help the next member breathe easier.';
 const visibleFeedbackMessage =
   feedbackMessage && !SUPPRESSED_FEEDBACK_MESSAGES.some((phrase) => feedbackMessage?.includes(phrase))
     ? feedbackMessage
     : '';
+const feedbackStatusMessage = (() => {
+  if (feedbackStatus === 'loading') return 'Syncing the latest shout-outs...';
+  if (feedbackStatus === 'ready') return 'Updated whenever someone shares a win or fix.';
+  if (feedbackStatus === 'empty') return 'Be the first to leave a note for the next member.';
+  if (feedbackStatus === 'error' && !visibleFeedbackMessage) return 'Forum stories are offline right now.';
+  if (feedbackStatus === 'idle') return 'Live pull from the share wall.';
+  return '';
+})();
 const visibleFaqCards =
   faqEntries.length > 0
     ? visibleFaqIndices.map((index) => {
@@ -1065,7 +1048,7 @@ const previewActiveLine = useMemo(() => {
               </>
             )}
 
-            <div className="absolute inset-0 flex items-center justify-center pt-12 sm:pt-16 lg:pt-20" aria-hidden={cardSlideProgress === 0}>
+            <div className="absolute inset-0 flex items-center justify-center py-10 sm:py-16" aria-hidden={cardSlideProgress === 0}>
               <div
                 className="flex w-full max-w-[min(1400px,92vw)] flex-col gap-8 rounded-[32px] border border-white/10 bg-slate-950/95 px-5 py-6 sm:px-10 sm:py-10 lg:flex-row lg:items-center lg:gap-14 lg:px-14 lg:py-16 shadow-[0_70px_240px_rgba(2,6,23,0.78)] transition duration-600 ease-out"
                 style={{
@@ -1100,124 +1083,111 @@ const previewActiveLine = useMemo(() => {
             </div>
 
             <div
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-start justify-center pt-4 sm:pt-6 lg:pt-6 pb-4 sm:pb-6"
               aria-hidden={feedbackStageProgress === 0}
               style={{ zIndex: feedbackStageProgress > 0 ? 10 : 'auto' }}
             >
               <section
                 ref={feedbackSectionRef}
-                className="scrollbar-hide flex w-full max-w-[min(1150px,90vw)] flex-col rounded-[28px] border border-white/10 bg-slate-950/92 p-5 sm:p-8 shadow-[0_50px_150px_rgba(2,6,23,0.6)] transition duration-500 overflow-y-auto overscroll-contain"
-                style={{ ...feedbackSectionStyle, minHeight: 'min(80vh, 880px)' }}
+                className="scrollbar-hide flex w-full max-w-[min(1200px,92vw)] flex-col gap-10 rounded-[32px] border border-white/10 bg-slate-950/92 p-6 pb-32 sm:p-10 sm:pb-36 shadow-[0_50px_150px_rgba(2,6,23,0.6)] transition duration-500 overflow-y-auto overscroll-contain"
+                style={feedbackSectionStyle}
               >
-                <div className="text-center space-y-3">
-                  <p className="text-xs uppercase tracking-[0.4em] text-slate-400">What our users say</p>
-                  <h2 className="text-2xl font-semibold text-white sm:text-3xl">Real voices from the JTech forums</h2>
-                  <p className="text-sm text-slate-400">Stories pulled straight from the feedback wall so you never feel stuck alone.</p>
-                </div>
-                <div className="mt-8 flex-1 space-y-6">
-                  <div className="flex flex-col gap-6 pr-3 sm:pr-4 lg:pr-6">
-                    {showFeedbackCarousel ? (
-                      <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-4 shadow-inner">
-                        <motion.div
-                          className="flex gap-4"
-                          animate={{ x: ['0%', '-50%'] }}
-                          transition={{
-                            duration: Math.max(feedbackList.length * 4, 16),
-                            repeat: Infinity,
-                            ease: 'linear',
-                          }}
-                        >
-                          {[...feedbackList, ...feedbackList].map((entry, index) => renderFeedbackCard(entry, index))}
-                        </motion.div>
-                      </div>
-                    ) : (
-                      <div className="grid gap-4 md:grid-cols-2">{feedbackList.map((entry, index) => renderFeedbackCard(entry, index))}</div>
-                    )}
-                    <div className="text-center text-xs text-slate-500 lg:text-left">
-                      {feedbackStatus === 'loading' && 'Syncing the latest shout-outs...'}
-                      {feedbackStatus === 'ready' && 'Updated whenever someone shares a win or fix.'}
-                      {feedbackStatus === 'empty' && 'Be the first to leave a note for the next member.'}
-                      {feedbackStatus === 'error' && !visibleFeedbackMessage && 'Forum stories are offline right now.'}
-                      {feedbackStatus === 'idle' && 'Live pull from the share wall.'}
-                    </div>
+                <div className="space-y-6 text-center sm:text-left">
+                  <div className="space-y-2">
+                    <p className="text-xs uppercase tracking-[0.4em] text-slate-400">Community stories</p>
+                    <h2 className="text-3xl font-semibold text-white sm:text-4xl">Real feedback from JTech members</h2>
                   </div>
-                  <article
-                    role="button"
-                    tabIndex={0}
-                    onClick={handleFeedbackCta}
-                    onKeyDown={handleFeedbackCardKeyDown}
-                    className="group mx-auto w-full max-w-[min(1150px,90vw)] cursor-pointer rounded-[24px] border border-white/10 bg-gradient-to-b from-slate-950/90 to-slate-900/60 p-5 text-left shadow-[0_24px_90px_rgba(2,6,23,0.4)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-                  >
-                    <div className="space-y-2">
-                      <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">Share your feedback</p>
-                      <h3 className="text-[1.35rem] font-semibold text-white">Drop a fix for the next member</h3>
-                      <p className="text-sm text-slate-300">{feedbackCtaSupportingText}</p>
-                    </div>
-                    <div className="mt-5 flex flex-wrap items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleFeedbackCta();
-                        }}
-                        className="inline-flex flex-1 items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10 sm:flex-none sm:px-5"
-                      >
-                        {feedbackCtaLabel}
-                      </button>
-                      {!user && <span className="text-xs text-slate-400">Log in to share feedback.</span>}
-                    </div>
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={handleFeedbackCta}
+                      className="inline-flex w-full items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10 sm:w-auto"
+                    >
+                      {feedbackCtaLabel}
+                    </button>
+                    {!user && <span className="text-xs text-slate-400">Log in to share feedback.</span>}
                     {visibleFeedbackMessage && (
-                      <p className="mt-4 text-xs text-slate-300" aria-live="polite">
+                      <p className="text-xs text-slate-300" aria-live="polite">
                         {visibleFeedbackMessage}
                       </p>
                     )}
-                  </article>
-                  <article className="mx-auto w-full max-w-[min(100%,960px)] rounded-[26px] border border-white/10 bg-slate-950/80 p-5 shadow-[0_25px_90px_rgba(2,6,23,0.35)]">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div className="space-y-1">
-                        <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">Real voices Q&amp;A</p>
-                        <h3 className="text-xl font-semibold text-white">So you get it?</h3>
-                        <p className="text-sm text-slate-300">Tap through the quick answers we repeat all day.</p>
-                      </div>
-                      <span className="rounded-full border border-white/10 px-4 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-200">FAQ</span>
+                  </div>
+                  {feedbackStatusMessage && (
+                    <p className="text-xs text-slate-500" aria-live="polite">
+                      {feedbackStatusMessage}
+                    </p>
+                  )}
+                <div className="space-y-4">
+                  {feedbackLoopEntries.length > 0 ? (
+                    <div className="overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 p-4 sm:p-5 shadow-[0_25px_90px_rgba(2,6,23,0.35)]">
+                      <motion.div
+                        className="flex gap-4"
+                        animate={{ x: ['0%', '-50%'] }}
+                        transition={{
+                          duration: feedbackCarouselDuration,
+                          repeat: Infinity,
+                          repeatType: 'loop',
+                          ease: 'linear',
+                        }}
+                      >
+                        {feedbackLoopEntries.map((entry, loopIndex) => (
+                          <div
+                            key={`${entry?.id || entry?.name || 'feedback'}-${loopIndex}`}
+                            className="w-[280px] flex-shrink-0 sm:w-[320px]"
+                          >
+                            {renderFeedbackCard(entry)}
+                          </div>
+                        ))}
+                      </motion.div>
                     </div>
-                    <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                      {visibleFaqCards.length === 0 ? (
-                        <p className="text-sm text-slate-400 md:col-span-2">More answers are loading shortly.</p>
-                      ) : (
-                        visibleFaqCards.map(({ index, question, answer }) => {
-                          const isOpen = activeFaqIndex === index;
-                          return (
-                            <div key={`${question}-${index}`} className="rounded-2xl border border-white/5 bg-slate-900/60 px-4 py-3">
-                              <button
-                                type="button"
-                                className="flex w-full items-center justify-between gap-3 text-left"
-                                onClick={() => toggleFaq(index)}
-                                aria-expanded={isOpen}
-                              >
-                                <span className="text-sm font-semibold text-white">{question}</span>
-                                {faqToggleIcon(isOpen)}
-                              </button>
-                              <AnimatePresence initial={false}>
-                                {isOpen && (
-                                  <motion.p
-                                    key={`faq-content-${index}`}
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.25 }}
-                                    className="overflow-hidden pt-3 text-sm leading-relaxed text-slate-300"
-                                  >
-                                    {answer}
-                                  </motion.p>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          );
-                        })
-                      )}
+                  ) : (
+                    <div className="rounded-3xl border border-dashed border-white/15 bg-slate-900/40 p-8 text-center text-sm text-slate-300">
+                      Nobody has posted feedback yet - sign in and share the first success story.
                     </div>
-                  </article>
+                  )}
+                </div>
+                </div>
+                <div className="rounded-[26px] border border-white/10 bg-slate-950/85 p-5 sm:p-7 shadow-[0_25px_90px_rgba(2,6,23,0.35)]">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">FAQ</p>
+                    <span className="rounded-full border border-white/10 px-4 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-200">Quick answers</span>
+                  </div>
+                  <div className="mt-6 space-y-3">
+                    {visibleFaqCards.length === 0 ? (
+                      <p className="text-sm text-slate-400 md:col-span-2">More answers are loading shortly.</p>
+                    ) : (
+                      visibleFaqCards.map(({ index, question, answer }) => {
+                        const isOpen = activeFaqIndex === index;
+                        return (
+                          <div key={`${question}-${index}`} className="rounded-2xl border border-white/5 bg-slate-900/60 px-4 py-3">
+                            <button
+                              type="button"
+                              className="flex w-full items-center justify-between gap-3 text-left"
+                              onClick={() => toggleFaq(index)}
+                              aria-expanded={isOpen}
+                            >
+                              <span className="text-sm font-semibold text-white">{question}</span>
+                              {faqToggleIcon(isOpen)}
+                            </button>
+                            <AnimatePresence initial={false}>
+                              {isOpen && (
+                                <motion.p
+                                  key={`faq-content-${index}`}
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.25 }}
+                                  className="overflow-hidden pt-3 text-sm leading-relaxed text-slate-300"
+                                >
+                                  {answer}
+                                </motion.p>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
                 <div className="mt-8 flex justify-center">
                   <div
@@ -1540,7 +1510,6 @@ const previewActiveLine = useMemo(() => {
           </div>
         </div>
       )}
-
     </div>
   );
 }
