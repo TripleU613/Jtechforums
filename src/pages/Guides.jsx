@@ -109,6 +109,7 @@ export default function Guides() {
           label="Guides"
           title="Latest walkthroughs from the JTech forum"
           description="We pull the newest topics from the Guides category in real-time. Scroll to keep loading fresh signal."
+          reveal={false}
         />
 
         {error && (
