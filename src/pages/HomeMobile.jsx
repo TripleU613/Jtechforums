@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
@@ -44,6 +44,8 @@ const adminProfiles = [
 ];
 
 const sectionContainer = 'mx-auto w-full max-w-2xl px-4 sm:px-6';
+const TERMINAL_SCROLL_STEP = 0.0009;
+const TERMINAL_TOUCH_STEP = 0.002;
 
 const terminalEntries = [
   {
@@ -180,6 +182,8 @@ export default function HomeMobile() {
   );
   const [nextFaqIndex, setNextFaqIndex] = useState(initialFaqCount);
   const [activeFaqIndex, setActiveFaqIndex] = useState(null);
+  const [terminalProgress, setTerminalProgress] = useState(0);
+  const terminalTouchRef = useRef({ active: false, lastY: 0 });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -303,6 +307,10 @@ export default function HomeMobile() {
     navigate('/signin');
   }, [user, navigate]);
 
+  const incrementTerminalProgress = useCallback((delta) => {
+    setTerminalProgress((prev) => clamp(prev + delta, 0, 1));
+  }, []);
+
   const toggleFaq = useCallback(
     (clickedIndex) => {
       if (!faqEntries.length) return;
@@ -377,6 +385,46 @@ export default function HomeMobile() {
     [handleDeleteFeedback, isAdmin]
   );
 
+  const handleTerminalWheel = useCallback(
+    (event) => {
+      const deltaY = event.deltaY;
+      if ((terminalProgress <= 0 && deltaY < 0) || (terminalProgress >= 1 && deltaY > 0)) {
+        return;
+      }
+      event.preventDefault();
+      const clampedDelta = clamp(deltaY, -80, 80) * TERMINAL_SCROLL_STEP;
+      incrementTerminalProgress(clampedDelta);
+    },
+    [incrementTerminalProgress, terminalProgress]
+  );
+
+  const handleTerminalTouchStart = useCallback((event) => {
+    const touch = event.touches?.[0];
+    if (!touch) return;
+    terminalTouchRef.current = { active: true, lastY: touch.clientY };
+  }, []);
+
+  const handleTerminalTouchMove = useCallback(
+    (event) => {
+      const touch = event.touches?.[0];
+      if (!touch || !terminalTouchRef.current.active) return;
+      const delta = terminalTouchRef.current.lastY - touch.clientY;
+      terminalTouchRef.current.lastY = touch.clientY;
+      if ((terminalProgress <= 0 && delta < 0) || (terminalProgress >= 1 && delta > 0)) {
+        terminalTouchRef.current.active = terminalProgress < 1;
+        return;
+      }
+      event.preventDefault();
+      const limitedDelta = clamp(delta, -80, 80);
+      incrementTerminalProgress(limitedDelta * TERMINAL_TOUCH_STEP);
+    },
+    [incrementTerminalProgress, terminalProgress]
+  );
+
+  const handleTerminalTouchEnd = useCallback(() => {
+    terminalTouchRef.current.active = false;
+  }, []);
+
   const feedbackList = useMemo(() => {
     if (Array.isArray(feedbackEntries) && feedbackEntries.length > 0) {
       return feedbackEntries;
@@ -410,6 +458,11 @@ export default function HomeMobile() {
       return { index: normalizedIndex, ...faqEntries[normalizedIndex] };
     });
   }, [visibleFaqIndices]);
+  const terminalTypingState = useMemo(
+    () => buildTerminalTypingState(terminalEntries, terminalProgress),
+    [terminalProgress]
+  );
+  const terminalComplete = terminalProgress >= 0.999;
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -529,25 +582,52 @@ export default function HomeMobile() {
 
       <section className={`${sectionContainer} py-6`}>
         <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">Terminal view</p>
-              <p className="mt-1 text-sm text-slate-300">Same CLI messages from the desktop hero, now readable on mobile.</p>
-            </div>
+          <div className="flex flex-col gap-1">
+            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">Terminal view</p>
           </div>
-          <div className="mt-6 space-y-4 font-mono text-xs text-slate-200 sm:text-sm">
-            {terminalEntries.map((entry, index) => (
-              <div key={`${entry.command}-${index}`} className="rounded-2xl border border-white/5 bg-black/40 p-4">
-                <p className="text-sky-300">
-                  <span className="text-white/70">jtech@forums:~$</span> {entry.command}
-                </p>
-                {entry.output.map((line, lineIndex) => (
-                  <p key={`${entry.command}-${lineIndex}`} className="mt-1 text-white/80">
-                    {line}
-                  </p>
-                ))}
+          <div
+            className="mt-6 rounded-3xl border border-white/15 bg-[#050914]/90 shadow-[0_25px_70px_rgba(2,6,23,0.45)]"
+            onWheel={handleTerminalWheel}
+            onTouchStart={handleTerminalTouchStart}
+            onTouchMove={handleTerminalTouchMove}
+            onTouchEnd={handleTerminalTouchEnd}
+            onTouchCancel={handleTerminalTouchEnd}
+            style={{ touchAction: terminalProgress < 1 ? 'none' : 'pan-y' }}
+          >
+            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+              <div className="flex gap-2">
+                <span className="h-3 w-3 rounded-full bg-rose-400/80"></span>
+                <span className="h-3 w-3 rounded-full bg-amber-400/80"></span>
+                <span className="h-3 w-3 rounded-full bg-emerald-400/80"></span>
               </div>
-            ))}
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">jtech terminal</p>
+              <span className="ml-auto rounded-full border border-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                cli
+              </span>
+            </div>
+            <div className="relative h-[360px] overflow-hidden px-4 py-5 font-mono text-xs text-slate-200 sm:text-sm">
+              <div role="log" aria-live="polite">
+                {terminalTypingState.map((entry, entryIndex) => {
+                  const baseEntry = terminalEntries[entryIndex];
+                  return (
+                    <div key={`${baseEntry?.command || 'terminal'}-${entryIndex}`} className="pb-4 last:pb-0">
+                      <p className="text-sky-300">
+                        <span className="text-white/70">jtech@forums:~$</span>{' '}
+                        <LineCharacters chars={entry.command} />
+                      </p>
+                      {entry.outputs.map((line, lineIndex) => (
+                        <p key={`${entryIndex}-${lineIndex}`} className="mt-1 text-white/80">
+                          <LineCharacters chars={line} />
+                        </p>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+              {!terminalComplete && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#050914] to-transparent" />
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -778,6 +858,80 @@ function faqToggleIcon(open = false) {
       <i className="fa-solid fa-plus text-[13px]"></i>
     </span>
   );
+}
+
+function LineCharacters({ chars }) {
+  if (!chars || chars.length === 0) {
+    return <span className="inline-block opacity-0">&nbsp;</span>;
+  }
+  return chars.map(({ char, opacity }, idx) => (
+    <span
+      key={idx}
+      className="inline-block transition-all duration-150"
+      style={{ opacity, transform: `translateY(${(1 - opacity) * 6}px)` }}
+    >
+      {char === ' ' ? '\u00A0' : char}
+    </span>
+  ));
+}
+
+function buildTerminalTypingState(entries, ratio = 0) {
+  const safeRatio = clamp(ratio, 0, 1);
+  const descriptors = [];
+  let totalChars = 0;
+
+  entries.forEach((entry, entryIndex) => {
+    const commandText = entry.command || '';
+    descriptors.push({ entryIndex, type: 'command', text: commandText });
+    totalChars += commandText.length;
+    entry.output.forEach((line, lineIndex) => {
+      const lineText = line || '';
+      descriptors.push({ entryIndex, type: 'output', lineIndex, text: lineText });
+      totalChars += lineText.length;
+    });
+  });
+
+  const baseState = entries.map((entry) => ({
+    command: [],
+    outputs: entry.output.map(() => []),
+  }));
+
+  if (totalChars === 0 || safeRatio <= 0) {
+    return baseState;
+  }
+
+  let remaining = Math.floor(totalChars * safeRatio);
+
+  descriptors.forEach((item) => {
+    if (remaining <= 0) return;
+    if (item.type === 'command') {
+      const take = Math.min(item.text.length, remaining);
+      baseState[item.entryIndex].command = buildSolidCharacters(item.text, take);
+      remaining -= take;
+      return;
+    }
+
+    const take = Math.min(item.text.length, remaining);
+    const chars = buildSolidCharacters(item.text, take);
+    if (typeof item.lineIndex === 'number') {
+      baseState[item.entryIndex].outputs[item.lineIndex] = chars;
+    }
+    remaining -= take;
+  });
+
+  return baseState;
+}
+
+function buildSolidCharacters(text = '', length) {
+  if (!text || length <= 0) return [];
+  return text
+    .slice(0, length)
+    .split('')
+    .map((char) => ({ char, opacity: 1 }));
+}
+
+function clamp(value, min = 0, max = 1) {
+  return Math.min(Math.max(value, min), max);
 }
 
 
