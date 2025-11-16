@@ -2,12 +2,13 @@
 import Header from './Header';
 import Footer from './Footer';
 
-export default function PageShell({ children }) {
+export default function PageShell({ children, isDesktopHome = false }) {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isDesktopHomeLayout = isHome && isDesktopHome;
   const baseMain = 'relative z-10 flex-1 min-h-0 overflow-x-hidden';
-  const mainClasses = isHome ? `${baseMain} flex overflow-hidden` : `${baseMain} pb-16 pt-10`;
-  const rootClasses = isHome
+  const mainClasses = isDesktopHomeLayout ? `${baseMain} flex overflow-hidden` : `${baseMain} pb-16 pt-10`;
+  const rootClasses = isDesktopHomeLayout
     ? 'relative flex h-screen flex-col bg-slate-950 text-white'
     : 'relative flex min-h-screen flex-col bg-slate-950 text-white';
 

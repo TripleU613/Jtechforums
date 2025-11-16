@@ -1,7 +1,9 @@
-﻿import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import PageShell from './components/PageShell';
 import Home from './pages/Home';
+import HomeMobile from './pages/HomeMobile';
 import Guides from './pages/Guides';
 import GuideDetail from './pages/GuideDetail';
 import About from './pages/About';
@@ -17,6 +19,25 @@ import NotFound from './pages/NotFound';
 export default function App() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const [isMobileView, setIsMobileView] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const coarse = window.matchMedia?.('(pointer: coarse)')?.matches;
+    const narrow = window.matchMedia?.('(max-width: 900px)')?.matches;
+    return Boolean(coarse || narrow);
+  });
+  const isDesktopHome = isHome && isMobileView === false;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const detect = () => {
+      const coarse = window.matchMedia?.('(pointer: coarse)')?.matches;
+      const narrow = window.matchMedia?.('(max-width: 900px)')?.matches;
+      setIsMobileView(Boolean(coarse || narrow));
+    };
+    detect();
+    window.addEventListener('resize', detect);
+    return () => window.removeEventListener('resize', detect);
+  }, []);
 
   const pageVariants = {
     initial: { opacity: 0, y: 24 },
@@ -25,7 +46,7 @@ export default function App() {
   };
 
   return (
-    <PageShell>
+    <PageShell isDesktopHome={isDesktopHome}>
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={location.pathname}
@@ -33,10 +54,13 @@ export default function App() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className={isHome ? 'h-full flex-1' : undefined}
+          className={isDesktopHome ? 'h-full flex-1' : undefined}
         >
           <Routes location={location}>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={isMobileView === null ? <HomeMobile /> : isMobileView ? <HomeMobile /> : <Home />}
+            />
             <Route path="/guides" element={<Guides />} />
             <Route path="/guides/:slug" element={<GuideDetail />} />
             <Route path="/egate" element={<EGate />} />
