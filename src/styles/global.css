@@ -72,3 +72,37 @@ html::-webkit-scrollbar {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.feedback-marquee-horizontal,
+.feedback-marquee-vertical {
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--feedback-marquee-duration, 24s);
+}
+
+.feedback-marquee-horizontal {
+  animation-name: feedback-marquee-horizontal;
+}
+
+.feedback-marquee-vertical {
+  animation-name: feedback-marquee-vertical;
+}
+
+@keyframes feedback-marquee-horizontal {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes feedback-marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
