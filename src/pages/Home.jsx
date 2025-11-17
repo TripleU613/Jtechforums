@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import Footer from '../components/Footer';
@@ -1198,27 +1198,19 @@ const previewActiveLine = useMemo(() => {
                 <div className="space-y-4">
                   {feedbackLoopEntries.length > 0 ? (
                     <div className="overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 p-4 sm:p-5 shadow-[0_25px_90px_rgba(2,6,23,0.35)]">
-                      <MotionConfig reducedMotion="never">
-                        <motion.div
-                          className="flex gap-4"
-                          animate={{ x: ['0%', '-50%'] }}
-                          transition={{
-                            duration: feedbackCarouselDuration,
-                            repeat: Infinity,
-                            repeatType: 'loop',
-                            ease: 'linear',
-                          }}
-                        >
-                          {feedbackLoopEntries.map((entry, loopIndex) => (
-                            <div
-                              key={`${entry?.id || entry?.name || 'feedback'}-${loopIndex}`}
-                              className="w-[280px] flex-shrink-0 sm:w-[320px]"
-                            >
-                              {renderFeedbackCard(entry)}
-                            </div>
-                          ))}
-                        </motion.div>
-                      </MotionConfig>
+                      <div
+                        className="flex gap-4 feedback-marquee-horizontal"
+                        style={{ '--feedback-marquee-duration': `${feedbackCarouselDuration}s` }}
+                      >
+                        {feedbackLoopEntries.map((entry, loopIndex) => (
+                          <div
+                            key={`${entry?.id || entry?.name || 'feedback'}-${loopIndex}`}
+                            className="w-[280px] flex-shrink-0 sm:w-[320px]"
+                          >
+                            {renderFeedbackCard(entry)}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     <div className="rounded-3xl border border-dashed border-white/15 bg-slate-900/40 p-8 text-center text-sm text-slate-300">
