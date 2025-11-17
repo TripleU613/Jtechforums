@@ -185,7 +185,9 @@ export default function HomeMobile() {
   const [nextFaqIndex, setNextFaqIndex] = useState(initialFaqCount);
   const [activeFaqIndex, setActiveFaqIndex] = useState(null);
   const [terminalProgress, setTerminalProgress] = useState(0);
+  const terminalProgressRef = useRef(0);
   const terminalTouchRef = useRef({ active: false, lastY: 0 });
+  const terminalViewportRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -391,14 +393,15 @@ export default function HomeMobile() {
   const handleTerminalWheel = useCallback(
     (event) => {
       const deltaY = event.deltaY;
-      if ((terminalProgress <= 0 && deltaY < 0) || (terminalProgress >= 1 && deltaY > 0)) {
+      const progress = terminalProgressRef.current;
+      if ((progress <= 0 && deltaY < 0) || (progress >= 1 && deltaY > 0)) {
         return;
       }
       event.preventDefault();
       const clampedDelta = clamp(deltaY, -80, 80) * TERMINAL_SCROLL_STEP;
       incrementTerminalProgress(clampedDelta);
     },
-    [incrementTerminalProgress, terminalProgress]
+    [incrementTerminalProgress]
   );
 
   const handleTerminalTouchStart = useCallback((event) => {
@@ -413,20 +416,58 @@ export default function HomeMobile() {
       if (!touch || !terminalTouchRef.current.active) return;
       const delta = terminalTouchRef.current.lastY - touch.clientY;
       terminalTouchRef.current.lastY = touch.clientY;
-      if ((terminalProgress <= 0 && delta < 0) || (terminalProgress >= 1 && delta > 0)) {
-        terminalTouchRef.current.active = terminalProgress < 1;
+      const progress = terminalProgressRef.current;
+      if ((progress <= 0 && delta < 0) || (progress >= 1 && delta > 0)) {
+        terminalTouchRef.current.active = progress < 1;
         return;
       }
       event.preventDefault();
       const limitedDelta = clamp(delta, -80, 80);
       incrementTerminalProgress(limitedDelta * TERMINAL_TOUCH_STEP);
     },
-    [incrementTerminalProgress, terminalProgress]
+    [incrementTerminalProgress]
   );
 
   const handleTerminalTouchEnd = useCallback(() => {
     terminalTouchRef.current.active = false;
   }, []);
+
+  useEffect(() => {
+    terminalProgressRef.current = terminalProgress;
+    const viewport = terminalViewportRef.current;
+    if (!viewport) return;
+    const scrollRange = viewport.scrollHeight - viewport.clientHeight;
+    if (scrollRange <= 0) {
+      viewport.scrollTop = 0;
+      return;
+    }
+    viewport.scrollTop = scrollRange * terminalProgress;
+  }, [terminalProgress]);
+
+  useEffect(() => {
+    const viewport = terminalViewportRef.current;
+    if (!viewport) return undefined;
+
+    const wheelListener = (event) => handleTerminalWheel(event);
+    const touchStartListener = (event) => handleTerminalTouchStart(event);
+    const touchMoveListener = (event) => handleTerminalTouchMove(event);
+    const touchEndListener = () => handleTerminalTouchEnd();
+    const activeOptions = { passive: false };
+
+    viewport.addEventListener('wheel', wheelListener, activeOptions);
+    viewport.addEventListener('touchstart', touchStartListener, activeOptions);
+    viewport.addEventListener('touchmove', touchMoveListener, activeOptions);
+    viewport.addEventListener('touchend', touchEndListener);
+    viewport.addEventListener('touchcancel', touchEndListener);
+
+    return () => {
+      viewport.removeEventListener('wheel', wheelListener, activeOptions);
+      viewport.removeEventListener('touchstart', touchStartListener, activeOptions);
+      viewport.removeEventListener('touchmove', touchMoveListener, activeOptions);
+      viewport.removeEventListener('touchend', touchEndListener);
+      viewport.removeEventListener('touchcancel', touchEndListener);
+    };
+  }, [handleTerminalTouchEnd, handleTerminalTouchMove, handleTerminalTouchStart, handleTerminalWheel]);
 
   const feedbackList = useMemo(() => {
     if (Array.isArray(feedbackEntries) && feedbackEntries.length > 0) {
@@ -599,12 +640,6 @@ export default function HomeMobile() {
           </div>
           <div
             className="mt-6 rounded-3xl border border-white/15 bg-[#050914]/90 shadow-[0_25px_70px_rgba(2,6,23,0.45)]"
-            onWheel={handleTerminalWheel}
-            onTouchStart={handleTerminalTouchStart}
-            onTouchMove={handleTerminalTouchMove}
-            onTouchEnd={handleTerminalTouchEnd}
-            onTouchCancel={handleTerminalTouchEnd}
-            style={{ touchAction: terminalProgress < 1 ? 'none' : 'pan-y' }}
           >
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
@@ -617,7 +652,11 @@ export default function HomeMobile() {
                 cli
               </span>
             </div>
-            <div className="relative h-[360px] overflow-hidden px-4 py-5 font-mono text-xs text-slate-200 sm:text-sm">
+            <div
+              ref={terminalViewportRef}
+              className="relative h-[360px] overflow-hidden px-4 py-5 font-mono text-xs text-slate-200 sm:text-sm"
+              style={{ touchAction: terminalProgress < 1 ? 'none' : 'pan-y' }}
+            >
               <div role="log" aria-live="polite">
                 {terminalTypingState.map((entry, entryIndex) => {
                   const baseEntry = terminalEntries[entryIndex];
