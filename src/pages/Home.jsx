@@ -1401,7 +1401,7 @@ const previewActiveLine = useMemo(() => {
                               <div className="min-w-0 text-xs">
                                 <p className="truncate font-semibold text-white">@{entry.username}</p>
                                 <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
-                                  Cheers â€¢ {cheersFormatter.format(entry.cheers)}
+                                  Cheers • {cheersFormatter.format(entry.cheers)}
                                 </p>
                               </div>
                             </div>
@@ -1410,7 +1410,7 @@ const previewActiveLine = useMemo(() => {
                       })}
                       {leaderboardStatus === 'ready' && leaderboardEntries.length === 0 && (
                         <p className="rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
-                          Nobody has logged cheers yetâ€”check back soon!
+                          Nobody has logged cheers yet—check back soon!
                         </p>
                       )}
                     </div>
