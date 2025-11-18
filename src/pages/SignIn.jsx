@@ -115,14 +115,14 @@ export default function SignIn() {
   };
 
   return (
-    <Reveal as="div" className="mx-auto max-w-5xl px-6 py-16" amount={0.1}>
-      <div className="overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900 to-slate-950 shadow-2xl shadow-black/40">
-        <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
-          <section className="border-b border-white/5 px-8 py-10 lg:border-b-0 lg:border-r">
-            <p className="section-label text-xs uppercase text-sky-200">Account</p>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+    <Reveal as="div" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16" amount={0.1}>
+      <div className="overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900/95 to-slate-950 shadow-2xl shadow-black/40">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1.15fr_0.85fr]">
+          <section className="border-b border-white/5 px-6 py-8 sm:px-8 sm:py-10 lg:border-b-0 lg:border-r">
+            <p className="section-label text-xs uppercase tracking-[0.4em] text-sky-200">Account</p>
+            <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <h1 className="text-4xl font-semibold text-white">{isSignup ? 'Create a secure account' : 'Welcome back'}</h1>
-              <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-sm font-semibold text-white">
+              <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-xs font-semibold text-white sm:text-sm">
                 <button
                   type="button"
                   className={`rounded-full px-4 py-1 transition ${!isSignup ? 'bg-white text-slate-900 shadow' : 'text-slate-200'}`}
@@ -157,10 +157,13 @@ export default function SignIn() {
                     name="email"
                     type="email"
                     autoComplete="email"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
                     required
                     value={form.email}
                     onChange={handleInput}
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
                   />
                 }
               />
@@ -181,7 +184,7 @@ export default function SignIn() {
                     autoComplete={isSignup ? 'new-password' : 'current-password'}
                     value={form.password}
                     onChange={handleInput}
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
                   />
                 }
               />
@@ -201,7 +204,7 @@ export default function SignIn() {
                         autoComplete="new-password"
                         value={form.confirm}
                         onChange={handleInput}
-                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-sky-400 focus:outline-none"
+                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white focus:border-sky-400 focus:outline-none"
                       />
                     }
                   />
@@ -254,7 +257,7 @@ export default function SignIn() {
             </Link>
           </section>
 
-          <aside className="relative overflow-hidden px-8 py-10">
+          <aside className="relative overflow-hidden px-6 py-8 sm:px-8 sm:py-10">
             <div className="pointer-events-none absolute inset-0 opacity-60">
               <div className="absolute inset-y-0 right-[-30%] w-[120%] rounded-full bg-sky-500/20 blur-3xl" />
             </div>
@@ -316,7 +319,7 @@ export default function SignIn() {
 function FormField({ label, helper, htmlFor, children }) {
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <label htmlFor={htmlFor} className="text-sm font-semibold text-white">
           {label}
         </label>
