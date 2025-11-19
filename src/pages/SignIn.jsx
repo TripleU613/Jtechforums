@@ -121,7 +121,7 @@ export default function SignIn() {
           <section className="border-b border-white/5 px-6 py-8 sm:px-8 sm:py-10 lg:border-b-0 lg:border-r">
             <p className="section-label text-xs uppercase tracking-[0.4em] text-sky-200">Account</p>
             <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-              <h1 className="text-4xl font-semibold text-white">{isSignup ? 'Create a secure account' : 'Welcome back'}</h1>
+              <h1 className="text-4xl font-semibold text-white">{isSignup ? 'Create your account' : 'Sign in to JTech'}</h1>
               <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-xs font-semibold text-white sm:text-sm">
                 <button
                   type="button"
@@ -144,7 +144,7 @@ export default function SignIn() {
               </div>
             </div>
             <p className="mt-3 text-base text-slate-300">
-              Use email/password or Google to manage app submissions. Verified email is still required before uploading APKs.
+              Use email or Google to manage catalog submissions. We verify every address before allowing uploads.
             </p>
 
             <form onSubmit={handleEmailSubmit} className="mt-8 space-y-5">
@@ -171,9 +171,7 @@ export default function SignIn() {
               <FormField
                 label="Password"
                 htmlFor="password"
-                helper={
-                  isSignup ? 'Use a strong password to speed up verification.' : 'Need help? Reset your password below.'
-                }
+                helper={isSignup ? 'Use 8+ characters to speed up approval.' : 'Need a hand? Reset it below.'}
                 children={
                   <input
                     id="password"
@@ -264,9 +262,9 @@ export default function SignIn() {
             <div className="relative flex h-full flex-col gap-6 text-white">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200/80">Instant access</p>
-                <h2 className="mt-3 text-3xl font-semibold">Sign in with Google</h2>
+                <h2 className="mt-3 text-3xl font-semibold">Skip the form with Google</h2>
                 <p className="mt-2 text-sm text-slate-200">
-                  Connect your existing Google account to keep forum activity and catalog uploads synced.
+                  Link your Google account once and we keep approvals and catalog edits in sync automatically.
                 </p>
                 <button
                   type="button"
@@ -280,33 +278,29 @@ export default function SignIn() {
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-slate-100">
-                <h3 className="text-base font-semibold text-white">Why verify?</h3>
-                <p className="mt-2">
-                  Verification protects our moderators and keeps malicious uploads out of the catalog. We only approve APKs that include a
-                  forum link so other members can review changes.
-                </p>
-                <ul className="mt-4 space-y-2 text-xs text-slate-300">
-                  <li className="flex items-center gap-2">
+                <h3 className="text-base font-semibold text-white">Quick facts</h3>
+                <ul className="space-y-2 text-slate-300">
+                  <li className="flex items-center gap-2 text-xs">
                     <i className="fa-solid fa-shield-halved text-sky-300" />
-                    Admins manually review every submission.
+                    Moderators review every upload before it appears in the catalog.
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 text-xs">
                     <i className="fa-solid fa-bell text-sky-300" />
-                    Email alerts arrive when your app is approved or needs edits.
+                    We email you when something is approved or needs edits.
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 text-xs">
                     <i className="fa-solid fa-cloud-arrow-up text-sky-300" />
-                    You can replace icons/APKs anytime after approval.
+                    Swap APKs or icons anytime after approval.
                   </li>
                 </ul>
               </div>
 
               <div className="mt-auto text-xs text-slate-300">
-                Problems signing in? Email{' '}
+                Need help? Email{' '}
                 <a href="mailto:support@jtechforums.org" className="text-sky-200 underline">
                   support@jtechforums.org
                 </a>{' '}
-                and mention your JTech username.
+                with your forum username.
               </div>
             </div>
           </aside>
