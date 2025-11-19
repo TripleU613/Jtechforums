@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 export default function Reveal({
@@ -9,7 +10,7 @@ export default function Reveal({
   ...rest
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const MotionComponent = motion.create(as);
+  const MotionComponent = useMemo(() => motion.create(as), [as]);
 
   if (shouldReduceMotion) {
     const StaticComponent = as;
