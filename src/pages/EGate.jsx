@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import SectionHeading from '../components/SectionHeading';
 import Reveal from '../components/Reveal';
 
@@ -34,11 +35,7 @@ const featureList = [
   },
 ];
 
-const slowVideoPlayback = (event) => {
-  if (event?.currentTarget) {
-    event.currentTarget.playbackRate = 0.8;
-  }
-};
+const demoVideoSrc = '/img/qinf21.mp4';
 
 export default function EGate() {
   return (
@@ -147,16 +144,12 @@ function PhoneMock() {
       <rect x="10" y="10" width="260" height="605" rx="35" fill="#232323" />
       <rect x="25" y="40" width="230" height="315" rx="12" fill="#050505" />
       <foreignObject x="45" y="60" width="190" height="270" clipPath="url(#egate-phone-screen)">
-        <video
-          src="/img/qinf21.mp4"
-          className="h-full w-full rounded-3xl object-contain bg-black"
-          autoPlay
-          loop
-          muted
-          playsInline
-          aria-label="eGate demo"
-          onLoadedData={slowVideoPlayback}
-          style={{ transform: 'scale(0.92)' }}
+        <VideoPreview
+          src={demoVideoSrc}
+          className="h-full w-full rounded-3xl bg-black"
+          videoClassName="h-full w-full rounded-3xl object-contain"
+          videoStyle={{ transform: 'scale(0.92)' }}
+          label="eGate demo"
         />
       </foreignObject>
       <rect x="120" y="25" width="40" height="6" rx="3" fill="#555555" />
@@ -184,6 +177,81 @@ function PhoneMock() {
   );
 }
 
+function VideoPreview({
+  src,
+  className = '',
+  videoClassName = '',
+  videoStyle,
+  playbackRate = 0.8,
+  label = 'Product preview video',
+}) {
+  const videoRef = useRef(null);
+  const [requiresInteraction, setRequiresInteraction] = useState(false);
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return undefined;
+    let isMounted = true;
+
+    const ensurePlayback = () => {
+      if (!videoEl) return;
+      videoEl.playbackRate = playbackRate;
+      const playPromise = videoEl.play();
+      if (playPromise?.catch) {
+        playPromise.catch((error) => {
+          if (isMounted && (!error || error.name !== 'AbortError')) {
+            setRequiresInteraction(true);
+          }
+        });
+      }
+    };
+
+    videoEl.defaultMuted = true;
+    videoEl.muted = true;
+    videoEl.playsInline = true;
+
+    ensurePlayback();
+    const handleLoadedData = () => ensurePlayback();
+    const handlePlay = () => {
+      if (isMounted) {
+        setRequiresInteraction(false);
+      }
+    };
+
+    videoEl.addEventListener('loadeddata', handleLoadedData);
+    videoEl.addEventListener('play', handlePlay);
+
+    return () => {
+      isMounted = false;
+      videoEl.removeEventListener('loadeddata', handleLoadedData);
+      videoEl.removeEventListener('play', handlePlay);
+    };
+  }, [playbackRate]);
+
+  return (
+    <div className={`relative ${className}`}>
+      <video
+        ref={videoRef}
+        src={src}
+        className={`block ${videoClassName}`}
+        style={videoStyle}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        controls={requiresInteraction}
+        aria-label={label}
+      />
+      {requiresInteraction && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] bg-black/70 px-4 text-center text-xs font-semibold text-white">
+          Tap play if the preview doesn't start automatically.
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Highlights() {
   return (
     <Reveal as="section" className="bg-black py-20 sm:py-24" amount={0.15}>
@@ -203,15 +271,12 @@ function Highlights() {
               <div className="relative mx-auto flex w-full max-w-sm flex-1 items-center justify-center px-8 pb-10 pt-8 lg:max-w-full">
                 <div className="h-[22rem] w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-950 to-slate-900 p-4 shadow-2xl">
                   <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-black/70 p-4">
-                    <video
-                      src="/img/qinf21.mp4"
-                      className="h-full w-full rounded-2xl object-contain"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      onLoadedData={slowVideoPlayback}
-                      style={{ transform: 'scale(0.92)' }}
+                    <VideoPreview
+                      src={demoVideoSrc}
+                      className="h-full w-full"
+                      videoClassName="h-full w-full rounded-2xl object-contain"
+                      videoStyle={{ transform: 'scale(0.92)' }}
+                      label="eGate UI preview"
                     />
                   </div>
                 </div>
