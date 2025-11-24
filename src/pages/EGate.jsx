@@ -179,6 +179,7 @@ function PhoneMock() {
 
 function VideoPreview({
   src,
+  type = 'video/mp4',
   className = '',
   videoClassName = '',
   videoStyle,
@@ -186,34 +187,41 @@ function VideoPreview({
   label = 'Product preview video',
 }) {
   const videoRef = useRef(null);
+  const isMountedRef = useRef(true);
   const [requiresInteraction, setRequiresInteraction] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
-  useEffect(() => {
+  const attemptPlayback = () => {
     const videoEl = videoRef.current;
-    if (!videoEl) return undefined;
-    let isMounted = true;
-
-    const ensurePlayback = () => {
-      if (!videoEl) return;
-      videoEl.playbackRate = playbackRate;
-      const playPromise = videoEl.play();
-      if (playPromise?.catch) {
-        playPromise.catch((error) => {
-          if (isMounted && (!error || error.name !== 'AbortError')) {
-            setRequiresInteraction(true);
-          }
-        });
-      }
-    };
+    if (!videoEl) return;
 
     videoEl.defaultMuted = true;
     videoEl.muted = true;
     videoEl.playsInline = true;
+    videoEl.playbackRate = playbackRate;
 
-    ensurePlayback();
-    const handleLoadedData = () => ensurePlayback();
+    const playPromise = videoEl.play();
+    if (playPromise?.catch) {
+      playPromise.catch((error) => {
+        if (isMountedRef.current && (!error || error.name !== 'AbortError')) {
+          setRequiresInteraction(true);
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return undefined;
+    isMountedRef.current = true;
+
+    setRequiresInteraction(false);
+    setVideoError(false);
+
+    attemptPlayback();
+    const handleLoadedData = () => attemptPlayback();
     const handlePlay = () => {
-      if (isMounted) {
+      if (isMountedRef.current) {
         setRequiresInteraction(false);
       }
     };
@@ -222,17 +230,24 @@ function VideoPreview({
     videoEl.addEventListener('play', handlePlay);
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
       videoEl.removeEventListener('loadeddata', handleLoadedData);
       videoEl.removeEventListener('play', handlePlay);
     };
-  }, [playbackRate]);
+  }, [playbackRate, src]);
+
+  const showOverlay = requiresInteraction || videoError;
+
+  const handleManualPlay = () => {
+    setVideoError(false);
+    setRequiresInteraction(false);
+    attemptPlayback();
+  };
 
   return (
     <div className={`relative ${className}`}>
       <video
         ref={videoRef}
-        src={src}
         className={`block ${videoClassName}`}
         style={videoStyle}
         autoPlay
@@ -240,12 +255,35 @@ function VideoPreview({
         muted
         playsInline
         preload="auto"
-        controls={requiresInteraction}
+        controls={showOverlay}
         aria-label={label}
-      />
-      {requiresInteraction && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] bg-black/70 px-4 text-center text-xs font-semibold text-white">
-          Tap play if the preview doesn't start automatically.
+        onError={() => setVideoError(true)}
+      >
+        <source src={src} type={type} />
+      </video>
+      {showOverlay && (
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[inherit] bg-black/70 px-4 text-center text-xs font-semibold text-white">
+          <p className="leading-tight">
+            {videoError ? 'Preview unavailable in this browser.' : "Tap play if the preview doesn't start automatically."}
+          </p>
+          {!videoError && (
+            <button
+              type="button"
+              onClick={handleManualPlay}
+              className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-white/20"
+            >
+              <i className="fa-solid fa-play text-[10px]" /> Play preview
+            </button>
+          )}
+          {videoError && (
+            <a
+              href={src}
+              download
+              className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white underline-offset-2 transition hover:bg-white/20"
+            >
+              <i className="fa-solid fa-download text-[10px]" /> Download video
+            </a>
+          )}
         </div>
       )}
     </div>
