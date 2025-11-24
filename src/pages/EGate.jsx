@@ -179,6 +179,7 @@ function PhoneMock() {
 
 function VideoPreview({
   src,
+  type = 'video/mp4',
   className = '',
   videoClassName = '',
   videoStyle,
@@ -247,7 +248,6 @@ function VideoPreview({
     <div className={`relative ${className}`}>
       <video
         ref={videoRef}
-        src={src}
         className={`block ${videoClassName}`}
         style={videoStyle}
         autoPlay
@@ -258,7 +258,9 @@ function VideoPreview({
         controls={showOverlay}
         aria-label={label}
         onError={() => setVideoError(true)}
-      />
+      >
+        <source src={src} type={type} />
+      </video>
       {showOverlay && (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[inherit] bg-black/70 px-4 text-center text-xs font-semibold text-white">
           <p className="leading-tight">
