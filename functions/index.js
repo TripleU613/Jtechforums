@@ -9,6 +9,7 @@ const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-en
 const { onRequest } = require('firebase-functions/v2/https');
 const { defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
+const rateLimit = require('express-rate-limit');
 
 const DISCOURSE_API_KEY = defineSecret('DISCOURSE_API_KEY');
 const CONTACT_SMTP_PASS = defineSecret('CONTACT_SMTP_PASS');
@@ -212,7 +213,17 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.post(['/contact', '/api/contact'], async (req, res) => {
+const contactRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 contact requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many contact requests from this IP, please try again later.',
+  },
+});
+
+app.post(['/contact', '/api/contact'], contactRateLimiter, async (req, res) => {
   const payload = req.body || {};
   const honeypot = (payload._honey || '').trim();
   if (honeypot) {
