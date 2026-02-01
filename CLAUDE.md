@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Project Overvie
 
 JTech Website is an open-source community platform for the Jewish tech and filtering community. It's a React SPA with Firebase backend providing beginner guides, app catalog, FAQs, and Discourse forum integration.
 
