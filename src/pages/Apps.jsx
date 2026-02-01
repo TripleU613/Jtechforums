@@ -452,7 +452,12 @@ export default function Apps() {
               >
                 <div className="flex items-center gap-4">
                   {app.iconUrl ? (
-                    <img src={app.iconUrl} alt={`${app.name} icon`} className="h-14 w-14 rounded-2xl object-cover" />
+                    <img
+                      src={app.iconUrl}
+                      alt={`${app.name} icon`}
+                      className="h-14 w-14 rounded-2xl object-cover"
+                      referrerPolicy="no-referrer"
+                    />
                   ) : (
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-800 text-xl text-white">
                       {app.name?.[0] ?? '?'}

@@ -356,7 +356,12 @@ function Highlights() {
               </div>
               <div className="relative flex flex-1 items-center justify-center px-8 pb-10 pt-6">
                 <div className="w-full rounded-3xl border border-white/10 bg-slate-900 shadow-2xl">
-                  <img src="/img/home/reseller.png" alt="Reseller portal" className="h-full w-full rounded-3xl object-cover" />
+                  <img
+                    src="/img/home/reseller.png"
+                    alt="Reseller portal"
+                    className="h-full w-full rounded-3xl object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
               </div>
             </CardChrome>
@@ -463,7 +468,12 @@ function Cta() {
               </div>
             </div>
             <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
-              <img src="/img/forum.png" alt="Forum preview" className="w-full rounded-2xl object-cover" />
+              <img
+                src="/img/forum.png"
+                alt="Forum preview"
+                className="w-full rounded-2xl object-cover"
+                referrerPolicy="no-referrer"
+              />
             </div>
           </div>
         </div>

@@ -243,7 +243,7 @@ export default function HomeMobile() {
             Tech forums can be <span className="text-red-400">overwhelming</span>
           </h2>
           <div className="rounded-2xl overflow-hidden border border-white/10">
-            <img src="/img/home/techie.png" alt="Confused user" className="w-full" />
+            <img src="/img/home/techie.png" alt="Confused user" className="w-full" referrerPolicy="no-referrer" />
           </div>
           <p className="text-slate-400 leading-relaxed">
             Reddit threads go off-topic. XDA posts get buried. And none of them understand the unique needs of the frum community.
@@ -271,7 +271,7 @@ export default function HomeMobile() {
             A forum built for <span className="text-cyan-400">our community</span>
           </h2>
           <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-cyan-500/10">
-            <img src="/img/forum.png" alt="JTech Forums" className="w-full" />
+            <img src="/img/forum.png" alt="JTech Forums" className="w-full" referrerPolicy="no-referrer" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
@@ -308,7 +308,7 @@ export default function HomeMobile() {
               className="space-y-4"
             >
               <div className="rounded-2xl overflow-hidden border border-white/10">
-                <img src={feature.image} alt={feature.title} className="w-full" />
+                <img src={feature.image} alt={feature.title} className="w-full" referrerPolicy="no-referrer" />
               </div>
               <h3 className="font-display text-xl font-bold text-white">{feature.title}</h3>
               <p className="text-slate-400 text-sm">{feature.desc}</p>
@@ -336,7 +336,13 @@ export default function HomeMobile() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-white/5"
               >
-                <img src={admin.avatar} alt={admin.name} className="w-12 h-12 rounded-xl object-cover" crossOrigin="anonymous" />
+                <img
+                  src={admin.avatar}
+                  alt={admin.name}
+                  className="w-12 h-12 rounded-xl object-cover"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
                 <div>
                   <p className="font-semibold text-white text-sm">{admin.name}</p>
                   <p className="text-xs text-slate-400">{admin.role}</p>
@@ -374,7 +380,13 @@ export default function HomeMobile() {
                 }`}>
                   #{entry.position}
                 </div>
-                <img src={entry.avatar} alt={entry.username} className="w-10 h-10 rounded-xl object-cover" crossOrigin="anonymous" />
+                <img
+                  src={entry.avatar}
+                  alt={entry.username}
+                  className="w-10 h-10 rounded-xl object-cover"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
                 <div>
                   <p className="font-semibold text-white text-sm">@{entry.username}</p>
                   <p className="text-xs text-slate-400">{entry.cheers.toLocaleString()} cheers</p>

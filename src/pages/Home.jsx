@@ -510,7 +510,7 @@ function ProblemSection() {
           {/* Image with zoom */}
           <motion.div className="relative" style={{ scale: imageScale, rotate: imageRotate }}>
             <div className="relative rounded-3xl overflow-hidden border border-red-500/20 shadow-2xl shadow-red-500/10">
-              <img src="/img/home/techie.png" alt="Confused user" className="w-full" />
+              <img src="/img/home/techie.png" alt="Confused user" className="w-full" referrerPolicy="no-referrer" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#030712]/80 to-transparent" />
             </div>
             {/* Floating badge */}
@@ -650,7 +650,7 @@ function SolutionSection() {
               </div>
             </div>
             {/* Screenshot */}
-            <img src="/img/forum.png" alt="JTech Forums" className="w-full" />
+            <img src="/img/forum.png" alt="JTech Forums" className="w-full" referrerPolicy="no-referrer" />
           </div>
 
           {/* Floating feature cards */}
@@ -839,6 +839,7 @@ function FeaturesSection() {
                       <img
                         src={feature.image}
                         alt={feature.title}
+                        referrerPolicy="no-referrer"
                         className="w-full animate-pan-vertical"
                       />
                     ) : feature.hasBackground ? (
@@ -847,6 +848,7 @@ function FeaturesSection() {
                         <img
                           src={feature.image}
                           alt={feature.title}
+                          referrerPolicy="no-referrer"
                           className="max-h-[65%] max-w-[65%] object-contain drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]"
                         />
                       </div>
@@ -855,6 +857,7 @@ function FeaturesSection() {
                       <img
                         src={feature.image}
                         alt={feature.title}
+                        referrerPolicy="no-referrer"
                         className="w-full h-full object-cover"
                       />
                     )}
@@ -1055,7 +1058,13 @@ function CommunitySection({ adminProfiles, leaderboardState, forumBaseUrl }) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-indigo-500/30 hover:scale-[1.02] hover:translate-x-2 transition-all group opacity-0"
                 >
-                  <img src={admin.avatar} alt={admin.name} className="w-14 h-14 rounded-xl object-cover" crossOrigin="anonymous" />
+                  <img
+                    src={admin.avatar}
+                    alt={admin.name}
+                    className="w-14 h-14 rounded-xl object-cover"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-white group-hover:text-indigo-300 transition-colors">{admin.name}</p>
                     <p className="text-sm text-slate-500">{admin.handle}</p>
@@ -1096,7 +1105,13 @@ function CommunitySection({ adminProfiles, leaderboardState, forumBaseUrl }) {
                   }`}>
                     #{entry.position}
                   </div>
-                  <img src={entry.avatar} alt={entry.username} className="w-12 h-12 rounded-xl object-cover" crossOrigin="anonymous" />
+                  <img
+                    src={entry.avatar}
+                    alt={entry.username}
+                    className="w-12 h-12 rounded-xl object-cover"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-white group-hover:text-amber-300 transition-colors">@{entry.username}</p>
                     <p className="text-sm text-slate-400">{entry.cheers.toLocaleString()} cheers</p>

@@ -43,7 +43,12 @@ export default function Header() {
   );
 
   const avatar = user?.photoURL ? (
-    <img src={user.photoURL} alt="Profile" className="h-9 w-9 rounded-full object-cover" />
+    <img
+      src={user.photoURL}
+      alt="Profile"
+      className="h-9 w-9 rounded-full object-cover"
+      referrerPolicy="no-referrer"
+    />
   ) : (
     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-500 text-sm font-semibold text-slate-950">
       {(user?.displayName?.[0] || user?.email?.[0] || '?').toUpperCase()}
@@ -72,7 +77,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <button type="button" className="flex items-center" onClick={goHome}>
-          <img src="/img/whitelogo.png" alt="JTech logo" className="h-10 w-auto" />
+          <img src="/img/whitelogo.png" alt="JTech logo" className="h-10 w-auto" referrerPolicy="no-referrer" />
         </button>
 
         <div className="hidden items-center gap-8 md:flex">

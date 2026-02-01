@@ -23,6 +23,7 @@ export default function PageShell({ children, isDesktopHome = false }) {
             src="/img/home/lines.png"
             alt=""
             className="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-screen"
+            referrerPolicy="no-referrer"
           />
         </div>
       )}
