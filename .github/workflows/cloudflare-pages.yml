@@ -40,6 +40,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: jtech-forums
+          projectName: jtechforums
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
