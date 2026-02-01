@@ -1,12 +1,27 @@
+# Dependencies
 node_modules
 functions/node_modules
+
+# Environment variables - NEVER COMMIT
+.env
+.env.local
+.env.*.local
 functions/.env
 functions/.env.*
 !functions/.env.example
+
+# Firebase
 .firebase/
-dist
-.env
-.env.local
-.DS_Store
 firebase-debug.log
 firebase-service-account.txt
+*-firebase-adminsdk-*.json
+service-account*.json
+
+# Cloudflare
+.wrangler/
+
+# Build outputs
+dist
+
+# OS
+.DS_Store

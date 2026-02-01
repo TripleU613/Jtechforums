@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import Footer from '../components/Footer';
 import { fetchForumApi, getForumWebBase } from '../lib/forumApi';
@@ -7,18 +8,7 @@ import { firestore } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import faqEntries from '../data/faqEntries';
 
-const heroLines = [
-  'Welcome to JTech Forums.',
-  'The leading Jewish filtering & tech forum.',
-  'Everything here is written by the community for the community.',
-];
-const heroNarrative =
-  'JTech Forums is where kosher tech conversations stay focused. Unlike sprawling boards such as Reddit, XDA, or Stack Overflow -- where off-topic noise or inappropriate language slip in -- every thread here is moderated by frum volunteers who understand the exact devices, filters, and scenarios you face. Jump in, share a setup, and see how quickly the community shows up to help.';
-
-const previewLines = [
-  'Every post in this feed is written by real JTech members solving real kosher tech problems.',
-  'Browse the latest app drops, FAQs, and walkthroughs, then jump into the thread when you need more.',
-];
+const forumBaseUrl = getForumWebBase();
 
 const adminProfiles = [
   {
@@ -44,98 +34,13 @@ const adminProfiles = [
   },
 ];
 
-const sectionContainer = 'mx-auto w-full max-w-2xl px-4 sm:px-6';
-const TERMINAL_SCROLL_STEP = 0.0009;
-const TERMINAL_TOUCH_STEP = 0.002;
-
-const terminalEntries = [
-  {
-    command: 'whoami',
-    output: ['=> Community member. Here because something on your phone went boom.'],
-  },
-  {
-    command: 'hostname',
-    output: ['=> forums.jtechforums.org'],
-  },
-  {
-    command: 'uname -a',
-    output: ['=> Linux JTech-Server #1 running stable since the last “how do I block WhatsApp Status?” post.'],
-  },
-  {
-    command: 'id',
-    output: ['=> uid=1000(you) groups=android_linux,windows,mac,panic-posters'],
-  },
-  {
-    command: 'df -h',
-    output: ['=> 87% space used by screenshots people uploaded instead of describing the situation.'],
-  },
-  {
-    command: 'faq --question="Is everything kosher here?"',
-    output: [
-      '=> Yes. Strict content standards. No inappropriate links.',
-      '   This forum is built for families — and indexed by Google.',
-      '   Keep it clean.',
-    ],
-  },
-  {
-    command: 'faq --question="Can I post any random files?"',
-    output: [
-      '=> No Google Drive dumps.',
-      '   No mystery APKs.',
-      '   Only trusted, safe sources allowed.',
-    ],
-  },
-  {
-    command: 'grep -R "MDM" ./Hacking',
-    output: ['=> Found: download and install guides, fix guides, and “pls help my kid found Developer Options”.'],
-  },
-  {
-    command: 'top -b -n1 | head',
-    output: [
-      '=> PID   TASK         CPU   DESCRIPTION',
-      '=> 101   mods          98%   deleting nonsense',
-      '=> 203   helpers       75%   answering same question for 12th time',
-      '=> 404   panicd        60%   “I factory reset and now nothing works plz help”',
-    ],
-  },
-  {
-    command: 'sudo -l',
-    output: ['=> Sorry, you don’t have moderator permissions. Nice try though.'],
-  },
-  {
-    command: 'dmesg | tail',
-    output: [
-      '=> ALERT: new thread detected about FIG phones being “hacked”',
-      '=> RESPONSE: highly unlikely. They’re not magic, relax.',
-    ],
-  },
-  {
-    command: 'stat ~/first_post.txt',
-    output: ['=> size: 0 bytes', '=> meaning: please include details when asking for help.'],
-  },
-  {
-    command: 'join --mode=ask',
-    output: [
-      '=> Provide device, model, clear issue, and what you tried.',
-      '   The more info you give, the faster you’ll get helped.',
-    ],
-  },
-  {
-    command: 'exit',
-    output: [
-      '=> JTech Forums — keeping your tech smooth, your devices kosher,',
-      '   and your sanity intact.',
-    ],
-  },
-];
-
 const feedbackShowcase = [
   {
     id: 'fb-1',
     name: 'Sara K.',
     handle: '@kosherandroid',
     context: 'Galaxy A14 + TAG Guardian',
-    quote: '“The apps section walked me through every step. My phone is locked down, but still useful.”',
+    quote: '"The apps section walked me through every step. My phone is locked down, but still useful."',
     fromFirestore: false,
   },
   {
@@ -143,7 +48,7 @@ const feedbackShowcase = [
     name: 'Eli D.',
     handle: '@flipguy',
     context: 'Nokia 2780 & Kosher config',
-    quote: '“Every time I break something, the forum already has the answer. Huge time saver.”',
+    quote: '"Every time I break something, the forum already has the answer. Huge time saver."',
     fromFirestore: false,
   },
   {
@@ -151,7 +56,7 @@ const feedbackShowcase = [
     name: 'Malky R.',
     handle: '@techmom',
     context: 'Moto G Pure for the family',
-    quote: '“Needed a safe phone setup for our teens. The guidance here kept it calm, kosher, and doable.”',
+    quote: '"Needed a safe phone setup for our teens. The guidance here kept it calm, kosher, and doable."',
     fromFirestore: false,
   },
 ];
@@ -159,58 +64,26 @@ const feedbackShowcase = [
 const LEADERBOARD_ID = 6;
 const LEADERBOARD_PERIOD = 'monthly';
 const LEADERBOARD_LIMIT = 3;
-const forumBaseUrl = getForumWebBase();
-const cheersFormatter = new Intl.NumberFormat('en-US');
 
-const MAX_FEEDBACK_NAME = 32;
 const MIN_FEEDBACK_LENGTH = 40;
 const MAX_FEEDBACK_LENGTH = 600;
-const SUPPRESSED_FEEDBACK_MESSAGES = ['Missing or insufficient permissions', 'We could not save that just yet'];
+const MAX_FEEDBACK_NAME = 32;
 
 export default function HomeMobile() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const isAdmin = Boolean(profile?.isAdmin);
-  const [leaderboardState, setLeaderboardState] = useState({ entries: [], status: 'idle', error: '' });
+
   const [feedbackEntries, setFeedbackEntries] = useState(feedbackShowcase);
   const [feedbackStatus, setFeedbackStatus] = useState('idle');
   const [feedbackForm, setFeedbackForm] = useState({ name: '', context: '', quote: '' });
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
-  const initialFaqCount = Math.min(faqEntries.length, 3);
-  const [visibleFaqIndices, setVisibleFaqIndices] = useState(() =>
-    Array.from({ length: initialFaqCount }, (_, index) => index)
-  );
-  const [nextFaqIndex, setNextFaqIndex] = useState(initialFaqCount);
   const [activeFaqIndex, setActiveFaqIndex] = useState(null);
-  const [terminalProgress, setTerminalProgress] = useState(0);
-  const terminalProgressRef = useRef(0);
-  const terminalTouchRef = useRef({ active: false, lastY: 0 });
-  const terminalViewportRef = useRef(null);
+  const [leaderboardState, setLeaderboardState] = useState({ entries: [], status: 'idle', error: '' });
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const loadLeaderboard = async () => {
-      setLeaderboardState((prev) => ({ ...prev, status: 'loading', error: '' }));
-      try {
-        const response = await fetchForumApi(
-          `/forum/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`,
-          { signal: controller.signal }
-        );
-        if (!response.ok) throw new Error('Leaderboard request failed.');
-        const payload = await response.json();
-        const entries = normalizeLeaderboardUsers(payload?.users);
-        setLeaderboardState({ entries, status: 'ready', error: '' });
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        setLeaderboardState({ entries: [], status: 'error', error: error?.message || 'Unable to load leaderboard.' });
-      }
-    };
-    loadLeaderboard();
-    return () => controller.abort();
-  }, []);
-
+  // Load feedback
   useEffect(() => {
     const feedbackRef = collection(firestore, 'feedback');
     const feedbackQuery = query(feedbackRef, orderBy('createdAt', 'desc'), limit(6));
@@ -223,761 +96,487 @@ export default function HomeMobile() {
           setFeedbackStatus('empty');
           return;
         }
-        const docs = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data() || {};
-          return {
-            id: docSnap.id,
-            name: data.authorDisplayName || data.authorName || 'Forum member',
-            handle: data.authorHandle || '@community',
-            context: data.context || 'Shared setup',
-            quote: data.quote || '',
-            fromFirestore: true,
-          };
-        });
+        const docs = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          name: docSnap.data().authorDisplayName || docSnap.data().authorName || 'Forum member',
+          handle: docSnap.data().authorHandle || '@community',
+          context: docSnap.data().context || 'Shared setup',
+          quote: docSnap.data().quote || '',
+          fromFirestore: true,
+        }));
         setFeedbackEntries(docs);
         setFeedbackStatus('ready');
       },
-      (error) => {
+      () => {
         setFeedbackEntries(feedbackShowcase);
         setFeedbackStatus('error');
-        setFeedbackMessage(error?.message || 'Unable to load feedback right now.');
       }
     );
     return unsubscribe;
   }, []);
 
+  // Load leaderboard
   useEffect(() => {
-    const handleOpenFeedback = () => {
-      setFeedbackModalOpen(true);
+    const controller = new AbortController();
+    const loadLeaderboard = async () => {
+      setLeaderboardState((prev) => ({ ...prev, status: 'loading' }));
+      try {
+        const response = await fetchForumApi(`/forum/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`, { signal: controller.signal });
+        if (!response.ok) throw new Error('Failed');
+        const payload = await response.json();
+        const entries = (payload?.users || []).slice(0, LEADERBOARD_LIMIT).map((u, i) => ({
+          id: u.id || `${u.username}-${i}`,
+          username: u.username || `member-${i + 1}`,
+          position: u.position || i + 1,
+          cheers: Number(u.total_score) || 0,
+          avatar: u.avatar_template ? (u.avatar_template.startsWith('http') ? u.avatar_template.replace('{size}', '160') : `${forumBaseUrl}${u.avatar_template.replace('{size}', '160')}`) : `${forumBaseUrl}/letter_avatar_proxy/v4/letter/j/ce7236/160.png`,
+          profileUrl: `${forumBaseUrl}/u/${encodeURIComponent(u.username || '')}`,
+        }));
+        setLeaderboardState({ entries, status: 'ready', error: '' });
+      } catch {
+        if (!controller.signal.aborted) setLeaderboardState({ entries: [], status: 'error', error: 'Unable to load' });
+      }
     };
-    window.addEventListener('openFeedbackModal', handleOpenFeedback);
-    return () => window.removeEventListener('openFeedbackModal', handleOpenFeedback);
+    loadLeaderboard();
+    return () => controller.abort();
   }, []);
 
-  const handleFeedbackInput = (event) => {
-    const { name, value } = event.target;
-    const limit = name === 'name' ? MAX_FEEDBACK_NAME : name === 'quote' ? MAX_FEEDBACK_LENGTH : undefined;
-    const nextValue = typeof limit === 'number' ? value.slice(0, limit) : value;
-    setFeedbackForm((prev) => ({ ...prev, [name]: nextValue }));
+  // Feedback handlers
+  const handleFeedbackInput = (e) => {
+    const { name, value } = e.target;
+    setFeedbackForm((prev) => ({ ...prev, [name]: name === 'name' ? value.slice(0, MAX_FEEDBACK_NAME) : value }));
     setFeedbackMessage('');
   };
 
-  const handleFeedbackSubmit = useCallback(
-    async (event) => {
-      event.preventDefault();
-      if (!user) {
-        setFeedbackMessage('Sign in first so we can link your feedback to the right account.');
-        return;
-      }
-      const nameValue = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
-      const quoteValue = feedbackForm.quote.trim().slice(0, MAX_FEEDBACK_LENGTH);
-      const contextValue = feedbackForm.context.trim();
-      if (!nameValue) {
-        setFeedbackMessage('Add the name you want other members to see.');
-        return;
-      }
-      if (quoteValue.length < MIN_FEEDBACK_LENGTH) {
-        setFeedbackMessage(`Share at least ${MIN_FEEDBACK_LENGTH} characters before submitting.`);
-        return;
-      }
-      setFeedbackSubmitting(true);
-      setFeedbackMessage('');
-      try {
-        await addDoc(collection(firestore, 'feedback'), {
-          uid: user.uid,
-          authorName: user.displayName || user.email?.split('@')[0] || 'Forum member',
-          authorDisplayName: nameValue || user.displayName || user.email?.split('@')[0] || 'Forum member',
-          authorHandle: user.email ? `@${user.email.split('@')[0]}` : `@${user.uid.slice(0, 6)}`,
-          context: contextValue || 'Custom setup',
-          quote: quoteValue,
-          createdAt: serverTimestamp(),
-        });
-        setFeedbackForm({ name: '', context: '', quote: '' });
-        setFeedbackMessage('Submitted! A moderator will publish it shortly.');
-        setFeedbackModalOpen(false);
-      } catch (error) {
-        setFeedbackMessage(error?.message || 'Unable to submit feedback right now.');
-      } finally {
-        setFeedbackSubmitting(false);
-      }
-    },
-    [feedbackForm, user]
-  );
-
-  const handleFeedbackCta = useCallback(() => {
-    if (user) {
-      setFeedbackModalOpen(true);
-      return;
+  const handleFeedbackSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    if (!user) { setFeedbackMessage('Sign in first.'); return; }
+    const nameVal = feedbackForm.name.trim().slice(0, MAX_FEEDBACK_NAME);
+    const quoteVal = feedbackForm.quote.trim().slice(0, MAX_FEEDBACK_LENGTH);
+    if (!nameVal) { setFeedbackMessage('Add your display name.'); return; }
+    if (quoteVal.length < MIN_FEEDBACK_LENGTH) { setFeedbackMessage(`At least ${MIN_FEEDBACK_LENGTH} characters needed.`); return; }
+    setFeedbackSubmitting(true);
+    try {
+      await addDoc(collection(firestore, 'feedback'), {
+        uid: user.uid,
+        authorName: user.displayName || user.email?.split('@')[0] || 'Forum member',
+        authorDisplayName: nameVal,
+        authorHandle: user.email ? `@${user.email.split('@')[0]}` : `@${user.uid.slice(0, 6)}`,
+        context: feedbackForm.context.trim() || 'Custom setup',
+        quote: quoteVal,
+        createdAt: serverTimestamp(),
+      });
+      setFeedbackForm({ name: '', context: '', quote: '' });
+      setFeedbackMessage('Submitted!');
+      setFeedbackModalOpen(false);
+    } catch {
+      setFeedbackMessage('Unable to submit right now.');
+    } finally {
+      setFeedbackSubmitting(false);
     }
-    navigate('/signin');
-  }, [user, navigate]);
+  }, [feedbackForm, user]);
 
-  const incrementTerminalProgress = useCallback((delta) => {
-    setTerminalProgress((prev) => clamp(prev + delta, 0, 1));
-  }, []);
+  const handleDeleteFeedback = useCallback(async (entryId) => {
+    if (!entryId || !isAdmin) return;
+    try { await deleteDoc(doc(firestore, 'feedback', entryId)); } catch {}
+  }, [isAdmin]);
 
-  const toggleFaq = useCallback(
-    (clickedIndex) => {
-      if (!faqEntries.length) return;
-      const isClosing = activeFaqIndex === clickedIndex;
-      const previouslyActive = activeFaqIndex;
-
-      setActiveFaqIndex(isClosing ? null : clickedIndex);
-
-      if (previouslyActive !== null && !isClosing) {
-        setVisibleFaqIndices((current) => {
-          const newIndices = [...current];
-          const indexToReplace = newIndices.indexOf(previouslyActive);
-
-          if (indexToReplace !== -1) {
-            let nextIndexToInsert = faqEntries.length ? nextFaqIndex % faqEntries.length : 0;
-            const otherVisible = newIndices.filter((value) => value !== previouslyActive);
-            let guard = 0;
-            while (faqEntries.length && otherVisible.includes(nextIndexToInsert) && guard < faqEntries.length) {
-              nextIndexToInsert = (nextIndexToInsert + 1) % faqEntries.length;
-              guard += 1;
-            }
-
-            if (faqEntries.length) {
-              newIndices[indexToReplace] = nextIndexToInsert;
-              setNextFaqIndex((nextIndexToInsert + 1) % faqEntries.length);
-            }
-            return newIndices;
-          }
-          return current;
-        });
-      }
-    },
-    [activeFaqIndex, nextFaqIndex]
-  );
-
-  const handleDeleteFeedback = useCallback(
-    async (entryId) => {
-      if (!entryId || !isAdmin) return;
-      try {
-        await deleteDoc(doc(firestore, 'feedback', entryId));
-        setFeedbackEntries((prev) => prev.filter((entry) => entry.id !== entryId));
-        setFeedbackMessage('Feedback removed.');
-      } catch (error) {
-        setFeedbackMessage(error?.message || 'Unable to remove feedback right now.');
-      }
-    },
-    [isAdmin]
-  );
-
-  const renderFeedbackCard = useCallback(
-    (entry) => {
-      if (!entry) return null;
-      const canRemove = Boolean(isAdmin && entry.fromFirestore && entry.id);
-      return (
-        <article className="flex h-full flex-col rounded-3xl border border-white/10 bg-slate-950/60 p-4">
-          <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-400">
-            <span className="truncate">{entry.context || 'Shared setup'}</span>
-            {canRemove && (
-              <button type="button" onClick={() => handleDeleteFeedback(entry.id)} className="text-rose-200">
-                Remove
-              </button>
-            )}
-          </div>
-          <p className="mt-3 flex-1 text-base text-slate-100">{entry.quote || 'Shared by the community.'}</p>
-          <p className="mt-4 text-sm font-semibold">
-            {entry.name || 'Forum member'}{' '}
-            {entry.handle && <span className="text-xs text-slate-400">{entry.handle}</span>}
-          </p>
-        </article>
-      );
-    },
-    [handleDeleteFeedback, isAdmin]
-  );
-
-  const handleTerminalWheel = useCallback(
-    (event) => {
-      const deltaY = event.deltaY;
-      const progress = terminalProgressRef.current;
-      if ((progress <= 0 && deltaY < 0) || (progress >= 1 && deltaY > 0)) {
-        return;
-      }
-      event.preventDefault();
-      const clampedDelta = clamp(deltaY, -80, 80) * TERMINAL_SCROLL_STEP;
-      incrementTerminalProgress(clampedDelta);
-    },
-    [incrementTerminalProgress]
-  );
-
-  const handleTerminalTouchStart = useCallback((event) => {
-    const touch = event.touches?.[0];
-    if (!touch) return;
-    terminalTouchRef.current = { active: true, lastY: touch.clientY };
-  }, []);
-
-  const handleTerminalTouchMove = useCallback(
-    (event) => {
-      const touch = event.touches?.[0];
-      if (!touch || !terminalTouchRef.current.active) return;
-      const delta = terminalTouchRef.current.lastY - touch.clientY;
-      terminalTouchRef.current.lastY = touch.clientY;
-      const progress = terminalProgressRef.current;
-      if ((progress <= 0 && delta < 0) || (progress >= 1 && delta > 0)) {
-        terminalTouchRef.current.active = progress < 1;
-        return;
-      }
-      event.preventDefault();
-      const limitedDelta = clamp(delta, -80, 80);
-      incrementTerminalProgress(limitedDelta * TERMINAL_TOUCH_STEP);
-    },
-    [incrementTerminalProgress]
-  );
-
-  const handleTerminalTouchEnd = useCallback(() => {
-    terminalTouchRef.current.active = false;
-  }, []);
-
-  useEffect(() => {
-    terminalProgressRef.current = terminalProgress;
-    const viewport = terminalViewportRef.current;
-    if (!viewport) return;
-    const scrollRange = viewport.scrollHeight - viewport.clientHeight;
-    if (scrollRange <= 0) {
-      viewport.scrollTop = 0;
-      return;
-    }
-    viewport.scrollTop = scrollRange * terminalProgress;
-  }, [terminalProgress]);
-
-  useEffect(() => {
-    const viewport = terminalViewportRef.current;
-    if (!viewport) return undefined;
-
-    const wheelListener = (event) => handleTerminalWheel(event);
-    const touchStartListener = (event) => handleTerminalTouchStart(event);
-    const touchMoveListener = (event) => handleTerminalTouchMove(event);
-    const touchEndListener = () => handleTerminalTouchEnd();
-    const activeOptions = { passive: false };
-
-    viewport.addEventListener('wheel', wheelListener, activeOptions);
-    viewport.addEventListener('touchstart', touchStartListener, activeOptions);
-    viewport.addEventListener('touchmove', touchMoveListener, activeOptions);
-    viewport.addEventListener('touchend', touchEndListener);
-    viewport.addEventListener('touchcancel', touchEndListener);
-
-    return () => {
-      viewport.removeEventListener('wheel', wheelListener, activeOptions);
-      viewport.removeEventListener('touchstart', touchStartListener, activeOptions);
-      viewport.removeEventListener('touchmove', touchMoveListener, activeOptions);
-      viewport.removeEventListener('touchend', touchEndListener);
-      viewport.removeEventListener('touchcancel', touchEndListener);
-    };
-  }, [handleTerminalTouchEnd, handleTerminalTouchMove, handleTerminalTouchStart, handleTerminalWheel]);
-
-  const feedbackList = useMemo(() => {
-    if (Array.isArray(feedbackEntries) && feedbackEntries.length > 0) {
-      return feedbackEntries;
-    }
-    return feedbackShowcase;
-  }, [feedbackEntries]);
-  const feedbackLoopEntries = useMemo(
-    () => (feedbackList.length > 0 ? [...feedbackList, ...feedbackList] : []),
-    [feedbackList]
-  );
-  const feedbackCarouselDuration = feedbackList.length > 0 ? Math.max(feedbackList.length * 6, 24) : 24;
-  const leaderboardEntries = leaderboardState.entries;
-  const leaderboardStatus = leaderboardState.status;
-  const leaderboardLink = `${forumBaseUrl}/leaderboard/${LEADERBOARD_ID}?period=${LEADERBOARD_PERIOD}`;
-  const feedbackCtaLabel = user ? 'Share your feedback' : 'Log in to share feedback';
-  const visibleFeedbackMessage =
-    feedbackMessage && !SUPPRESSED_FEEDBACK_MESSAGES.some((phrase) => feedbackMessage?.includes(phrase))
-      ? feedbackMessage
-      : '';
-  const feedbackStatusMessage = (() => {
-    if (feedbackStatus === 'loading') return 'Syncing the latest shout-outs...';
-    if (feedbackStatus === 'ready') return 'Updated whenever someone shares a win or fix.';
-    if (feedbackStatus === 'empty') return 'Be the first to leave a note for the next member.';
-    if (feedbackStatus === 'error' && !visibleFeedbackMessage) return 'Forum stories are offline right now.';
-    return '';
-  })();
-  const visibleFaqCards = useMemo(() => {
-    if (!faqEntries.length || visibleFaqIndices.length === 0) return [];
-    return visibleFaqIndices.map((index) => {
-      const normalizedIndex = ((index % faqEntries.length) + faqEntries.length) % faqEntries.length;
-      return { index: normalizedIndex, ...faqEntries[normalizedIndex] };
-    });
-  }, [visibleFaqIndices]);
-  const terminalTypingState = useMemo(
-    () => buildTerminalTypingState(terminalEntries, terminalProgress),
-    [terminalProgress]
-  );
-  const terminalComplete = terminalProgress >= 0.999;
+  const feedbackList = feedbackStatus === 'ready' ? feedbackEntries : feedbackShowcase;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <section className={`${sectionContainer} py-12`}>
-        <div className="space-y-3 text-center">
-          <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400">Hey there</p>
-          <h1 className="mx-auto max-w-md text-3xl font-semibold leading-snug text-white sm:text-4xl">{heroLines[0]}</h1>
-          <p className="mx-auto max-w-xl text-base text-slate-200 sm:text-lg">{heroLines[1]}</p>
-          <p className="mx-auto max-w-xl text-sm text-slate-400 sm:text-base">{heroLines[2]}</p>
+    <div className="min-h-screen bg-[#030712] text-white">
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center justify-center px-6 py-20 overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: 'url(/img/home/phonegrid.png)' }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/80 via-[#030712]/60 to-[#030712]" />
         </div>
-        <div className="mx-auto mt-6 max-w-2xl rounded-[28px] border border-white/10 bg-slate-950/60 p-5 text-left shadow-[0_25px_80px_rgba(2,6,23,0.45)] sm:p-6 sm:text-center">
-          <p className="text-sm leading-relaxed text-slate-200 sm:text-base">{heroNarrative}</p>
-          <div className="mt-4 flex flex-col gap-2 text-xs uppercase tracking-[0.3em] text-slate-400 sm:flex-row sm:justify-center">
-            <span className="rounded-full border border-white/15 px-4 py-1">Community-run</span>
-            <span className="rounded-full border border-white/15 px-4 py-1">Kosher-first</span>
+
+        {/* Glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-cyan-500/20 blur-[100px]" />
+
+        {/* Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 text-center"
+        >
+          <p className="text-cyan-400 font-mono text-xs tracking-[0.25em] uppercase mb-4">Welcome to the community</p>
+          <h1 className="font-display text-4xl font-bold text-white leading-tight mb-4">
+            <span className="block">JTech</span>
+            <span className="block bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-400 bg-clip-text text-transparent">Forums</span>
+          </h1>
+          <p className="text-lg text-slate-300 mb-8 max-w-sm mx-auto">
+            The leading Jewish tech & filtering community.
+          </p>
+          <div className="flex flex-col gap-3">
+            <a
+              href="https://forums.jtechforums.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-white text-slate-900 font-semibold rounded-full"
+            >
+              Join the Forum
+            </a>
+            <a
+              href="/guides"
+              className="px-8 py-4 border border-white/20 text-white font-semibold rounded-full"
+            >
+              Browse Guides
+            </a>
           </div>
-        </div>
-        <div className="mt-8 flex flex-col gap-3 text-center sm:flex-row sm:justify-center">
-          <a
-            href="https://forums.jtechforums.org"
-            target="_blank"
-            rel="noopener"
-            className="inline-flex w-full items-center justify-center rounded-full bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 sm:w-auto sm:px-6 sm:text-base"
-          >
-            Join the forum
-          </a>
-          <a
-            href="/contact"
-            className="inline-flex w-full items-center justify-center rounded-full border border-white/40 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/60 sm:w-auto sm:px-6 sm:text-base"
-          >
-            Talk with the team
-          </a>
-        </div>
+        </motion.div>
       </section>
 
-      <section className={`${sectionContainer} pb-8`}>
-        <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-5 sm:p-6">
-          <div className="space-y-4 text-sm leading-relaxed text-slate-200 sm:text-base">
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70">
-              <img
-                src="/img/forum.png"
-                alt="JTech Forums preview"
-                className="h-48 w-full object-cover sm:h-64"
-              />
-            </div>
-            {previewLines.map((line) => (
-              <p key={line}>{line}</p>
+      {/* Problem Section */}
+      <section className="px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="space-y-6"
+        >
+          <p className="text-red-400 font-mono text-xs tracking-[0.2em] uppercase">The Problem</p>
+          <h2 className="font-display text-3xl font-bold text-white leading-tight">
+            Tech forums can be <span className="text-red-400">overwhelming</span>
+          </h2>
+          <div className="rounded-2xl overflow-hidden border border-white/10">
+            <img src="/img/home/techie.png" alt="Confused user" className="w-full" />
+          </div>
+          <p className="text-slate-400 leading-relaxed">
+            Reddit threads go off-topic. XDA posts get buried. And none of them understand the unique needs of the frum community.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {['Off-topic noise', 'Inappropriate content', 'Outdated info'].map((item) => (
+              <span key={item} className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-300 text-xs">
+                {item}
+              </span>
             ))}
           </div>
+        </motion.div>
+      </section>
+
+      {/* Solution Section */}
+      <section className="px-6 py-16 bg-gradient-to-b from-transparent via-slate-900/30 to-transparent">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="space-y-6"
+        >
+          <p className="text-cyan-400 font-mono text-xs tracking-[0.2em] uppercase">The Solution</p>
+          <h2 className="font-display text-3xl font-bold text-white leading-tight">
+            A forum built for <span className="text-cyan-400">our community</span>
+          </h2>
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-cyan-500/10">
+            <img src="/img/forum.png" alt="JTech Forums" className="w-full" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
+              <span className="text-green-400 text-lg">✓</span>
+              <p className="text-white font-semibold text-sm mt-2">Moderated Daily</p>
+              <p className="text-slate-400 text-xs">By frum volunteers</p>
+            </div>
+            <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
+              <span className="text-blue-400 text-lg">📱</span>
+              <p className="text-white font-semibold text-sm mt-2">Kosher-First</p>
+              <p className="text-slate-400 text-xs">Family-friendly</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Features Section */}
+      <section className="px-6 py-16">
+        <p className="text-cyan-400 font-mono text-xs tracking-[0.2em] uppercase mb-4">What You'll Find</p>
+        <h2 className="font-display text-3xl font-bold text-white mb-8">Everything in one place</h2>
+
+        <div className="space-y-8">
+          {[
+            { title: 'Step-by-Step Guides', image: '/img/guides.png', desc: 'Detailed walkthroughs for every device and setup.' },
+            { title: 'Curated App Library', image: '/img/home/gps.webp', desc: 'Trusted, safe apps vetted by the community.' },
+            { title: 'eGate Filter Support', image: '/img/home/egatesquare.png', desc: 'Enterprise-grade filtering solutions.' },
+          ].map((feature, i) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="space-y-4"
+            >
+              <div className="rounded-2xl overflow-hidden border border-white/10">
+                <img src={feature.image} alt={feature.title} className="w-full" />
+              </div>
+              <h3 className="font-display text-xl font-bold text-white">{feature.title}</h3>
+              <p className="text-slate-400 text-sm">{feature.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      <section className={`${sectionContainer} space-y-6 py-6`}>
-        <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6">
-          <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-400">
-            <span>Admins</span>
-            <span className="text-slate-300">Daily coverage</span>
-          </div>
-          <div className="mt-6 space-y-4">
+      {/* Community Section */}
+      <section className="px-6 py-16 bg-gradient-to-b from-transparent via-indigo-950/20 to-transparent">
+        <p className="text-indigo-400 font-mono text-xs tracking-[0.2em] uppercase mb-4">The People</p>
+        <h2 className="font-display text-3xl font-bold text-white mb-8">You're in good hands</h2>
+
+        {/* Admins */}
+        <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5 mb-6">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <span className="text-indigo-400">👤</span> Forum Leaders
+          </h3>
+          <div className="space-y-3">
             {adminProfiles.map((admin) => (
               <a
                 key={admin.name}
                 href={admin.profileUrl}
                 target="_blank"
-                rel="noopener"
-                className="flex w-full items-center gap-4 rounded-2xl border border-white/5 bg-slate-950/60 px-4 py-3 transition hover:border-sky-400 hover:bg-slate-900/70"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-white/5"
               >
-                <img src={admin.avatar} alt={`${admin.handle} avatar`} className="h-12 w-12 rounded-2xl object-cover" />
+                <img src={admin.avatar} alt={admin.name} className="w-12 h-12 rounded-xl object-cover" />
                 <div>
-                  <p className="text-sm font-semibold text-white">{admin.name}</p>
-                  <p className="text-xs text-slate-400">{admin.handle}</p>
-                  <p className="text-xs text-slate-300">{admin.role}</p>
+                  <p className="font-semibold text-white text-sm">{admin.name}</p>
+                  <p className="text-xs text-slate-400">{admin.role}</p>
                 </div>
               </a>
             ))}
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6">
-          <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-400">
-            <span>Leaderboard</span>
-            <a
-              href={leaderboardLink}
-              target="_blank"
-              rel="noopener"
-              className="rounded-full border border-white/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white"
-            >
-              View
-            </a>
-          </div>
-          <p className="mt-2 text-xs text-slate-400 sm:text-sm">Top cheers this month from the JTech Champions board.</p>
-          <div className="mt-4 space-y-3">
-            {leaderboardStatus === 'loading' &&
-              Array.from({ length: LEADERBOARD_LIMIT }).map((_, index) => (
-                <div key={`skeleton-${index}`} className="h-16 rounded-2xl bg-slate-800/60" />
-              ))}
-            {leaderboardStatus === 'ready' &&
-              leaderboardEntries.map((entry, index) => (
-                <a
-                  key={entry.id}
-                  href={entry.profileUrl}
-                  target="_blank"
-                  rel="noopener"
-                  className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-sm ${
-                    getPlacementBadgeClass(index)
-                  }`}
-                >
-                  <img src={entry.avatar} alt={entry.username} className="h-10 w-10 rounded-2xl object-cover" />
-                  <div>
-                    <p className="font-semibold text-white">@{entry.username}</p>
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-200">
-                      Cheers {cheersFormatter.format(entry.cheers)}
-                    </p>
-                  </div>
-                </a>
-              ))}
-            {leaderboardStatus === 'ready' && leaderboardEntries.length === 0 && (
-              <p className="text-sm text-slate-400">Nobody has logged cheers yet -- check back soon.</p>
-            )}
-            {leaderboardStatus === 'error' && (
-              <p className="text-sm text-rose-200">{leaderboardState.error || 'Leaderboard is offline right now.'}</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className={`${sectionContainer} py-6`}>
-        <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6">
-          <div className="flex flex-col gap-1">
-            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">Terminal view</p>
-          </div>
-          <div
-            className="mt-6 rounded-3xl border border-white/15 bg-[#050914]/90 shadow-[0_25px_70px_rgba(2,6,23,0.45)]"
-          >
-            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
-              <div className="flex gap-2">
-                <span className="h-3 w-3 rounded-full bg-rose-400/80"></span>
-                <span className="h-3 w-3 rounded-full bg-amber-400/80"></span>
-                <span className="h-3 w-3 rounded-full bg-emerald-400/80"></span>
-              </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">jtech terminal</p>
-              <span className="ml-auto rounded-full border border-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
-                cli
-              </span>
-            </div>
-            <div
-              ref={terminalViewportRef}
-              className="relative h-[360px] overflow-hidden px-4 py-5 font-mono text-xs text-slate-200 sm:text-sm"
-              style={{ touchAction: terminalProgress < 1 ? 'none' : 'pan-y' }}
-            >
-              <div role="log" aria-live="polite">
-                {terminalTypingState.map((entry, entryIndex) => {
-                  const baseEntry = terminalEntries[entryIndex];
-                  return (
-                    <div key={`${baseEntry?.command || 'terminal'}-${entryIndex}`} className="pb-4 last:pb-0">
-                      <p className="text-sky-300">
-                        <span className="text-white/70">jtech@forums:~$</span>{' '}
-                        <LineCharacters chars={entry.command} />
-                      </p>
-                      {entry.outputs.map((line, lineIndex) => (
-                        <p key={`${entryIndex}-${lineIndex}`} className="mt-1 text-white/80">
-                          <LineCharacters chars={line} />
-                        </p>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-              {!terminalComplete && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#050914] to-transparent" />
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={`${sectionContainer} py-6`}>
-        <div className="space-y-5 rounded-3xl border border-white/10 bg-slate-900/70 p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">Community stories</p>
-              <h2 className="text-2xl font-semibold leading-snug text-white sm:text-3xl">Real feedback from JTech members</h2>
-            </div>
-            <button
-              type="button"
-              onClick={handleFeedbackCta}
-              className="w-full rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/50 sm:w-auto"
-            >
-              {feedbackCtaLabel}
-            </button>
-          </div>
-          {feedbackStatusMessage && (
-            <p className="text-xs text-slate-400" aria-live="polite">
-              {feedbackStatusMessage}
-            </p>
-          )}
-          {visibleFeedbackMessage && (
-            <p className="text-sm text-slate-300" aria-live="polite">
-              {visibleFeedbackMessage}
-            </p>
-          )}
-          {feedbackLoopEntries.length > 0 ? (
-            <div className="relative h-[360px] overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-4 sm:h-[420px] sm:p-5">
-              <div
-                className="flex flex-col gap-4 feedback-marquee-vertical"
-                style={{ '--feedback-marquee-duration': `${feedbackCarouselDuration}s` }}
-                aria-live="polite"
-              >
-                {feedbackLoopEntries.map((entry, loopIndex) => (
-                  <div key={`${entry?.id || entry?.name || 'feedback'}-${loopIndex}`} className="w-full">
-                    {renderFeedbackCard(entry)}
-                  </div>
+        {/* Leaderboard */}
+        <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <span className="text-amber-400">🏆</span> Top Contributors
+          </h3>
+          <div className="space-y-3">
+            {leaderboardState.status === 'loading' && (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-16 rounded-xl bg-slate-800/50 animate-pulse" />
                 ))}
               </div>
-            </div>
-          ) : (
-            <div className="rounded-3xl border border-dashed border-white/15 bg-slate-900/50 p-6 text-center text-sm text-slate-300">
-              Nobody has posted feedback yet -- share the first win.
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className={`${sectionContainer} py-6`}>
-        <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">FAQ</p>
-              <h2 className="text-2xl font-semibold leading-snug text-white">Quick answers</h2>
-            </div>
-            <span className="inline-flex items-center rounded-full border border-white/15 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-200">
-              Rotating Q&amp;A
-            </span>
-          </div>
-          <div className="mt-6 space-y-4">
-            {visibleFaqCards.length === 0 ? (
-              <p className="text-sm text-slate-400">More answers are loading shortly.</p>
-            ) : (
-              visibleFaqCards.map(({ index, question, answer }) => {
-                const isOpen = activeFaqIndex === index;
-                return (
-                  <article
-                    key={`${question}-${index}`}
-                    className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 shadow-[0_20px_50px_rgba(2,6,23,0.4)]"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => toggleFaq(index)}
-                      aria-expanded={isOpen}
-                      className="flex w-full items-center justify-between gap-3 text-left"
-                    >
-                      <span className="text-sm font-semibold text-white">{question}</span>
-                      {faqToggleIcon(isOpen)}
-                    </button>
-                    {isOpen && <p className="mt-3 text-sm text-slate-300">{answer}</p>}
-                  </article>
-                );
-              })
             )}
+            {leaderboardState.status === 'ready' && leaderboardState.entries.map((entry, i) => (
+              <a
+                key={entry.id}
+                href={entry.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-white/5"
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                  i === 0 ? 'bg-amber-500/20 text-amber-400' :
+                  i === 1 ? 'bg-slate-400/20 text-slate-300' :
+                  'bg-orange-600/20 text-orange-400'
+                }`}>
+                  #{entry.position}
+                </div>
+                <img src={entry.avatar} alt={entry.username} className="w-10 h-10 rounded-xl object-cover" />
+                <div>
+                  <p className="font-semibold text-white text-sm">@{entry.username}</p>
+                  <p className="text-xs text-slate-400">{entry.cheers.toLocaleString()} cheers</p>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className={`${sectionContainer} pb-10`}>
-        <Footer />
+      {/* Testimonials Section */}
+      <section className="px-6 py-16">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <p className="text-cyan-400 font-mono text-xs tracking-[0.2em] uppercase mb-2">Community Stories</p>
+            <h2 className="font-display text-2xl font-bold text-white">Real feedback</h2>
+          </div>
+          <button
+            onClick={() => user ? setFeedbackModalOpen(true) : navigate('/signin')}
+            className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white text-sm font-semibold"
+          >
+            Share
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {feedbackList.slice(0, 3).map((entry) => (
+            <motion.article
+              key={entry.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative bg-slate-900/50 border border-white/5 rounded-2xl p-5"
+            >
+              {isAdmin && entry.fromFirestore && (
+                <button
+                  onClick={() => handleDeleteFeedback(entry.id)}
+                  className="absolute top-3 right-3 text-xs text-red-400"
+                >
+                  Remove
+                </button>
+              )}
+              <p className="text-cyan-400/60 font-mono text-xs uppercase tracking-wider mb-3">{entry.context}</p>
+              <p className="text-slate-200 leading-relaxed mb-4">{entry.quote}</p>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center text-white font-bold text-sm">
+                  {entry.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-semibold text-white text-sm">{entry.name}</p>
+                  <p className="text-xs text-slate-500">{entry.handle}</p>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
       </section>
 
-      {user && isFeedbackModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-md">
-          <div className="relative w-full max-w-lg rounded-[28px] border border-white/10 bg-slate-950/95 p-6 shadow-[0_30px_120px_rgba(2,6,23,0.7)]">
-            <button
-              type="button"
-              aria-label="Close feedback modal"
-              onClick={() => setFeedbackModalOpen(false)}
-              className="absolute right-4 top-4 text-sm text-slate-400 transition hover:text-white"
+      {/* FAQ Section */}
+      <section className="px-6 py-16 bg-gradient-to-b from-transparent to-slate-900/30">
+        <p className="text-cyan-400 font-mono text-xs tracking-[0.2em] uppercase mb-4">FAQ</p>
+        <h2 className="font-display text-2xl font-bold text-white mb-6">Quick answers</h2>
+
+        <div className="space-y-3">
+          {faqEntries.slice(0, 5).map((faq, i) => (
+            <div key={i} className="bg-slate-900/50 border border-white/5 rounded-xl overflow-hidden">
+              <button
+                onClick={() => setActiveFaqIndex(activeFaqIndex === i ? null : i)}
+                className="w-full flex items-center justify-between p-4 text-left"
+              >
+                <span className="font-semibold text-white text-sm pr-4">{faq.question}</span>
+                <motion.span
+                  animate={{ rotate: activeFaqIndex === i ? 45 : 0 }}
+                  className="text-cyan-400 text-lg flex-shrink-0"
+                >
+                  +
+                </motion.span>
+              </button>
+              <AnimatePresence>
+                {activeFaqIndex === i && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <p className="px-4 pb-4 text-slate-400 text-sm leading-relaxed">{faq.answer}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-6 py-20 text-center">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 blur-3xl" />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative space-y-6"
+          >
+            <h2 className="font-display text-3xl font-bold text-white leading-tight">
+              Ready to join the <span className="bg-gradient-to-r from-cyan-300 to-indigo-400 bg-clip-text text-transparent">community?</span>
+            </h2>
+            <p className="text-slate-400">Thousands of members are already helping each other stay connected—safely.</p>
+            <div className="flex flex-col gap-3 pt-4">
+              <a
+                href="https://forums.jtechforums.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-4 bg-white text-slate-900 font-bold rounded-full"
+              >
+                Join JTech Forums
+              </a>
+              <a href="/contact" className="px-8 py-4 border border-white/20 text-white font-bold rounded-full">
+                Contact Us
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5">
+        <Footer />
+      </footer>
+
+      {/* Feedback Modal */}
+      <AnimatePresence>
+        {user && isFeedbackModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => setFeedbackModalOpen(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              className="w-full max-w-lg bg-slate-900 border-t border-white/10 rounded-t-3xl p-6 pb-10"
+              onClick={(e) => e.stopPropagation()}
             >
-              &times;
-            </button>
-            <h3 className="text-lg font-semibold text-white">Share your feedback</h3>
-            <p className="mt-1 text-xs text-slate-400">Tell us how the forum or apps helped your kosher setup.</p>
-            <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4 text-left">
-              <div>
-                <label htmlFor="name-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
-                  Display name
-                </label>
-                <input
-                  id="name-modal"
-                  name="name"
-                  type="text"
-                  value={feedbackForm.name}
-                  onChange={handleFeedbackInput}
-                  placeholder="ex. Usher W."
-                  maxLength={MAX_FEEDBACK_NAME}
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-2 text-sm text-white outline-none transition focus:border-white/40"
-                />
-              </div>
-              <div>
-                <label htmlFor="context-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
-                  Setup context
-                </label>
-                <input
-                  id="context-modal"
-                  name="context"
-                  type="text"
-                  value={feedbackForm.context}
-                  onChange={handleFeedbackInput}
-                  placeholder="ex. Pixel 8a + TAG Guardian"
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-2 text-sm text-white outline-none transition focus:border-white/40"
-                />
-              </div>
-              <div>
-                <label htmlFor="quote-modal" className="text-xs uppercase tracking-[0.3em] text-slate-400">
-                  Feedback
-                </label>
-                <textarea
-                  id="quote-modal"
-                  name="quote"
-                  rows={4}
-                  value={feedbackForm.quote}
-                  onChange={handleFeedbackInput}
-                  placeholder={`Share the story (max ${MAX_FEEDBACK_LENGTH} characters)…`}
-                  maxLength={MAX_FEEDBACK_LENGTH}
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-sm text-white outline-none transition focus:border-white/40"
-                />
-              </div>
-              <div className="space-y-2 text-center">
+              <div className="w-12 h-1 bg-slate-700 rounded-full mx-auto mb-6" />
+              <h3 className="text-lg font-bold text-white mb-6">Share your feedback</h3>
+              <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Display name</label>
+                  <input
+                    name="name"
+                    value={feedbackForm.name}
+                    onChange={handleFeedbackInput}
+                    placeholder="e.g. Usher W."
+                    maxLength={MAX_FEEDBACK_NAME}
+                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500/50 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Setup context</label>
+                  <input
+                    name="context"
+                    value={feedbackForm.context}
+                    onChange={handleFeedbackInput}
+                    placeholder="e.g. Pixel 8a + TAG Guardian"
+                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500/50 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Your feedback</label>
+                  <textarea
+                    name="quote"
+                    value={feedbackForm.quote}
+                    onChange={handleFeedbackInput}
+                    rows={3}
+                    placeholder="Share your experience..."
+                    maxLength={MAX_FEEDBACK_LENGTH}
+                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500/50 focus:outline-none resize-none"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    {feedbackForm.quote.length < MIN_FEEDBACK_LENGTH
+                      ? `${MIN_FEEDBACK_LENGTH - feedbackForm.quote.length} more characters needed`
+                      : `${MAX_FEEDBACK_LENGTH - feedbackForm.quote.length} remaining`}
+                  </p>
+                </div>
+                {feedbackMessage && <p className="text-sm text-cyan-400">{feedbackMessage}</p>}
                 <button
                   type="submit"
-                  disabled={feedbackSubmitting}
-                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-slate-500"
+                  disabled={feedbackSubmitting || feedbackForm.quote.trim().length < MIN_FEEDBACK_LENGTH || !feedbackForm.name.trim()}
+                  className="w-full py-4 bg-white text-slate-900 font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {feedbackSubmitting ? 'Sending…' : 'Submit feedback'}
+                  {feedbackSubmitting ? 'Submitting...' : 'Submit Feedback'}
                 </button>
-                {visibleFeedbackMessage && <p className="text-xs text-slate-300">{visibleFeedbackMessage}</p>}
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
-function normalizeLeaderboardUsers(users) {
-  if (!Array.isArray(users)) return [];
-  return users
-    .filter(Boolean)
-    .slice(0, LEADERBOARD_LIMIT)
-    .map((user, index) => {
-      const username = user.username || `member-${index + 1}`;
-      const cheers = Number(user.total_score);
-      return {
-        id: user.id ?? `${username}-${index}`,
-        username,
-        position: user.position || index + 1,
-        cheers: Number.isFinite(cheers) ? cheers : 0,
-        avatar: buildAvatarUrl(user.avatar_template),
-        profileUrl: buildProfileUrl(username),
-      };
-    });
-}
-
-function buildProfileUrl(username = '') {
-  if (!username) return forumBaseUrl;
-  return `${forumBaseUrl}/u/${encodeURIComponent(username)}`;
-}
-
-function buildAvatarUrl(template = '', size = 160) {
-  if (!template) {
-    return `${forumBaseUrl}/letter_avatar_proxy/v4/letter/j/ce7236/${size}.png`;
-  }
-  const resolved = template.replace('{size}', size);
-  if (/^https?:\/\//i.test(resolved)) {
-    return resolved;
-  }
-  return `${forumBaseUrl}${resolved}`;
-}
-
-function getPlacementBadgeClass(index = 0) {
-  const placementAccentClasses = [
-    'border-amber-400/50 bg-gradient-to-br from-amber-500/20 to-amber-300/5 text-amber-100',
-    'border-sky-400/40 bg-gradient-to-br from-sky-500/15 to-sky-300/5 text-sky-100',
-    'border-emerald-400/40 bg-gradient-to-br from-emerald-500/15 to-emerald-300/5 text-emerald-100',
-  ];
-  return placementAccentClasses[index] || 'border-white/15 bg-white/5 text-white';
-}
-
-function faqToggleIcon(open = false) {
-  return (
-    <span
-      className={`flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white transition ${
-        open ? 'rotate-45 border-sky-400 text-sky-300' : 'bg-white/5 text-white/80'
-      }`}
-    >
-      <i className="fa-solid fa-plus text-[13px]"></i>
-    </span>
-  );
-}
-
-function LineCharacters({ chars }) {
-  if (!chars || chars.length === 0) {
-    return <span className="inline-block opacity-0">&nbsp;</span>;
-  }
-  return chars.map(({ char, opacity }, idx) => (
-    <span
-      key={idx}
-      className="inline-block transition-all duration-150"
-      style={{ opacity, transform: `translateY(${(1 - opacity) * 6}px)` }}
-    >
-      {char === ' ' ? '\u00A0' : char}
-    </span>
-  ));
-}
-
-function buildTerminalTypingState(entries, ratio = 0) {
-  const safeRatio = clamp(ratio, 0, 1);
-  const descriptors = [];
-  let totalChars = 0;
-
-  entries.forEach((entry, entryIndex) => {
-    const commandText = entry.command || '';
-    descriptors.push({ entryIndex, type: 'command', text: commandText });
-    totalChars += commandText.length;
-    entry.output.forEach((line, lineIndex) => {
-      const lineText = line || '';
-      descriptors.push({ entryIndex, type: 'output', lineIndex, text: lineText });
-      totalChars += lineText.length;
-    });
-  });
-
-  const baseState = entries.map((entry) => ({
-    command: [],
-    outputs: entry.output.map(() => []),
-  }));
-
-  if (totalChars === 0 || safeRatio <= 0) {
-    return baseState;
-  }
-
-  let remaining = Math.floor(totalChars * safeRatio);
-
-  descriptors.forEach((item) => {
-    if (remaining <= 0) return;
-    if (item.type === 'command') {
-      const take = Math.min(item.text.length, remaining);
-      baseState[item.entryIndex].command = buildSolidCharacters(item.text, take);
-      remaining -= take;
-      return;
-    }
-
-    const take = Math.min(item.text.length, remaining);
-    const chars = buildSolidCharacters(item.text, take);
-    if (typeof item.lineIndex === 'number') {
-      baseState[item.entryIndex].outputs[item.lineIndex] = chars;
-    }
-    remaining -= take;
-  });
-
-  return baseState;
-}
-
-function buildSolidCharacters(text = '', length) {
-  if (!text || length <= 0) return [];
-  return text
-    .slice(0, length)
-    .split('')
-    .map((char) => ({ char, opacity: 1 }));
-}
-
-function clamp(value, min = 0, max = 1) {
-  return Math.min(Math.max(value, min), max);
-}
-
-

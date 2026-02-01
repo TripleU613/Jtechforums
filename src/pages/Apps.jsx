@@ -18,7 +18,7 @@ import { auth, firestore, storage } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import PageLoader from '../components/PageLoader';
 
-const ADMIN_EMAIL = 'tripleuworld@gmail.com';
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 const MAX_FORM_LIMITS = {
   name: 72,
   username: 32,

@@ -5,14 +5,19 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBykzDYSr-DNtQW41Y3ufIZdDB75H4b1Lg',
-  authDomain: 'jtechsite-2ebc8.firebaseapp.com',
-  projectId: 'jtechsite-2ebc8',
-  storageBucket: 'jtechsite-2ebc8.firebasestorage.app',
-  messagingSenderId: '589329414755',
-  appId: '1:589329414755:web:06ee33088387ed1a9b1656',
-  measurementId: 'G-0JP00LW81T',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
+
+// Validate required configuration
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  throw new Error('Missing required Firebase configuration. Check environment variables.');
+}
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);

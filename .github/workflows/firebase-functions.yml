@@ -1,0 +1,30 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'firestore.rules'
+      - 'storage.rules'
+  workflow_dispatch:
+
+jobs:
+  deploy-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install function dependencies
+        working-directory: functions
+        run: npm ci
+
+      - uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions,firestore:rules,storage:rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

@@ -1,0 +1,5 @@
+# Proxy API calls to Firebase Functions
+/api/*  https://us-central1-jtechsite-2ebc8.cloudfunctions.net/forumApi/:splat  200
+
+# SPA fallback for client-side routing
+/*  /index.html  200

@@ -5,6 +5,49 @@ This site provides beginner guides, an app list, FAQs, and other resources for t
 
 ---
 
+## Environment Setup
+
+### Local Development
+
+1. **Copy environment templates:**
+   ```bash
+   cp .env.example .env
+   cd functions && cp .env.example .env
+   ```
+
+2. **Edit `.env` files with your Firebase credentials** (NEVER commit these files)
+   - Frontend `.env`: Add Firebase config from Firebase Console
+   - Backend `functions/.env`: Add SMTP settings and reCAPTCHA config
+
+3. **Install dependencies:**
+   ```bash
+   npm install
+   cd functions && npm install
+   ```
+
+4. **Run locally:**
+   ```bash
+   npm run dev  # Frontend dev server (port 5173)
+   npm --prefix functions run serve  # Firebase Functions emulator (port 5001)
+   ```
+
+### Deployment
+
+- **Frontend**: Auto-deploys to Cloudflare Pages on push to `main`
+- **Backend**: Auto-deploys Firebase Functions on changes to `functions/**`
+- **Manual Functions deploy**: `cd functions && npm run deploy`
+
+### Security
+
+**NEVER commit:**
+- `.env` files
+- Firebase service account keys
+- API keys or secrets
+
+All secrets are managed via GitHub Secrets and Firebase Secret Manager.
+
+---
+
 ## Contributing
 
 We welcome contributions! Whether you're editing guides, improving formatting, or adding new sections, your help makes JTech better.

@@ -54,7 +54,6 @@ export default function App() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className={isDesktopHome ? 'h-full flex-1' : undefined}
         >
           <Routes location={location}>
             <Route
