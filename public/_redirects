@@ -1,5 +1,2 @@
-# Proxy API calls to Firebase Functions (Cloud Run URL)
-/api/*  https://forumapi-vvtyqkmgxa-uc.a.run.app/:splat  200
-
 # SPA fallback for client-side routing
-/*  /index.html  200
+/*  /index.html  200!
