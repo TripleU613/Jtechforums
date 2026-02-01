@@ -104,6 +104,15 @@ const getContactConfig = () => {
   return config;
 };
 
+const escapeHtml = (str) => {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
 const sendContactEmail = async ({ name, email, phone, message }) => {
   const config = getContactConfig();
 
@@ -129,12 +138,20 @@ const sendContactEmail = async ({ name, email, phone, message }) => {
     message,
   ].join('\n');
 
+  const escapedLines = [
+    `Name: ${escapeHtml(name)}`,
+    `Email: ${escapeHtml(email)}`,
+    `Phone: ${escapeHtml(phone)}`,
+    '',
+    escapeHtml(message),
+  ].join('\n');
+
   await transporter.sendMail({
     from: `"JTech Website" <${config.user}>`,
     to: config.to,
     subject: `New JTech contact from ${name}`,
     text: lines,
-    html: lines
+    html: escapedLines
       .split('\n')
       .map((line) => `<p>${line.replace(/\n/g, '<br/>')}</p>`)
       .join('')
