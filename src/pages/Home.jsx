@@ -1055,7 +1055,7 @@ function CommunitySection({ adminProfiles, leaderboardState, forumBaseUrl }) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-indigo-500/30 hover:scale-[1.02] hover:translate-x-2 transition-all group opacity-0"
                 >
-                  <img src={admin.avatar} alt={admin.name} className="w-14 h-14 rounded-xl object-cover" />
+                  <img src={admin.avatar} alt={admin.name} className="w-14 h-14 rounded-xl object-cover" crossOrigin="anonymous" />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-white group-hover:text-indigo-300 transition-colors">{admin.name}</p>
                     <p className="text-sm text-slate-500">{admin.handle}</p>
@@ -1096,7 +1096,7 @@ function CommunitySection({ adminProfiles, leaderboardState, forumBaseUrl }) {
                   }`}>
                     #{entry.position}
                   </div>
-                  <img src={entry.avatar} alt={entry.username} className="w-12 h-12 rounded-xl object-cover" />
+                  <img src={entry.avatar} alt={entry.username} className="w-12 h-12 rounded-xl object-cover" crossOrigin="anonymous" />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-white group-hover:text-amber-300 transition-colors">@{entry.username}</p>
                     <p className="text-sm text-slate-400">{entry.cheers.toLocaleString()} cheers</p>

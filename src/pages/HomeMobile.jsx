@@ -336,7 +336,7 @@ export default function HomeMobile() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-white/5"
               >
-                <img src={admin.avatar} alt={admin.name} className="w-12 h-12 rounded-xl object-cover" />
+                <img src={admin.avatar} alt={admin.name} className="w-12 h-12 rounded-xl object-cover" crossOrigin="anonymous" />
                 <div>
                   <p className="font-semibold text-white text-sm">{admin.name}</p>
                   <p className="text-xs text-slate-400">{admin.role}</p>
@@ -374,7 +374,7 @@ export default function HomeMobile() {
                 }`}>
                   #{entry.position}
                 </div>
-                <img src={entry.avatar} alt={entry.username} className="w-10 h-10 rounded-xl object-cover" />
+                <img src={entry.avatar} alt={entry.username} className="w-10 h-10 rounded-xl object-cover" crossOrigin="anonymous" />
                 <div>
                   <p className="font-semibold text-white text-sm">@{entry.username}</p>
                   <p className="text-xs text-slate-400">{entry.cheers.toLocaleString()} cheers</p>
