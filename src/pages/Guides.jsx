@@ -14,6 +14,12 @@ const formatDate = (value) => {
   }).format(date);
 };
 
+const normalizeTagLabel = (tag) => {
+  if (!tag) return '';
+  if (typeof tag === 'string') return tag;
+  return tag.name || tag.slug || '';
+};
+
 export default function Guides() {
   const sentinelRef = useRef(null);
   const [topics, setTopics] = useState([]);
@@ -169,14 +175,18 @@ function GuideCard({ topic }) {
         </h3>
         {topic.tags?.length ? (
           <div className="flex flex-wrap gap-2">
-            {topic.tags.slice(0, 4).map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-200 transition-colors duration-300 group-hover:border-sky-200/40 group-hover:text-white"
-              >
-                {tag}
-              </span>
-            ))}
+            {topic.tags.slice(0, 4).map((tag, index) => {
+              const label = normalizeTagLabel(tag);
+              if (!label) return null;
+              return (
+                <span
+                  key={`${label}-${index}`}
+                  className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-200 transition-colors duration-300 group-hover:border-sky-200/40 group-hover:text-white"
+                >
+                  {label}
+                </span>
+              );
+            })}
           </div>
         ) : null}
 
