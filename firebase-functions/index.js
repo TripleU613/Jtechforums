@@ -35,24 +35,22 @@ const getDiscourseApiKey = () => {
   }
 };
 
-const proxyJson = async (res, endpoint, cacheSeconds = 300) => {
-  const apiKey = getDiscourseApiKey();
-  if (!apiKey) {
-    res.status(500).json({ error: 'Forum API secret is not configured.' });
-    return;
+const proxyJson = async (res, endpoint, cacheSeconds = 300, { auth = true } = {}) => {
+  const forumBase = buildForumBase();
+  const headers = { Accept: 'application/json' };
+
+  if (auth) {
+    const apiKey = getDiscourseApiKey();
+    if (!apiKey) {
+      res.status(500).json({ error: 'Forum API secret is not configured.' });
+      return;
+    }
+    headers['Api-Key'] = apiKey;
+    headers['Api-Username'] = getUsername();
   }
 
-  const forumBase = buildForumBase();
-  const apiUsername = getUsername();
-
   try {
-    const response = await fetch(`${forumBase}${endpoint}`, {
-      headers: {
-        'Api-Key': apiKey,
-        'Api-Username': apiUsername,
-        Accept: 'application/json',
-      },
-    });
+    const response = await fetch(`${forumBase}${endpoint}`, { headers });
 
     if (!response.ok) {
       const detail = await response.text();
@@ -292,7 +290,7 @@ forumRouter.get('/forum/leaderboard/:id', async (req, res) => {
   }
   const period = typeof req.query.period === 'string' ? req.query.period : '';
   const periodSegment = period ? `?period=${encodeURIComponent(period)}` : '';
-  await proxyJson(res, `/leaderboard/${leaderboardId}.json${periodSegment}`, 600);
+  await proxyJson(res, `/leaderboard/${leaderboardId}.json${periodSegment}`, 600, { auth: false });
 });
 
 app.use('/', forumRouter);
