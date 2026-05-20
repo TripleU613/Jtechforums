@@ -81,7 +81,7 @@ Forum data now flows through Firebase Functions (`firebase-functions/index.js`) 
 
 ## Contact Form Email
 
-`/contact` now posts to Firebase Functions, which relays the message via SMTP to `tripleuworld@gmail.com`.
+`/contact` now posts to Firebase Functions, which relays the message via SMTP to the configured admin inbox (`CONTACT_TO_EMAIL`).
 
 1. Copy `firebase-functions/.env.example` to `firebase-functions/.env.production` (and optionally `.env.local`) and fill in your SMTP host, username, and `CONTACT_SMTP_PASS` (e.g. a Gmail App Password).
 2. Provide the reCAPTCHA Enterprise site key/project (the backend calls Google’s Assessment API using the default Firebase service account); set the matching public key in `.env` via `VITE_RECAPTCHA_SITE_KEY`.
@@ -93,7 +93,7 @@ Forum data now flows through Firebase Functions (`firebase-functions/index.js`) 
 ## App Catalog & Submissions
 
 * `/apps` lists Firestore-backed cards for every approved submission and lets verified users upload APKs, icons, and forum links. 
-* Email/password auth (Firebase Auth) plus email verification is required before the submission form unlocks; only `tripleuworld@gmail.com` sees the admin review queue.
+* Email/password auth (Firebase Auth) plus email verification is required before the submission form unlocks; only the configured admin account (see `firestore.rules`) sees the admin review queue.
 * Metadata lives in the Firestore `apps` collection and files in Storage buckets (`app-icons/` + `app-apks/`); security rules are defined in `firestore.rules` and `storage.rules`.
 * Deploy the new rules with `npx firebase deploy --only firestore:rules,storage:rules`, keep `CONTACT_SMTP_PASS` + `DISCOURSE_API_KEY` secrets set, and update `/apps` content by approving entries in the admin queue.
 

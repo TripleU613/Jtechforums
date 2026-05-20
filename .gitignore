@@ -27,5 +27,12 @@ dist
 # OS
 .DS_Store
 
+# Editor swap/backup files
+*.swp
+*.swo
+*~
+.*.swp
+.,.swp
+
 # Local tooling logs
 pglite-debug.log
