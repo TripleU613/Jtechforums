@@ -1235,19 +1235,18 @@ function ModeratorCarousel({ moderators, status, forumBaseUrl, cardsRef }) {
   const trackRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const [activeDot, setActiveDot] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   const updateScrollState = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
+    const overflow = scrollWidth - clientWidth;
+    setHasOverflow(overflow > 4);
     setCanScrollLeft(scrollLeft > 4);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
-    const cardEl = el.querySelector('[data-mod-card]');
-    if (cardEl) {
-      const cardWidth = cardEl.getBoundingClientRect().width + 16; // gap
-      setActiveDot(Math.round(scrollLeft / cardWidth));
-    }
+    setCanScrollRight(scrollLeft < overflow - 4);
+    setScrollProgress(overflow > 0 ? Math.min(scrollLeft / overflow, 1) : 0);
   }, []);
 
   useEffect(() => {
@@ -1288,10 +1287,10 @@ function ModeratorCarousel({ moderators, status, forumBaseUrl, cardsRef }) {
           </span>
           <div>
             <h3 className="text-xl sm:text-2xl font-bold text-white">Our Moderators</h3>
-            <p className="text-sm text-slate-400 mt-0.5">Keeping the conversation kosher · swipe to meet the team</p>
+            <p className="text-sm text-slate-400 mt-0.5">Keeping the conversation kosher{hasOverflow ? ' · swipe to meet the team' : ''}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${hasOverflow ? '' : 'hidden'}`}>
           <button
             type="button"
             onClick={() => scrollBy(-1)}
@@ -1369,17 +1368,23 @@ function ModeratorCarousel({ moderators, status, forumBaseUrl, cardsRef }) {
         ))}
       </div>
 
-      {/* Progress indicator */}
-      {!isLoading && moderators.length > 1 && (
+      {/* Progress indicator — only shown when content actually overflows */}
+      {!isLoading && hasOverflow && (
         <div className="relative flex items-center gap-3 mt-5">
-          <span className="text-xs font-mono text-emerald-300/80 tabular-nums whitespace-nowrap">
-            {String(Math.min(activeDot + 1, moderators.length)).padStart(2, '0')}
-            <span className="text-slate-500"> / {String(moderators.length).padStart(2, '0')}</span>
+          <span
+            className="flex items-center gap-1.5 text-xs font-mono text-emerald-300/70 whitespace-nowrap transition-opacity duration-300"
+            style={{ opacity: scrollProgress < 0.05 ? 1 : 0 }}
+            aria-hidden="true"
+          >
+            Swipe
+            <svg className="w-3.5 h-3.5 animate-[pulse_1.5s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
           </span>
           <div className="relative flex-1 h-[3px] rounded-full bg-white/10 overflow-hidden">
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-300 ease-out"
-              style={{ width: `${((Math.min(activeDot + 1, moderators.length)) / moderators.length) * 100}%` }}
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-[width] duration-150 ease-out"
+              style={{ width: `${Math.max(scrollProgress * 100, 6)}%` }}
             />
           </div>
         </div>
