@@ -34,38 +34,25 @@ const adminProfiles = [
   },
 ];
 
-const moderatorProfiles = [
-  {
-    username: 'Shalom_Karr',
-    role: 'Forum Moderator · GroupMe Expert',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/shalom_karr/144/8264_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/Shalom_Karr',
-  },
-  {
-    username: 'kosherboy',
-    role: 'Forum Moderator',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/kosherboy/144/292_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/kosherboy',
-  },
-  {
-    username: 'flipphoneguy',
-    role: 'Forum Moderator · GroupMe Expert',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/flipphoneguy/144/4207_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/flipphoneguy',
-  },
-  {
-    username: 'Dev-in-the-BM_2.0',
-    role: 'Forum Moderator',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/dev-in-the-bm_2.0/144/969_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/Dev-in-the-BM_2.0',
-  },
-  {
-    username: 'anonymousfliphones',
-    role: 'Forum Moderator · Phone Distributor',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/anonymousfliphones/144/2591_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/anonymousfliphones',
-  },
-];
+const resolveAvatar = (template, size = 144) => {
+  if (!template) return '';
+  const path = template.replace('{size}', String(size));
+  return path.startsWith('http') ? path : `${forumBaseUrl}${path}`;
+};
+
+const deriveModerators = (aboutData) => {
+  if (!aboutData?.about || !Array.isArray(aboutData.users)) return [];
+  const modIds = new Set(aboutData.about.moderator_ids || []);
+  const adminIds = new Set(aboutData.about.admin_ids || []);
+  return aboutData.users
+    .filter((u) => modIds.has(u.id) && !adminIds.has(u.id))
+    .map((u) => ({
+      username: u.username,
+      role: u.title?.trim() || 'Forum Moderator',
+      avatar: resolveAvatar(u.avatar_template),
+      profileUrl: `${forumBaseUrl}/u/${encodeURIComponent(u.username)}`,
+    }));
+};
 
 const feedbackShowcase = [
   {
@@ -129,6 +116,9 @@ export default function HomeMobile() {
   const [forumQuery, setForumQuery] = useState('');
   const [forumStats, setForumStats] = useState(null);
   const [forumStatsStatus, setForumStatsStatus] = useState('loading');
+  const [aboutData, setAboutData] = useState(null);
+
+  const moderatorProfiles = deriveModerators(aboutData);
 
   const MIN_SEARCH_LENGTH = 3;
   const trimmedForumQuery = forumQuery.trim();
@@ -188,6 +178,7 @@ export default function HomeMobile() {
         const res = await fetchForumApi('/forum/about', { signal: controller.signal });
         if (!res.ok) throw new Error('failed');
         const payload = await res.json();
+        setAboutData(payload);
         setForumStats(payload?.about?.stats || null);
         setForumStatsStatus('ready');
       } catch {
@@ -442,33 +433,49 @@ export default function HomeMobile() {
           </div>
         </div>
 
-        {/* Moderators */}
-        <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5 mb-4">
-          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
-              <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/>
-            </svg>
-            Our Moderators
-          </h3>
-          <div className="space-y-3">
-            {moderatorProfiles.map((mod) => (
+        {/* Moderators carousel */}
+        <div className="relative bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-emerald-950/20 border border-white/5 rounded-2xl p-5 mb-4 overflow-hidden">
+          <div className="pointer-events-none absolute -top-16 -right-16 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="relative flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-teal-500/20 flex items-center justify-center text-emerald-300 ring-1 ring-emerald-500/30 flex-shrink-0">
+              <svg className="w-5 h-5" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+                <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/>
+              </svg>
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-lg font-bold text-white leading-tight">Our Moderators</h3>
+              <p className="text-[11px] text-slate-400 leading-snug">Swipe to meet the team →</p>
+            </div>
+          </div>
+
+          <div className="relative -mx-5 px-5 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {forumStatsStatus !== 'ready' && Array.from({ length: 4 }).map((_, i) => (
+              <div key={`mob-skel-${i}`} className="snap-start grow-0 shrink-0 basis-[68%] rounded-2xl bg-slate-800/40 border border-white/5 p-4 animate-pulse h-[180px]" />
+            ))}
+            {forumStatsStatus === 'ready' && moderatorProfiles.length === 0 && (
+              <p className="text-slate-400 text-xs py-6">No moderators to show.</p>
+            )}
+            {forumStatsStatus === 'ready' && moderatorProfiles.map((mod) => (
               <a
                 key={mod.username}
                 href={mod.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-white/5"
+                className="snap-start grow-0 shrink-0 basis-[68%] rounded-2xl bg-slate-800/40 border border-white/10 p-4 active:border-emerald-500/40 transition-colors"
               >
-                <img
-                  src={mod.avatar}
-                  alt={mod.username}
-                  className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-white text-sm truncate">@{mod.username}</p>
-                  <p className="text-xs text-slate-400 leading-snug">{mod.role}</p>
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-3">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-500/30 blur-md" />
+                    <img
+                      src={mod.avatar}
+                      alt={mod.username}
+                      className="relative w-16 h-16 rounded-full object-cover ring-2 ring-white/10"
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <p className="font-semibold text-white text-sm truncate max-w-full">@{mod.username}</p>
+                  <p className="text-[11px] text-slate-400 leading-snug mt-1 line-clamp-2">{mod.role}</p>
                 </div>
               </a>
             ))}

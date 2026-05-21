@@ -40,38 +40,25 @@ const adminProfiles = [
   },
 ];
 
-const moderatorProfiles = [
-  {
-    username: 'Shalom_Karr',
-    role: 'Forum Moderator · GroupMe Expert',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/shalom_karr/144/8264_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/Shalom_Karr',
-  },
-  {
-    username: 'kosherboy',
-    role: 'Forum Moderator',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/kosherboy/144/292_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/kosherboy',
-  },
-  {
-    username: 'flipphoneguy',
-    role: 'Forum Moderator · GroupMe Expert',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/flipphoneguy/144/4207_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/flipphoneguy',
-  },
-  {
-    username: 'Dev-in-the-BM_2.0',
-    role: 'Forum Moderator',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/dev-in-the-bm_2.0/144/969_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/Dev-in-the-BM_2.0',
-  },
-  {
-    username: 'anonymousfliphones',
-    role: 'Forum Moderator · Phone Distributor',
-    avatar: 'https://forums.jtechforums.org/user_avatar/forums.jtechforums.org/anonymousfliphones/144/2591_2.png',
-    profileUrl: 'https://forums.jtechforums.org/u/anonymousfliphones',
-  },
-];
+const resolveAvatar = (template, size = 144) => {
+  if (!template) return '';
+  const path = template.replace('{size}', String(size));
+  return path.startsWith('http') ? path : `${forumBaseUrl}${path}`;
+};
+
+const deriveModerators = (aboutData) => {
+  if (!aboutData?.about || !Array.isArray(aboutData.users)) return [];
+  const modIds = new Set(aboutData.about.moderator_ids || []);
+  const adminIds = new Set(aboutData.about.admin_ids || []);
+  return aboutData.users
+    .filter((u) => modIds.has(u.id) && !adminIds.has(u.id))
+    .map((u) => ({
+      username: u.username,
+      role: u.title?.trim() || 'Forum Moderator',
+      avatar: resolveAvatar(u.avatar_template),
+      profileUrl: `${forumBaseUrl}/u/${encodeURIComponent(u.username)}`,
+    }));
+};
 
 const feedbackShowcase = [
   {
@@ -123,6 +110,26 @@ export default function Home() {
   const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [activeFaqIndex, setActiveFaqIndex] = useState(null);
   const [leaderboardState, setLeaderboardState] = useState({ entries: [], status: 'idle', error: '' });
+  const [aboutData, setAboutData] = useState(null);
+  const [aboutStatus, setAboutStatus] = useState('loading');
+
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetchForumApi('/forum/about', { signal: controller.signal });
+        if (!res.ok) throw new Error('failed');
+        const payload = await res.json();
+        setAboutData(payload);
+        setAboutStatus('ready');
+      } catch {
+        if (!controller.signal.aborted) setAboutStatus('error');
+      }
+    })();
+    return () => controller.abort();
+  }, []);
+
+  const moderatorProfiles = deriveModerators(aboutData);
 
   // Load feedback from Firestore
   useEffect(() => {
@@ -250,12 +257,13 @@ export default function Home() {
       <CommunitySection
         adminProfiles={adminProfiles}
         moderatorProfiles={moderatorProfiles}
+        moderatorStatus={aboutStatus}
         leaderboardState={leaderboardState}
         forumBaseUrl={forumBaseUrl}
       />
 
       {/* ===== SECTION 5.5: Forum Stats ===== */}
-      <StatsSection />
+      <StatsSection aboutData={aboutData} status={aboutStatus} />
 
       {/* ===== SECTION 6: Testimonials ===== */}
       <TestimonialsSection
@@ -767,10 +775,9 @@ const formatStat = (n) => {
   return n.toLocaleString();
 };
 
-function StatsSection() {
+function StatsSection({ aboutData, status }) {
   const ref = useRef(null);
-  const [stats, setStats] = useState(null);
-  const [status, setStatus] = useState('loading');
+  const stats = aboutData?.about?.stats || null;
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -778,22 +785,6 @@ function StatsSection() {
   });
   const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [60, 0]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    (async () => {
-      try {
-        const res = await fetchForumApi('/forum/about', { signal: controller.signal });
-        if (!res.ok) throw new Error('failed');
-        const payload = await res.json();
-        setStats(payload?.about?.stats || null);
-        setStatus('ready');
-      } catch {
-        if (!controller.signal.aborted) setStatus('error');
-      }
-    })();
-    return () => controller.abort();
-  }, []);
 
   const yearsActive = new Date().getFullYear() - FORUM_CREATED_YEAR;
 
@@ -1238,9 +1229,169 @@ function FeaturesSection() {
 }
 
 /* ============================================
+   MODERATOR CAROUSEL - Native scroll-snap + arrow controls
+============================================ */
+function ModeratorCarousel({ moderators, status, forumBaseUrl, cardsRef }) {
+  const trackRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [activeDot, setActiveDot] = useState(0);
+
+  const updateScrollState = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 4);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+    const cardEl = el.querySelector('[data-mod-card]');
+    if (cardEl) {
+      const cardWidth = cardEl.getBoundingClientRect().width + 16; // gap
+      setActiveDot(Math.round(scrollLeft / cardWidth));
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [updateScrollState, moderators.length]);
+
+  const scrollBy = (dir) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const cardEl = el.querySelector('[data-mod-card]');
+    const cardWidth = cardEl ? cardEl.getBoundingClientRect().width + 16 : 280;
+    el.scrollBy({ left: dir * cardWidth, behavior: 'smooth' });
+  };
+
+  const isLoading = status === 'loading' || (status === 'ready' && moderators.length === 0);
+  const skeletonCount = 5;
+
+  return (
+    <div className="relative bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-emerald-950/20 border border-white/5 rounded-3xl p-6 sm:p-8 backdrop-blur-sm overflow-hidden">
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-emerald-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-teal-500/10 blur-3xl" />
+
+      <div className="relative flex items-center justify-between gap-3 mb-6 flex-wrap">
+        <div className="flex items-center gap-4">
+          <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-teal-500/20 flex items-center justify-center text-emerald-300 ring-1 ring-emerald-500/30">
+            <svg className="w-6 h-6" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+              <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/>
+            </svg>
+          </span>
+          <div>
+            <h3 className="text-xl sm:text-2xl font-bold text-white">Our Moderators</h3>
+            <p className="text-sm text-slate-400 mt-0.5">Keeping the conversation kosher · swipe to meet the team</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scrollBy(-1)}
+            disabled={!canScrollLeft}
+            aria-label="Previous moderators"
+            className="hidden sm:inline-flex w-10 h-10 rounded-full bg-white/5 border border-white/10 text-white hover:bg-emerald-500/20 hover:border-emerald-500/30 hover:text-emerald-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 disabled:hover:border-white/10 disabled:hover:text-white items-center justify-center transition-all"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollBy(1)}
+            disabled={!canScrollRight}
+            aria-label="Next moderators"
+            className="hidden sm:inline-flex w-10 h-10 rounded-full bg-white/5 border border-white/10 text-white hover:bg-emerald-500/20 hover:border-emerald-500/30 hover:text-emerald-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 disabled:hover:border-white/10 disabled:hover:text-white items-center justify-center transition-all"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={trackRef}
+        className="relative -mx-2 px-2 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {isLoading && Array.from({ length: skeletonCount }).map((_, i) => (
+          <div
+            key={`mod-skel-${i}`}
+            className="snap-start grow-0 shrink-0 basis-[78%] sm:basis-[44%] md:basis-[32%] lg:basis-[23%] rounded-3xl bg-slate-800/40 border border-white/5 p-5 animate-pulse h-[212px]"
+          />
+        ))}
+
+        {!isLoading && status === 'error' && (
+          <p className="text-slate-400 text-sm py-8 px-2">Couldn't load moderators right now.</p>
+        )}
+
+        {!isLoading && moderators.map((mod, i) => (
+          <a
+            key={mod.username}
+            ref={el => { if (cardsRef) cardsRef.current[i] = el; }}
+            data-mod-card
+            href={mod.profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="snap-start group relative grow-0 shrink-0 basis-[78%] sm:basis-[44%] md:basis-[32%] lg:basis-[23%] rounded-3xl bg-slate-800/40 border border-white/10 p-5 overflow-hidden hover:border-emerald-500/40 transition-all"
+          >
+            {/* Card glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 via-emerald-500/0 to-teal-500/0 group-hover:from-emerald-500/10 group-hover:via-emerald-500/5 group-hover:to-teal-500/10 transition-all" />
+
+            <div className="relative flex flex-col items-center text-center">
+              <div className="relative mb-4">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/40 to-teal-500/40 blur-md group-hover:blur-lg transition-all" />
+                <img
+                  src={mod.avatar}
+                  alt={mod.username}
+                  className="relative w-20 h-20 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-emerald-400/60 transition-all"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <p className="font-semibold text-white group-hover:text-emerald-200 transition-colors truncate max-w-full">@{mod.username}</p>
+              <p className="text-xs text-slate-400 mt-1 leading-snug line-clamp-2 min-h-[2rem]">{mod.role}</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-xs text-emerald-400/80 group-hover:text-emerald-300 transition-colors">
+                View profile
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      {/* Progress indicator */}
+      {!isLoading && moderators.length > 1 && (
+        <div className="relative flex items-center gap-3 mt-5">
+          <span className="text-xs font-mono text-emerald-300/80 tabular-nums whitespace-nowrap">
+            {String(Math.min(activeDot + 1, moderators.length)).padStart(2, '0')}
+            <span className="text-slate-500"> / {String(moderators.length).padStart(2, '0')}</span>
+          </span>
+          <div className="relative flex-1 h-[3px] rounded-full bg-white/10 overflow-hidden">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-300 ease-out"
+              style={{ width: `${((Math.min(activeDot + 1, moderators.length)) / moderators.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================
    COMMUNITY SECTION - Uses GSAP ScrollTrigger for animations
 ============================================ */
-function CommunitySection({ adminProfiles, moderatorProfiles, leaderboardState, forumBaseUrl }) {
+function CommunitySection({ adminProfiles, moderatorProfiles, moderatorStatus, leaderboardState, forumBaseUrl }) {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const leftColRef = useRef(null);
@@ -1322,7 +1473,7 @@ function CommunitySection({ adminProfiles, moderatorProfiles, leaderboardState, 
         }
       );
 
-      // Middle column (moderators) fade up
+      // Moderator carousel container fade up
       gsap.fromTo(middleColRef.current,
         { opacity: 0, y: 40 },
         {
@@ -1333,23 +1484,6 @@ function CommunitySection({ adminProfiles, moderatorProfiles, leaderboardState, 
           scrollTrigger: {
             trigger: section,
             start: 'top 70%',
-            toggleActions: 'play none none none',
-          },
-        }
-      );
-
-      // Moderator cards stagger
-      gsap.fromTo(moderatorCardsRef.current.filter(Boolean),
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 60%',
             toggleActions: 'play none none none',
           },
         }
@@ -1492,50 +1626,14 @@ function CommunitySection({ adminProfiles, moderatorProfiles, leaderboardState, 
           </div>
         </div>
 
-        {/* Moderators row (triangle: 3 on top, 2 centered on bottom) */}
-        <div ref={middleColRef} className="mt-8 bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm opacity-0">
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-            <h3 className="text-xl font-bold text-white flex items-center gap-3">
-              <span className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <svg className="w-5 h-5" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
-                  <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/>
-                </svg>
-              </span>
-              Our Moderators
-            </h3>
-            <a
-              href={`${forumBaseUrl}/about`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              View on forum →
-            </a>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4">
-            {moderatorProfiles.map((mod, i) => (
-              <a
-                key={mod.username}
-                ref={el => moderatorCardsRef.current[i] = el}
-                href={mod.profileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-emerald-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all group opacity-0 grow-0 shrink-0 basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] lg:basis-[calc(33.333%-0.667rem)] lg:max-w-[calc(33.333%-0.667rem)]"
-              >
-                <img
-                  src={mod.avatar}
-                  alt={mod.username}
-                  className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-white group-hover:text-emerald-300 transition-colors truncate">@{mod.username}</p>
-                  <p className="text-xs text-slate-400 mt-0.5 leading-snug">{mod.role}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+        {/* Moderators carousel */}
+        <div ref={middleColRef} className="mt-8 opacity-0">
+          <ModeratorCarousel
+            moderators={moderatorProfiles}
+            status={moderatorStatus}
+            forumBaseUrl={forumBaseUrl}
+            cardsRef={moderatorCardsRef}
+          />
         </div>
       </div>
     </section>
