@@ -34,6 +34,26 @@ const adminProfiles = [
   },
 ];
 
+const resolveAvatar = (template, size = 144) => {
+  if (!template) return '';
+  const path = template.replace('{size}', String(size));
+  return path.startsWith('http') ? path : `${forumBaseUrl}${path}`;
+};
+
+const deriveModerators = (aboutData) => {
+  if (!aboutData?.about || !Array.isArray(aboutData.users)) return [];
+  const modIds = new Set(aboutData.about.moderator_ids || []);
+  const adminIds = new Set(aboutData.about.admin_ids || []);
+  return aboutData.users
+    .filter((u) => modIds.has(u.id) && !adminIds.has(u.id))
+    .map((u) => ({
+      username: u.username,
+      role: u.title?.trim() || 'Forum Moderator',
+      avatar: resolveAvatar(u.avatar_template),
+      profileUrl: `${forumBaseUrl}/u/${encodeURIComponent(u.username)}`,
+    }));
+};
+
 const feedbackShowcase = [
   {
     id: 'fb-1',
@@ -69,6 +89,17 @@ const MIN_FEEDBACK_LENGTH = 40;
 const MAX_FEEDBACK_LENGTH = 600;
 const MAX_FEEDBACK_NAME = 32;
 
+const FORUM_CREATED_YEAR = 2023;
+
+const formatStatMobile = (n) => {
+  if (n === null || n === undefined || Number.isNaN(n)) return '—';
+  if (n >= 1000) {
+    const k = n / 1000;
+    return `${k >= 100 ? Math.round(k) : k.toFixed(1).replace(/\.0$/, '')}k`;
+  }
+  return n.toLocaleString();
+};
+
 export default function HomeMobile() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
@@ -82,6 +113,30 @@ export default function HomeMobile() {
   const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [activeFaqIndex, setActiveFaqIndex] = useState(null);
   const [leaderboardState, setLeaderboardState] = useState({ entries: [], status: 'idle', error: '' });
+  const [forumQuery, setForumQuery] = useState('');
+  const [forumStats, setForumStats] = useState(null);
+  const [forumStatsStatus, setForumStatsStatus] = useState('loading');
+  const [aboutData, setAboutData] = useState(null);
+
+  const moderatorProfiles = deriveModerators(aboutData);
+
+  const MIN_SEARCH_LENGTH = 3;
+  const trimmedForumQuery = forumQuery.trim();
+  const canSubmitForumSearch = trimmedForumQuery.length >= MIN_SEARCH_LENGTH;
+
+  const submitForumSearch = (e) => {
+    e.preventDefault();
+    if (!canSubmitForumSearch) return;
+    window.open(
+      `${forumBaseUrl}/search?q=${encodeURIComponent(trimmedForumQuery)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  const openForumSearch = (term) => {
+    window.open(`${forumBaseUrl}/search?q=${encodeURIComponent(term)}`, '_blank', 'noopener,noreferrer');
+  };
 
   // Load feedback
   useEffect(() => {
@@ -113,6 +168,24 @@ export default function HomeMobile() {
       }
     );
     return unsubscribe;
+  }, []);
+
+  // Load forum stats
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetchForumApi('/forum/about', { signal: controller.signal });
+        if (!res.ok) throw new Error('failed');
+        const payload = await res.json();
+        setAboutData(payload);
+        setForumStats(payload?.about?.stats || null);
+        setForumStatsStatus('ready');
+      } catch {
+        if (!controller.signal.aborted) setForumStatsStatus('error');
+      }
+    })();
+    return () => controller.abort();
   }, []);
 
   // Load leaderboard
@@ -275,12 +348,17 @@ export default function HomeMobile() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-              <span className="text-green-400 text-lg">✓</span>
+              <svg className="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
               <p className="text-white font-semibold text-sm mt-2">Moderated Daily</p>
               <p className="text-slate-400 text-xs">By frum volunteers</p>
             </div>
             <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-              <span className="text-blue-400 text-lg">📱</span>
+              <svg className="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="7" y="2" width="10" height="20" rx="2" />
+                <line x1="11" y1="18" x2="13" y2="18" />
+              </svg>
               <p className="text-white font-semibold text-sm mt-2">Kosher-First</p>
               <p className="text-slate-400 text-xs">Family-friendly</p>
             </div>
@@ -323,9 +401,12 @@ export default function HomeMobile() {
         <h2 className="font-display text-3xl font-bold text-white mb-8">You're in good hands</h2>
 
         {/* Admins */}
-        <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5 mb-6">
+        <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5 mb-4">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <span className="text-indigo-400">👤</span> Forum Leaders
+            <svg className="w-5 h-5 text-indigo-400" viewBox="0 0 576 512" fill="currentColor" aria-hidden="true">
+              <path d="M309 106c11.4-7 19-19.7 19-34c0-22.1-17.9-40-40-40s-40 17.9-40 40c0 14.4 7.6 27 19 34L209.7 220.6c-9.1 18.2-32.7 23.4-48.6 10.7L72 160c5-6.7 8-15 8-24c0-22.1-17.9-40-40-40S0 113.9 0 136s17.9 40 40 40c.2 0 .5 0 .7 0L86.4 427.4c5.5 30.4 32 52.6 63 52.6H426.6c30.9 0 57.4-22.1 63-52.6L535.3 176c.2 0 .5 0 .7 0c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40c0 9 3 17.3 8 24l-89.1 71.3c-15.9 12.7-39.5 7.5-48.6-10.7L309 106z"/>
+            </svg>
+            Forum Leaders
           </h3>
           <div className="space-y-3">
             {adminProfiles.map((admin) => (
@@ -352,10 +433,62 @@ export default function HomeMobile() {
           </div>
         </div>
 
+        {/* Moderators carousel */}
+        <div className="relative bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-emerald-950/20 border border-white/5 rounded-2xl p-5 mb-4 overflow-hidden">
+          <div className="pointer-events-none absolute -top-16 -right-16 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="relative flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-teal-500/20 flex items-center justify-center text-emerald-300 ring-1 ring-emerald-500/30 flex-shrink-0">
+              <svg className="w-5 h-5" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+                <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/>
+              </svg>
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-lg font-bold text-white leading-tight">Our Moderators</h3>
+              <p className="text-[11px] text-slate-400 leading-snug">Swipe to meet the team →</p>
+            </div>
+          </div>
+
+          <div className="relative -mx-5 px-5 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {forumStatsStatus !== 'ready' && Array.from({ length: 4 }).map((_, i) => (
+              <div key={`mob-skel-${i}`} className="snap-start grow-0 shrink-0 basis-[68%] rounded-2xl bg-slate-800/40 border border-white/5 p-4 animate-pulse h-[180px]" />
+            ))}
+            {forumStatsStatus === 'ready' && moderatorProfiles.length === 0 && (
+              <p className="text-slate-400 text-xs py-6">No moderators to show.</p>
+            )}
+            {forumStatsStatus === 'ready' && moderatorProfiles.map((mod) => (
+              <a
+                key={mod.username}
+                href={mod.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="snap-start grow-0 shrink-0 basis-[68%] rounded-2xl bg-slate-800/40 border border-white/10 p-4 active:border-emerald-500/40 transition-colors"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-3">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-500/30 blur-md" />
+                    <img
+                      src={mod.avatar}
+                      alt={mod.username}
+                      className="relative w-16 h-16 rounded-full object-cover ring-2 ring-white/10"
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <p className="font-semibold text-white text-sm truncate max-w-full">@{mod.username}</p>
+                  <p className="text-[11px] text-slate-400 leading-snug mt-1 line-clamp-2">{mod.role}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
         {/* Leaderboard */}
         <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <span className="text-amber-400">🏆</span> Top Contributors
+            <svg className="w-5 h-5 text-amber-400" viewBox="0 0 576 512" fill="currentColor" aria-hidden="true">
+              <path d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 16-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63.1-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63.1 142.3z"/>
+            </svg>
+            Top Contributors
           </h3>
           <div className="space-y-3">
             {leaderboardState.status === 'loading' && (
@@ -395,6 +528,78 @@ export default function HomeMobile() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Forum Stats Section */}
+      <section className="px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="space-y-5"
+        >
+          <p className="text-cyan-400 font-mono text-xs tracking-[0.2em] uppercase">By the Numbers</p>
+          <h2 className="font-display text-2xl font-bold text-white leading-tight">
+            JTech Forums <span className="text-cyan-400">Stats</span>
+          </h2>
+
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { value: forumStats?.topics_7_days, label: 'topics', sub: 'last 7 days', accent: 'from-cyan-400 to-blue-500' },
+              { value: forumStats?.posts_last_day, label: 'posts', sub: 'today', accent: 'from-blue-400 to-indigo-500' },
+              { value: forumStats?.active_users_7_days, label: 'active users', sub: 'last 7 days', accent: 'from-indigo-400 to-violet-500' },
+              { value: forumStats?.users_7_days, label: 'sign-ups', sub: 'last 7 days', accent: 'from-violet-400 to-fuchsia-500' },
+            ].map((card) => (
+              <div key={card.label} className="bg-slate-900/80 border border-white/10 rounded-2xl p-4 text-center flex flex-col items-center">
+                <div className={`text-2xl font-bold bg-gradient-to-br ${card.accent} bg-clip-text text-transparent leading-none mb-1`}>
+                  {forumStatsStatus === 'loading' ? (
+                    <span className="inline-block w-12 h-6 rounded bg-slate-800 animate-pulse" />
+                  ) : (
+                    formatStatMobile(card.value)
+                  )}
+                </div>
+                <p className="text-white font-semibold text-sm capitalize">{card.label}</p>
+                <p className="text-[10px] text-slate-500 mt-1">{card.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="relative bg-gradient-to-br from-slate-900/90 to-cyan-950/30 border border-cyan-500/20 rounded-2xl p-5 overflow-hidden text-center">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80 mb-1">Total Real Members</p>
+            <p className="text-3xl font-bold text-white leading-none">
+              {forumStatsStatus === 'loading' ? (
+                <span className="inline-block w-24 h-8 rounded bg-slate-800 animate-pulse" />
+              ) : (
+                (forumStats?.users_count ?? 0).toLocaleString()
+              )}{' '}
+              <span className="text-sm font-medium text-slate-400">Members</span>
+            </p>
+          </div>
+
+          <div className="relative bg-gradient-to-br from-slate-900/90 to-pink-950/30 border border-pink-500/20 rounded-2xl p-5 overflow-hidden text-center">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80 mb-1">Likes</p>
+            <p className="text-3xl font-bold text-white leading-none">
+              {forumStatsStatus === 'loading' ? (
+                <span className="inline-block w-24 h-8 rounded bg-slate-800 animate-pulse" />
+              ) : (
+                formatStatMobile(forumStats?.likes_count)
+              )}{' '}
+              <span className="text-sm font-medium text-slate-400">all time</span>
+            </p>
+          </div>
+
+          <div className="relative bg-gradient-to-br from-slate-900/90 to-indigo-950/30 border border-indigo-500/20 rounded-2xl p-5 overflow-hidden text-center">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-indigo-400/80 mb-1">Established</p>
+            <p className="text-3xl font-bold text-white leading-none">
+              {FORUM_CREATED_YEAR}
+              <span className="text-sm font-medium text-slate-400 ml-2">· {new Date().getFullYear() - FORUM_CREATED_YEAR} years strong</span>
+            </p>
+          </div>
+
+          {forumStatsStatus === 'error' && (
+            <p className="text-slate-500 text-xs text-center">Live stats unavailable</p>
+          )}
+        </motion.div>
       </section>
 
       {/* Testimonials Section */}
@@ -480,6 +685,75 @@ export default function HomeMobile() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Search the Forums Section */}
+      <section className="px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="space-y-5 text-center"
+        >
+          <p className="text-cyan-400 font-mono text-xs tracking-[0.2em] uppercase">Search the Forums</p>
+          <h2 className="font-display text-2xl font-bold text-white leading-tight">
+            Your question may already be <span className="text-cyan-400">answered</span>
+          </h2>
+          <p className="text-slate-400 text-sm">
+            Search thousands of threads from the JTech community.
+          </p>
+
+          <form onSubmit={submitForumSearch} className="relative">
+            <div className="flex items-center gap-2 bg-slate-900/90 border border-white/10 rounded-2xl p-2 focus-within:border-cyan-500/50 transition-colors">
+              <svg className="w-5 h-5 text-slate-400 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="search"
+                value={forumQuery}
+                onChange={(e) => setForumQuery(e.target.value)}
+                placeholder="e.g. TAG Guardian"
+                aria-label="Search JTech Forums"
+                minLength={MIN_SEARCH_LENGTH}
+                className="flex-1 bg-transparent text-white placeholder-slate-500 px-1 py-2.5 focus:outline-none text-sm min-w-0"
+              />
+              <button
+                type="submit"
+                disabled={!canSubmitForumSearch}
+                className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl text-sm whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Search
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-2 text-left pl-2 h-3">
+              {trimmedForumQuery.length > 0 && !canSubmitForumSearch
+                ? `At least ${MIN_SEARCH_LENGTH} characters`
+                : ''}
+            </p>
+          </form>
+
+          <div className="flex flex-wrap gap-2 justify-center pt-2">
+            {['eGate', 'TAG filter', 'Nokia 2780', 'MDM setup'].map((term) => (
+              <button
+                key={term}
+                type="button"
+                onClick={() => openForumSearch(term)}
+                className="px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-full text-slate-300"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+
+          <a
+            href={`${forumBaseUrl}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-slate-400 hover:text-white text-xs pt-2"
+          >
+            Or browse the full forum →
+          </a>
+        </motion.div>
       </section>
 
       {/* CTA Section */}
