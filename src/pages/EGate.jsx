@@ -46,7 +46,6 @@ export default function EGate() {
           <SectionHeading
             label="Everything you need"
             title="Why choose eGate?"
-            description="The same controls that made the legacy eGate site popular now live inside our new React build."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featureList.map((feature) => (
@@ -82,13 +81,9 @@ function Hero() {
         <div className="space-y-6">
           <p className="section-label text-xs uppercase text-sky-200">eGate filter</p>
           <h1 className="text-4xl font-semibold text-white sm:text-5xl lg:text-6xl">Enterprise-grade control for kosher devices</h1>
-          <p className="text-base text-slate-300 sm:text-lg">
-            We rebuilt this page straight from the original jtech-forums.github.io site. The hero, copy, and media placements mirror the legacy
-            layout so partners instantly recognize the product story.
-          </p>
           <div className="flex flex-wrap gap-4">
             <a
-              href="https://payhip.com/b/vxf1i"
+              href="https://github.com/offlinesoftwaresolutions/egate"
               target="_blank"
               rel="noopener"
               className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
@@ -334,24 +329,12 @@ function Highlights() {
             </CardChrome>
           </article>
 
-          <article className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-            <CardChrome>
-              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                <p className="text-xl font-semibold text-white">Progressive updates</p>
-                <p className="mt-3 text-sm text-slate-300">Rapid release cadence keeps policies and tooling modern.</p>
-              </div>
-              <div className="flex flex-1 items-center justify-center px-8 pb-10 pt-6">
-                <ProgressiveGraphic />
-              </div>
-            </CardChrome>
-          </article>
-
           <article className="relative lg:row-span-2">
             <CardChrome className="max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]">
               <div className="px-8 pt-8 sm:px-10 sm:pt-10">
                 <p className="text-xl font-semibold text-white">Reseller portal</p>
                 <p className="mt-3 text-sm text-slate-300">
-                  The same screenshot from the legacy .io page showcases bulk license controls and remote toggles.
+                  Bulk license controls and remote toggles.
                 </p>
               </div>
               <div className="relative flex flex-1 items-center justify-center px-8 pb-10 pt-6">
@@ -397,46 +380,8 @@ function PasswordBadge() {
           <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
           Admin-only override portal
         </p>
-        <p className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
-          Logged policy revisions
-        </p>
       </div>
     </div>
-  );
-}
-
-function ProgressiveGraphic() {
-  return (
-    <svg viewBox="0 0 320 200" className="w-full max-w-xs" role="img">
-      <defs>
-        <linearGradient id="egate-pulse" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="50%" stopColor="#6366f1" />
-          <stop offset="100%" stopColor="#f472b6" />
-        </linearGradient>
-      </defs>
-      <rect width="320" height="200" rx="28" fill="url(#egate-pulse)" opacity="0.15" />
-      <g fill="none" strokeWidth="3" strokeLinecap="round">
-        <path
-          d="M20 130 Q 60 40, 100 90 T 180 80 T 260 30"
-          stroke="url(#egate-pulse)"
-          opacity="0.8"
-        />
-        <path d="M20 150 Q 60 70, 120 120 T 200 90 T 300 120" stroke="#1d4ed8" opacity="0.4" />
-      </g>
-      <g fill="white" opacity="0.9">
-        <circle cx="100" cy="90" r="6" />
-        <circle cx="180" cy="80" r="6" />
-        <circle cx="260" cy="30" r="6" />
-      </g>
-      <text x="24" y="40" fill="white" fontSize="16" fontWeight="600">
-        Progressive timeline
-      </text>
-      <text x="24" y="64" fill="#cbd5f5" fontSize="12">
-        Weekly policy drops
-      </text>
-    </svg>
   );
 }
 
