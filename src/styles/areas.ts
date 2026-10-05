@@ -2,6 +2,67 @@ import { css } from "./css.ts";
 
 /** The home page's newer areas: categories, the phones strip, the flip-phone demo, the palette. */
 export default css`
+  /* The live pulse in the numbers strip (components/home/CommunityStrip.tsx) */
+  .strip-pulse {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    color: var(--ink);
+    font-weight: 550;
+  }
+  .strip-pulse > i {
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 40%, transparent);
+  }
+  .strip-pulse > span {
+    animation: pulse-fact 0.45s cubic-bezier(0.2, 0, 0, 1);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .strip-pulse > i {
+      animation: pulse-dot 2s ease-out infinite;
+    }
+  }
+  @keyframes pulse-dot {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 45%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 8px transparent;
+    }
+  }
+  @keyframes pulse-fact {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  /* Four tabs on a phone: one row that scrolls sideways */
+  @media (max-width: 760px) {
+    .topic-tabs {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .topic-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .topic-tabs button {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .topic-tabs > span {
+      display: none;
+    }
+  }
+
   /* Find your corner */
   .corners-section {
     padding-block: 100px 40px;

@@ -18,6 +18,10 @@ export interface ForumUser {
 }
 
 export interface AboutStats {
+  likes_30_days?: number;
+  visitors_last_day?: number;
+  active_users_last_day?: number;
+  topics_30_days?: number;
   topics_count?: number;
   posts_count?: number;
   users_count?: number;

@@ -22,6 +22,9 @@ export default function Footer() {
           <Link viewTransition to="/terms">Terms</Link>
           <Link viewTransition to="/about">About</Link>
           <Link viewTransition to="/contact">Contact</Link>
+          <a href={links.source} target="_blank" rel="noreferrer" title="This page is open source; pull requests welcome">
+            Source
+          </a>
         </nav>
         <p className="footer-credit">
           <span>Landing page built by</span>{" "}

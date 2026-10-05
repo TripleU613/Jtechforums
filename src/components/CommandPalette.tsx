@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import faq, { faqId } from "../data/faq.ts";
 import { FORUM, forumSearch, links } from "../lib/links.ts";
 import { toggleScheme } from "../lib/scheme.ts";
 import { useForumSearch } from "../lib/search.ts";
@@ -104,7 +105,22 @@ export default function CommandPalette() {
     } else if (!open && el.open) el.close();
   }, [open]);
 
-  const actions = useMemo(() => ACTIONS.filter((action) => matches(action, query)).slice(0, query ? 6 : 8), [query]);
+  const actions = useMemo(() => {
+    const found = ACTIONS.filter((action) => matches(action, query)).slice(0, query ? 6 : 8);
+    if (query.trim().length < 3) return found;
+    // Questions from the FAQ, opened in place on the home page
+    const answers: Action[] = faq
+      .filter((entry) => matches({ label: entry.question, keywords: entry.answer } as Action, query))
+      .slice(0, 3)
+      .map((entry) => ({
+        label: entry.question,
+        hint: "FAQ",
+        icon: "book",
+        keywords: "",
+        run: page(`/#${faqId(entry.question)}`),
+      }));
+    return [...found, ...answers];
+  }, [query]);
   const hits = query.trim().length >= 2 ? search.hits : [];
   const searchAll = query.trim().length >= 2;
   const total = actions.length + hits.length + (searchAll ? 1 : 0);

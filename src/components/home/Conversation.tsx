@@ -6,12 +6,28 @@ import { useForum } from "../../lib/useForum.ts";
 import Avatar from "../Avatar.tsx";
 import Icon, { type IconName } from "../Icon.tsx";
 
-const TABS = ["Latest", "Popular", "Most discussed"] as const;
+const TABS = ["Latest", "Popular", "Most discussed", "Needs an answer"] as const;
 type Tab = (typeof TABS)[number];
 const SYMBOLS: IconName[] = ["phone", "book", "chat", "grid"];
 const SUGGESTIONS = ["Qin F21 Pro", "TCL Flip 2", "Kyocera E4810", "eGate", "ADB"];
 
 const activity = (topic: Topic): number => new Date(topic.bumped_at ?? topic.created_at).getTime();
+
+const relative = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+/** "3 hours ago", "yesterday", "2 weeks ago". */
+function ago(time: number): string {
+  const seconds = (time - Date.now()) / 1000;
+  const steps: Array<[Intl.RelativeTimeFormatUnit, number]> = [
+    ["year", 31536000],
+    ["month", 2592000],
+    ["week", 604800],
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+  ];
+  for (const [unit, size] of steps) if (Math.abs(seconds) >= size) return relative.format(Math.round(seconds / size), unit);
+  return "just now";
+}
 
 function categoryNames(payload: CategoriesPayload | null): Map<number, string> {
   const names = new Map<number, string>();
@@ -48,8 +64,10 @@ export default function Conversation({ sample }: { sample: boolean }) {
       Latest: (a, b) => activity(b) - activity(a),
       Popular: (a, b) => (b.views ?? 0) - (a.views ?? 0),
       "Most discussed": (a, b) => (b.reply_count ?? 0) - (a.reply_count ?? 0),
+      "Needs an answer": (a, b) => activity(b) - activity(a),
     };
-    return [...list].sort(order[tab]).slice(0, 4);
+    const pool = tab === "Needs an answer" ? list.filter((t) => (t.reply_count ?? 0) === 0) : list;
+    return [...pool].sort(order[tab]).slice(0, 4);
   }, [latest.data, tab]);
 
   const search = (event: FormEvent) => {
@@ -98,7 +116,11 @@ export default function Conversation({ sample }: { sample: boolean }) {
             </div>
           )}
           {latest.status === "ready" && topics.length === 0 && (
-            <p className="empty-state">Nothing new right now. Start a topic on the forum.</p>
+            <p className="empty-state">
+              {tab === "Needs an answer"
+                ? "Every recent topic has a reply. Nice."
+                : "Nothing new right now. Start a topic on the forum."}
+            </p>
           )}
           {topics.map((topic, i) => (
             <a className="topic-row" href={forumTopic(topic.slug, topic.id)} key={topic.id}>
@@ -112,13 +134,9 @@ export default function Conversation({ sample }: { sample: boolean }) {
                   {(topic.category_id !== undefined && names.get(topic.category_id)) ||
                     firstTag(topic) ||
                     "Forum"}
-                  <span className="topic-date">
-                    {new Date(activity(topic)).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
+                  <time className="topic-date" dateTime={new Date(activity(topic)).toISOString()}>
+                    {ago(activity(topic))}
+                  </time>
                 </p>
               </div>
               <span className="topic-replies" aria-label={`${topic.reply_count ?? 0} replies`}>

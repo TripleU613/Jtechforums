@@ -20,6 +20,7 @@ export const links = {
   egateVendor: "https://pages.st/oss",
   email: "mailto:admin@jtechforums.org",
   samsclub: `${FORUM}/u/sams-club`,
+  source: "https://github.com/JTech-Forums/Jtechforums",
   condvar: "https://condvar.com",
 } as const;
 

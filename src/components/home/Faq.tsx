@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import faq from "../../data/faq.ts";
+import { Link, useLocation } from "react-router-dom";
+import faq, { faqId } from "../../data/faq.ts";
 import Icon from "../Icon.tsx";
 
 export default function Faq() {
@@ -16,6 +16,16 @@ export default function Faq() {
     measure();
     return () => observer.disconnect();
   }, []);
+  // Arriving at #faq-… (from ⌘K) opens that answer.
+  const { hash } = useLocation();
+  useLayoutEffect(() => {
+    if (!hash.startsWith("#faq-")) return;
+    const details = document.getElementById(hash.slice(1));
+    if (details instanceof HTMLDetailsElement) {
+      details.open = true;
+      details.scrollIntoView({ block: "center" });
+    }
+  }, [hash]);
   const needle = query.trim().toLowerCase();
   const matches = faq.filter((entry) => `${entry.question} ${entry.answer}`.toLowerCase().includes(needle));
   return (
@@ -43,7 +53,7 @@ export default function Faq() {
       </div>
       <div className="faq-list">
         {matches.map((entry) => (
-          <details key={entry.question}>
+          <details key={entry.question} id={faqId(entry.question)}>
             <summary>
               {entry.question}
               <Icon name="plus" size={18} />

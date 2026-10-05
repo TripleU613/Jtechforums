@@ -73,4 +73,8 @@ const faq: FaqEntry[] = [
   },
 ];
 
+/** An anchor for each question: #faq-can-i-message-someone-privately */
+export const faqId = (question: string): string =>
+  `faq-${question.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+
 export default faq;
