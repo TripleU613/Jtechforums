@@ -208,7 +208,7 @@ export default function EgateSettings() {
               setQuery(event.target.value);
               setPicked(null);
             }}
-            placeholder="Search the settings, e.g. Bluetooth"
+            placeholder="Search, e.g. Bluetooth"
             aria-label="Search eGate's settings"
             autoComplete="off"
             spellCheck={false}
