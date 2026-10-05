@@ -831,6 +831,55 @@
   }
 }
 
+// Wide screens: the heading, each scene and the pagination line up with the
+// rest of the page (.container: 1240px wide, at least 48px from the edge)
+// instead of a share of the window, which drifted further out the wider it got.
+@media (min-width: 1100px) {
+  .experience-rail {
+    padding-top: 32px;
+  }
+
+  .rail-heading,
+  .rail-footer {
+    padding-inline: max(48px, calc((100% - 1240px) / 2));
+  }
+
+  .rail-heading h2 > span {
+    margin-left: 0;
+  }
+
+  .experience-panel {
+    width: 100vw;
+    padding-inline: max(48px, calc((100vw - 1240px) / 2));
+    gap: clamp(32px, 4vw, 72px);
+  }
+
+  .panel-number {
+    right: max(48px, calc((100vw - 1240px) / 2));
+  }
+
+  // room for "Step-by-step" on one line at the title's full size
+  .panel-copy {
+    max-width: 540px;
+  }
+
+  // the scene's own width, so it lines up exactly when the page has a scrollbar
+  @supports (width: 1cqw) {
+    .rail-viewport {
+      container-type: inline-size;
+    }
+
+    .experience-panel {
+      width: 100cqw;
+      padding-inline: max(48px, calc((100cqw - 1240px) / 2));
+    }
+
+    .panel-number {
+      right: max(48px, calc((100cqw - 1240px) / 2));
+    }
+  }
+}
+
 @media (max-width: 1099px) {
   .story-pin-shell {
     height: auto;
