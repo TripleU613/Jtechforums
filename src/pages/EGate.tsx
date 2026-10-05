@@ -1,4 +1,5 @@
 import { Card, PageHero, SectionHead } from "../components/page/Page.tsx";
+import EgatePhoneCheck from "../components/EgatePhoneCheck.tsx";
 import EgateScreens from "../components/EgateScreens.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
@@ -134,8 +135,9 @@ export default function EGate() {
             <h2>Questions about eGate?</h2>
             <p>
               Setup help, compatibility and release notes are in the forum's eGate category. If you're
-              not sure your phone will work, ask there first.
+              not sure your phone will work, ask there first, or look it up:
             </p>
+            <EgatePhoneCheck />
             <ul className="page-checklist">
               <li>
                 <Icon name="check" size={18} />

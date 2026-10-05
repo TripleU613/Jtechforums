@@ -481,6 +481,53 @@ export default css`
     }
   }
 
+  /* What's new (components/page/WhatsNew.tsx) */
+  .whats-new ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .whats-new-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition: border-color var(--motion);
+  }
+  .whats-new-item:hover {
+    border-color: var(--border-strong);
+  }
+  .whats-new-item time {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-subtle);
+  }
+  .whats-new-item strong {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .whats-new-item span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    color: var(--ink-subtle);
+    font-size: 12.5px;
+  }
+  @media (max-width: 760px) {
+    .whats-new ul {
+      grid-template-columns: 1fr;
+    }
+  }
+
   /* eGate's own screens */
   .phone-screen {
     position: relative;
@@ -594,6 +641,57 @@ export default css`
     object-fit: cover;
     object-position: top;
   }
+  /* Will it work on my phone? (components/EgatePhoneCheck.tsx) */
+  .egate-check {
+    margin-top: 18px;
+    max-width: 520px;
+  }
+  .egate-check-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: min(var(--radius-control), var(--radius-md));
+    background: var(--fill);
+    color: var(--ink-subtle);
+  }
+  .egate-check-input:focus-within {
+    border-color: var(--ink-subtle);
+  }
+  .egate-check-input input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 16px;
+  }
+  .egate-check-results {
+    margin-top: 10px;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    text-align: start;
+  }
+  .egate-check-results ul {
+    display: grid;
+    gap: 2px;
+    margin-top: 6px;
+  }
+  .egate-check-results a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--ink);
+    font-weight: 550;
+  }
+  .egate-check-results a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
   .page-cta-split .page-checklist {
     margin-top: 24px;
   }
@@ -642,6 +740,30 @@ export default css`
   .field input:focus,
   .field textarea:focus {
     border-color: var(--ink-subtle);
+  }
+  .contact-related {
+    padding: 12px 16px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--ink-muted);
+    font-size: 13px;
+    animation: fs-toast 0.2s ease-out;
+  }
+  .contact-related ul {
+    display: grid;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .contact-related a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink);
+    font-weight: 550;
+  }
+  .contact-related a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   .contact-submit {
     width: 100%;

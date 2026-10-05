@@ -3,6 +3,7 @@ import { PageHero } from "../components/page/Page.tsx";
 import Icon from "../components/Icon.tsx";
 import { usingSample } from "../lib/forum.ts";
 import { links } from "../lib/links.ts";
+import { useForumSearch } from "../lib/search.ts";
 
 /**
  * The form posts to the Firebase function behind /api/contact, which checks
@@ -16,6 +17,9 @@ const ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || "/api/contact";
 const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "";
 const TEAM_EMAIL = "admin@jtechforums.org";
 const CAPTCHA_WAIT_MS = 12000;
+const STOP = new Set(
+  "the and for with that this have from your you are was but not can how what when who why where which does did get got just like want need help please there their they them about into been would could should some any our its it's i'm hi hello thanks thank do to in on of is it an or be me so if at as by up we am my no every day use using really very also still even much many one way".split(" "),
+);
 
 interface Grecaptcha {
   enterprise?: {
@@ -77,6 +81,16 @@ export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const [captcha, setCaptcha] = useState<CaptchaState>(SITE_KEY ? "loading" : "off");
+  // While someone describes their problem, threads that might already answer it
+  const [draft, setDraft] = useState("");
+  // The forum's search wants every word to match, so only the three most
+  // telling ones (the longest, by a rough rule) go in.
+  const keywords = [...new Set(draft.toLowerCase().split(/[^a-z0-9.+-]+/))]
+    .filter((word) => word.length > 1 && !STOP.has(word))
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 3)
+    .join(" ");
+  const related = useForumSearch(draft.trim().length >= 20 ? keywords : "", 1200);
 
   useEffect(() => {
     if (!SITE_KEY) return;
@@ -136,6 +150,7 @@ export default function Contact() {
         throw new Error(result.error || "The message couldn't be sent.");
       }
       formElement.reset();
+      setDraft("");
       setStatus("sent");
       setMessage("Sent. Thanks for writing; we'll reply by email.");
     } catch (error) {
@@ -170,8 +185,29 @@ export default function Contact() {
           </label>
           <label className="field field-wide">
             <span>Message</span>
-            <textarea name="message" rows={6} required enterKeyHint="send" placeholder="What can we help with?" />
+            <textarea
+              name="message"
+              rows={6}
+              required
+              enterKeyHint="send"
+              placeholder="What can we help with?"
+              onChange={(event) => setDraft(event.target.value)}
+            />
           </label>
+          {related.hits.length > 0 && (
+            <div className="field-wide contact-related" aria-live="polite">
+              <p>These threads might already answer it:</p>
+              <ul>
+                {related.hits.slice(0, 3).map((hit) => (
+                  <li key={hit.id}>
+                    <a href={hit.href} target="_blank" rel="noreferrer">
+                      {hit.title} <Icon name="external" size={13} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         <button type="submit" className="button contact-submit" disabled={status === "sending"}>
           {status === "sending" ? "Sending…" : "Send message"}

@@ -371,7 +371,7 @@ export default function FlipDemo() {
               {screen === "menu" ? (
                 <div className="fs-body">
                   <p className="fs-title">Menu</p>
-                  <ul className="fs-list">
+                  <ul className="fs-list" tabIndex={-1}>
                     {MENU.map((item, i) => (
                       <li key={item} className={`fs-row${i === menuIndex ? " fs-row-selected" : ""}`}>
                         <span className="fs-row-title">{item}</span>
@@ -406,7 +406,7 @@ export default function FlipDemo() {
                       </span>
                     ))}
                   </div>
-                  <ul className="fs-list" ref={listRef}>
+                  <ul className="fs-list" ref={listRef} tabIndex={-1}>
                     {list.length === 0 && (
                       <li className="fs-row">
                         <span className="fs-row-meta">{latest.status === "loading" ? "Loading…" : "Nothing here yet."}</span>

@@ -107,6 +107,7 @@ export const forumPaths = {
   about: "/about.json",
   latest: "/latest.json",
   categories: "/categories.json?include_subcategories=true",
+  announcements: "/c/updates-feedback/13/none/l/latest.json",
   leaderboard: (id: number, period: string) =>
     `/leaderboard/${id}.json?period=${encodeURIComponent(period)}`,
 };

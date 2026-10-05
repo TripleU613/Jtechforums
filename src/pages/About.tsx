@@ -4,6 +4,7 @@ import Avatar from "../components/Avatar.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
 import Timeline from "../components/page/Timeline.tsx";
+import WhatsNew from "../components/page/WhatsNew.tsx";
 import { forumPaths, usingSample, type AboutPayload } from "../lib/forum.ts";
 import { avatarUrl, forumUser, links } from "../lib/links.ts";
 import { useForum } from "../lib/useForum.ts";
@@ -74,6 +75,11 @@ export default function About() {
       <section className="page-section">
         <SectionHead eyebrow="HOW IT GREW" title="Since 2023" />
         <Timeline />
+      </section>
+
+      <section className="page-section">
+        <SectionHead eyebrow="WHAT'S NEW" title="The latest announcements" />
+        <WhatsNew />
       </section>
 
       <section className="page-section">

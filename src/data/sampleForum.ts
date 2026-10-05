@@ -139,7 +139,18 @@ const leaderboard: LeaderboardPayload = {
   ],
 };
 
+const announcements: LatestPayload = {
+  topic_list: {
+    topics: [
+      topic(10225, "the-new-jtech-theme-is-now-selectable", "The New Jtech Theme Is Now Selectable", 13, ["update"], 230, 34, "2026-10-01T20:46:15Z", "2026-10-05T03:08:26Z"),
+      topic(8762, "after-all-pm-issues-and-complaints-we-solve-it-today", "After all PM issues and complaints, we solve it today", 13, ["update"], 173, 31, "2026-09-30T12:00:00Z", "2026-09-30T12:00:00Z"),
+      topic(8674, "going-to-be-messing-with-the-domains-so-expect-interruptions", "Going to be messing with the domains so expect interruptions", 13, ["update"], 76, 2, "2026-09-18T12:00:00Z", "2026-09-18T12:00:00Z"),
+    ],
+  },
+};
+
 export function sample(path: string): unknown {
+  if (path.startsWith("/c/updates-feedback")) return announcements;
   if (path.startsWith("/about.json")) return about;
   if (path.startsWith("/latest.json")) return latest;
   if (path.startsWith("/categories.json")) return categories;

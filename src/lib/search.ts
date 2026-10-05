@@ -19,7 +19,7 @@ interface SearchPayload {
 async function searchForum(term: string, signal: AbortSignal): Promise<SearchHit[]> {
   if (usingSample) {
     const topics = (sample("/latest.json") as LatestPayload).topic_list?.topics ?? [];
-    const needle = term.toLowerCase();
+    const needle = term.replace(/\bcategory:\S+/g, "").trim().toLowerCase();
     return topics
       .filter((t) => t.title.toLowerCase().includes(needle))
       .map((t) => ({ id: t.id, title: t.title, href: forumTopic(t.slug, t.id) }));
@@ -52,11 +52,13 @@ export type SearchState =
  * request reaches the forum's search log and its rate limits), and keeps
  * the last results while it looks.
  */
-export function useForumSearch(term: string, wait = 600): SearchState {
+export function useForumSearch(term: string, wait = 600, scope = ""): SearchState {
   const [state, setState] = useState<SearchState>({ status: "idle", hits: [] });
-  const query = term.trim();
+  const typed = term.trim();
+  // A scope like "category:75" narrows the search; it isn't counted as typing.
+  const query = typed.length >= 3 ? `${typed} ${scope}`.trim() : typed;
   useEffect(() => {
-    if (query.length < 3) {
+    if (typed.length < 3) {
       setState({ status: "idle", hits: [] });
       return;
     }
