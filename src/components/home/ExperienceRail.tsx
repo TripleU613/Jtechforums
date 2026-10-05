@@ -6,6 +6,7 @@ import { links } from "../../lib/links.ts";
 import EgateScreens from "../EgateScreens.tsx";
 import Icon from "../Icon.tsx";
 import ThemedShot from "../ThemedShot.tsx";
+import TerminalToy from "./TerminalToy.tsx";
 import { DESKTOP_MOTION, gsap, ScrollTrigger } from "./gsap.ts";
 
 type SlideType = "guides" | "apps" | "egate" | "installer";
@@ -188,32 +189,7 @@ function SlideVisual({ type }: { type: SlideType }) {
         </div>
       </div>
     );
-  if (type === "installer")
-    return (
-      <div className="rail-terminal">
-        <div className="terminal-top">
-          <span>● ● ●</span> JTECH / INSTALLER
-        </div>
-        <div className="terminal-content">
-          <span className="terminal-muted">$ adb devices</span>
-          <p>
-            <span>✓</span> Phone connected
-          </p>
-          <p>
-            <span>✓</span> USB debugging on
-          </p>
-          <p>
-            <span>✓</span> Device manager installed
-          </p>
-          <div className="terminal-bar">
-            <span />
-          </div>
-          <strong>
-            READY WHEN YOU ARE<b>_</b>
-          </strong>
-        </div>
-      </div>
-    );
+  if (type === "installer") return <TerminalToy />;
   return <GuidePreview />;
 }
 

@@ -17,3 +17,10 @@ createRoot(root).render(
 );
 
 startAnalytics();
+
+// For whoever opens the console.
+console.log(
+  "%cJTech%c\nThis page is TypeScript all the way down, and open source: https://github.com/JTech-Forums/Jtechforums\nTry ⌘K, the arrow keys on the flip phone, or tapping the big logo seven times.",
+  "font: 700 28px Geist, system-ui, sans-serif; letter-spacing: -1px;",
+  "font: 12px Geist Mono, monospace; line-height: 1.6;",
+);

@@ -70,16 +70,50 @@ export default function FlipDemo() {
   const [toast, setToast] = useState("");
   const [time, setTime] = useState(clock);
   const [pressed, setPressed] = useState<Key | null>(null);
+  const [buzzing, setBuzzing] = useState(false);
   const screenRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const newest = latest.data?.topic_list?.topics?.find((t) => !t.pinned_globally)?.title;
 
   useEffect(() => {
     const timer = setInterval(() => setTime(clock()), 20000);
     return () => clearInterval(timer);
   }, []);
+  // Left alone on screen for half a minute, the phone buzzes once with the newest topic.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || !newest || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let visible = false;
+    let last = Date.now();
+    let done = false;
+    const active = () => {
+      last = Date.now();
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = !!entry?.isIntersecting;
+      last = Date.now();
+    }, { threshold: 0.6 });
+    observer.observe(section);
+    const timer = setInterval(() => {
+      if (done || !visible || document.hidden || Date.now() - last < 30000) return;
+      done = true;
+      setBuzzing(true);
+      setToast(`New: ${newest}`);
+      setTimeout(() => setBuzzing(false), 900);
+    }, 3000);
+    const events = ["pointermove", "keydown", "scroll", "touchstart"] as const;
+    for (const name of events) window.addEventListener(name, active, { passive: true });
+    return () => {
+      observer.disconnect();
+      clearInterval(timer);
+      for (const name of events) window.removeEventListener(name, active);
+    };
+  }, [newest]);
+
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(""), 2200);
+    const timer = setTimeout(() => setToast(""), toast.startsWith("New: ") ? 4200 : 2200);
     return () => clearTimeout(timer);
   }, [toast]);
 
@@ -289,7 +323,7 @@ export default function FlipDemo() {
           : "";
 
   return (
-    <section className="flip-section container" aria-labelledby="flip-title">
+    <section className="flip-section container" aria-labelledby="flip-title" ref={sectionRef}>
       <div className="flip-copy">
         <span className="eyebrow">ON A FLIP PHONE?</span>
         <h2 id="flip-title">
@@ -313,7 +347,7 @@ export default function FlipDemo() {
         </div>
       </div>
 
-      <div className={`flip-device${closed ? " is-closed" : ""}`}>
+      <div className={`flip-device${closed ? " is-closed" : ""}${buzzing ? " is-buzzing" : ""}`}>
         <div className="flip-lid">
           <div className="flip-lid-front">
             <span className="flip-earpiece" />

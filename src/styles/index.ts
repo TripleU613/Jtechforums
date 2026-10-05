@@ -8,6 +8,7 @@ import theme from "./theme.ts";
 import pages from "./pages.ts";
 import motion from "./motion.ts";
 import areas from "./areas.ts";
+import quirks from "./quirks.ts";
 
 /**
  * The site's one stylesheet, in cascade order. Each module is a css``
@@ -23,7 +24,8 @@ import areas from "./areas.ts";
  * - pages: About, eGate, Contact, the legal pages and notices
  * - motion: page transitions, the light/dark sweep, the card spotlight
  * - areas: the home page's categories, phones strip, flip-phone demo and palette
+ * - quirks: toasts, developer options and the other hidden things
  */
 export default function stylesheet(): string {
-  return [tokens, reset, honors, base, scenes, phones, theme, pages, areas, motion].join("\n");
+  return [tokens, reset, honors, base, scenes, phones, theme, pages, areas, quirks, motion].join("\n");
 }

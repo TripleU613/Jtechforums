@@ -230,7 +230,7 @@ em {
   text-align: right;
 }
 .rail-heading-right > span {
-  font: 8px monospace;
+  font: 8px var(--font-mono);
   letter-spacing: 1.6px;
   color: var(--tone-82);
 }
@@ -352,7 +352,7 @@ em {
   align-items: center;
   gap: 10px;
   color: var(--tone-50);
-  font: 9px monospace;
+  font: 9px var(--font-mono);
   padding: 6px 0;
 }
 .rail-pagination button i {
@@ -372,7 +372,7 @@ em {
   display: flex;
   align-items: center;
   gap: 18px;
-  font: 8px monospace;
+  font: 8px var(--font-mono);
   letter-spacing: 1.5px;
   color: var(--tone-54);
 }
@@ -481,7 +481,7 @@ em {
 .terminal-top {
   padding: 17px;
   border-bottom: 1px solid var(--border);
-  font: 8px monospace;
+  font: 8px var(--font-mono);
   color: var(--tone-70);
   display: flex;
   gap: 60px;
@@ -493,7 +493,7 @@ em {
 }
 .terminal-content {
   padding: 35px;
-  font: 12px/2 monospace;
+  font: 12px/2 var(--font-mono);
 }
 .terminal-muted {
   display: block;
@@ -1063,7 +1063,7 @@ em {
   align-items: center;
   padding: 16px;
   background: var(--tone-20);
-  font: 8px monospace;
+  font: 8px var(--font-mono);
   letter-spacing: 1px;
   color: var(--tone-78);
   border-bottom: 1px solid var(--border-strong);
@@ -1173,7 +1173,7 @@ em {
   position: absolute;
   right: 5vw;
   bottom: 35px;
-  font: 8px monospace;
+  font: 8px var(--font-mono);
   letter-spacing: 2px;
   color: var(--tone-58);
 }
@@ -1269,7 +1269,7 @@ em {
   background: var(--tone-16-a90);
   border: 1px solid var(--tone-54);
   color: var(--tone-94);
-  font: 7px monospace;
+  font: 7px var(--font-mono);
   letter-spacing: 1px;
   padding: 10px;
   opacity: 0;
@@ -1306,7 +1306,7 @@ em {
   top: 0;
   padding: 18px 22px;
   background: var(--tone-16);
-  font: 9px monospace;
+  font: 9px var(--font-mono);
   letter-spacing: 2px;
   border-bottom: 1px solid var(--border-strong);
   z-index: 1;

@@ -1,4 +1,7 @@
 import { useEffect, useRef } from "react";
+import { asset } from "../../lib/asset.ts";
+import { animationScale } from "../../lib/devmode.ts";
+import { KONAMI_EVENT, claimKonami } from "../../lib/konami.ts";
 import { currentScheme, onSchemeChange } from "../../lib/scheme.ts";
 
 interface Point {
@@ -143,6 +146,20 @@ function traceShape(pen: CanvasRenderingContext2D, kind: number): Point[] {
   return points;
 }
 
+/** The wordmark itself, as points: its lit pixels, sampled from the logo image. */
+function traceLogo(pen: CanvasRenderingContext2D, image: HTMLImageElement): Point[] {
+  pen.clearRect(0, 0, 400, 400);
+  const width = 380;
+  const height = (image.naturalHeight / image.naturalWidth) * width;
+  pen.drawImage(image, 10, 200 - height / 2, width, height);
+  const pixels = pen.getImageData(0, 0, 400, 400).data;
+  const points: Point[] = [];
+  for (let y = 0; y < 400; y += 2)
+    for (let x = 0; x < 400; x += 2)
+      if ((pixels[(y * 400 + x) * 4 + 3] ?? 0) > 120) points.push({ x: (x - 200) / 400, y: (y - 200) / 400 });
+  return points;
+}
+
 /**
  * One canvas, one animation loop: particles assemble into device
  * silhouettes, one after another. Drawn in the page's ink, so white on the
@@ -181,6 +198,25 @@ export default function ParticleScene() {
       const points = traceShape(pen, kind);
       return Array.from({ length: COUNT }, (_, i) => points[Math.floor((i * points.length) / COUNT)] ?? { x: 0, y: 0 });
     });
+    // ↑↑↓↓←→←→BA: the particles spell the logo for a few seconds.
+    let logo: Point[] | null = null;
+    let logoUntil = 0;
+    const showLogo = () => {
+      if (!visible) return;
+      claimKonami();
+      const begin = (points: Point[]) => {
+        logo = Array.from({ length: COUNT }, (_, i) => points[Math.floor((i * points.length) / COUNT)] ?? { x: 0, y: 0 });
+        logoUntil = elapsed + 7000;
+        if (motion.matches) draw(0);
+      };
+      if (logo) begin(logo);
+      else {
+        const image = new Image();
+        image.onload = () => begin(traceLogo(pen, image));
+        image.src = asset("/img/whitelogo.webp");
+      }
+    };
+    window.addEventListener(KONAMI_EVENT, showLogo);
     const particles = Array.from({ length: COUNT }, (_, i) => ({
       x: Math.sin(i * 24.17) * 0.7,
       y: Math.cos(i * 13.57) * 0.6,
@@ -204,7 +240,8 @@ export default function ParticleScene() {
       canvas.dataset.shape = SHAPE_NAMES[step];
       canvas.dataset.nextShape = SHAPE_NAMES[next];
       morph = morph * morph * (3 - 2 * morph);
-      const rotation = still ? -0.18 : Math.sin(t * 0.24) * 0.18 - 0.13;
+      const spelling = logo !== null && elapsed < logoUntil;
+      const rotation = spelling ? 0 : still ? -0.18 : Math.sin(t * 0.24) * 0.18 - 0.13;
       const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.66);
       halo.addColorStop(0, color(0.07));
       halo.addColorStop(1, color(0));
@@ -230,17 +267,17 @@ export default function ParticleScene() {
         ctx.arc(x, y, i % 9 === 0 ? 1.7 : 0.7, 0, 7);
         ctx.fill();
       }
-      const from = shapes[step] ?? [];
-      const to = shapes[next] ?? [];
+      const from = spelling && logo ? logo : (shapes[step] ?? []);
+      const to = spelling && logo ? logo : (shapes[next] ?? []);
       particles.forEach((p, i) => {
         const a = from[i] ?? { x: 0, y: 0 };
         const b = to[i] ?? a;
         const tx = a.x + (b.x - a.x) * morph;
         const ty = a.y + (b.y - a.y) * morph;
-        const scatter = still ? 0 : Math.sin(morph * Math.PI) * 0.025;
+        const scatter = still || spelling ? 0 : Math.sin(morph * Math.PI) * 0.025;
         const targetX = tx + Math.sin(p.seed + t * 0.5) * scatter;
         const targetY = ty + Math.cos(p.seed + t * 0.4) * scatter;
-        const lerp = still ? 1 : Math.min(1, delta / 65);
+        const lerp = still ? 1 : Math.min(1, delta / (spelling ? 140 : 65));
         p.x += (targetX - p.x) * lerp;
         p.y += (targetY - p.y) * lerp;
         const x = cx + (p.x * Math.cos(rotation) - p.y * Math.sin(rotation)) * size;
@@ -248,7 +285,7 @@ export default function ParticleScene() {
         const shimmer = 0.58 + (Math.sin(t * 1.1 + p.seed) + 1) * 0.23;
         ctx.fillStyle = color(i % 8 === 0 ? shimmer : shimmer * 0.62);
         ctx.beginPath();
-        ctx.arc(x, y, i % 13 === 0 ? 1.75 : 1.05, 0, 7);
+        ctx.arc(x, y, spelling ? 1.5 : i % 13 === 0 ? 1.75 : 1.05, 0, 7);
         ctx.fill();
       });
       // A few packets emerge from the device and flow towards the edge.
@@ -274,7 +311,9 @@ export default function ParticleScene() {
       if (visible && !document.hidden && time - lastFrame > 28) {
         const delta = lastFrame ? time - lastFrame : 30;
         lastFrame = time;
-        draw(delta);
+        // developer options' animator duration scale (0 stops it)
+        const scale = animationScale();
+        draw(scale === 0 ? 0 : delta / scale);
       }
       frame = requestAnimationFrame(tick);
     }
@@ -306,6 +345,7 @@ export default function ParticleScene() {
       observer.disconnect();
       visibility.disconnect();
       motion.removeEventListener("change", sync);
+      window.removeEventListener(KONAMI_EVENT, showLogo);
       stopScheme();
     };
   }, []);

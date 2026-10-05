@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { links } from "../../lib/links.ts";
 import Icon from "../Icon.tsx";
 
@@ -17,7 +18,11 @@ export default function Closing() {
         Join the forum <Icon name="arrow" size={18} />
       </a>
       <div className="closing-watermark" aria-hidden="true">
-        jtech.
+        {[..."jtech."].map((letter, i) => (
+          <span key={i} style={{ "--i": i } as CSSProperties}>
+            {letter}
+          </span>
+        ))}
       </div>
     </section>
   );
