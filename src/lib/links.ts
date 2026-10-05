@@ -9,6 +9,7 @@ export const links = {
   memberMade: `${FORUM}/tag/member-made`,
   egateCategory: `${FORUM}/c/filters-and-mdms/egate/75`,
   egateExplained: `${FORUM}/t/what-is-egate-software/235`,
+  egateInstall: `${FORUM}/t/how-to-install-egate-guide/689`,
   siteFeedback: `${FORUM}/c/updates-feedback/feedback/30`,
   guidelines: `${FORUM}/t/5`,
   leaderboard: `${FORUM}/leaderboard`,

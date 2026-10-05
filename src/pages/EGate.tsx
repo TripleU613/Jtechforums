@@ -1,94 +1,22 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Card, PageHero, SectionHead } from "../components/page/Page.tsx";
+import EgateScreens from "../components/EgateScreens.tsx";
 import Icon from "../components/Icon.tsx";
-import { asset } from "../lib/asset.ts";
+import ThemedShot from "../components/ThemedShot.tsx";
 import { links } from "../lib/links.ts";
 
-const DEMO = asset("/img/qinf21.mp4");
-
-/** A muted, looping demo that offers a play button when the browser won't autoplay it. */
-function DemoVideo({ label, style }: { label: string; style?: CSSProperties }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const [blocked, setBlocked] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [started, setStarted] = useState(false);
-  const play = () => {
-    const el = video.current;
-    if (!el) return;
-    el.muted = true;
-    el.playbackRate = 0.8;
-    el.play().catch((error: unknown) => {
-      if (!(error instanceof DOMException && error.name === "AbortError")) setBlocked(true);
-    });
-  };
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setBlocked(true);
-      return;
-    }
-    const playing = () => setBlocked(false);
-    el.addEventListener("loadeddata", play);
-    el.addEventListener("play", playing);
-    play();
-    return () => {
-      el.removeEventListener("loadeddata", play);
-      el.removeEventListener("play", playing);
-    };
-  }, []);
-  return (
-    <div className="demo-video">
-      <video
-        ref={video}
-        style={style}
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        poster={asset("/img/home/egatesquare.webp")}
-        controls={started || failed}
-        aria-label={label}
-        onError={() => setFailed(true)}
-      >
-        <source src={DEMO} type="video/mp4" />
-      </video>
-      {(blocked || failed) && (
-        <div className="demo-video-overlay">
-          {failed ? (
-            <a href={DEMO} download>
-              <Icon name="download" size={14} /> Download the demo
-            </a>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                setBlocked(false);
-                setStarted(true);
-                play();
-              }}
-            >
-              <Icon name="play" size={14} /> Play the demo
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
+/** A keypad phone, its screen cycling through eGate's own screens. */
 function PhoneMock() {
   return (
-    <svg viewBox="0 0 280 628" role="img" aria-label="eGate on a keypad phone" className="egate-phone">
+    <svg viewBox="0 0 280 628" role="img" aria-label="eGate 1.47 on a keypad phone" className="egate-phone">
       <defs>
         <clipPath id="egate-phone-screen">
-          <rect width="190" height="270" rx="16" x="45" y="60" />
+          <rect width="210" height="280" rx="10" x="35" y="57" />
         </clipPath>
       </defs>
       <rect className="egate-phone-body" x="10" y="10" width="260" height="605" rx="35" />
       <rect className="egate-phone-glass" x="25" y="40" width="230" height="315" rx="12" />
-      <foreignObject x="45" y="60" width="190" height="270" clipPath="url(#egate-phone-screen)">
-        <DemoVideo label="eGate running on a Qin F21 Pro" style={{ transform: "scale(0.92)" }} />
+      <foreignObject x="35" y="57" width="210" height="280" clipPath="url(#egate-phone-screen)">
+        <EgateScreens className="phone-screen-fill" />
       </foreignObject>
       <rect className="egate-phone-key" x="120" y="25" width="40" height="6" rx="3" />
       <g className="egate-phone-key">
@@ -107,21 +35,26 @@ function PhoneMock() {
   );
 }
 
-function PasswordBadge() {
-  return (
-    <div className="password-badge">
-      <span className="password-badge-icon">
-        <Icon name="lock" size={30} />
-      </span>
-      <p className="password-badge-title">Password protected</p>
-      <p className="password-badge-kicker">Works offline</p>
-      <ul>
-        <li>Set during setup</li>
-        <li>Asked for before every change</li>
-      </ul>
-    </div>
-  );
-}
+const STEPS = [
+  {
+    base: "/img/egate/setup",
+    title: "Set up from a computer",
+    text: "eGate becomes the phone's device owner over ADB, then asks for one more permission the same way.",
+    alt: "eGate 1.47 asking for secure settings access from a connected computer",
+  },
+  {
+    base: "/img/egate/login",
+    title: "Locked with your password",
+    text: "Nothing in eGate changes without it.",
+    alt: "eGate 1.47's password screen",
+  },
+  {
+    base: "/img/egate/activate",
+    title: "One license, in the app",
+    text: "Enter a license code, or buy one right there. Resellers buy in bulk at volume pricing, with a web dashboard for their licenses.",
+    alt: "eGate 1.47 asking for a license code",
+  },
+] as const;
 
 export default function EGate() {
   return (
@@ -139,8 +72,8 @@ export default function EGate() {
             <a className="button" href={links.egateDownload} target="_blank" rel="noreferrer">
               Download eGate <Icon name="download" size={18} />
             </a>
-            <a className="button button-ghost" href={links.egateExplained}>
-              What is eGate? <Icon name="arrow" size={18} />
+            <a className="button button-ghost" href={links.egateInstall}>
+              How to install it <Icon name="arrow" size={18} />
             </a>
           </div>
           <p className="page-note">
@@ -166,7 +99,7 @@ export default function EGate() {
             Blocks factory reset, extra user profiles, ADB, and installing APK files.
           </Card>
           <Card icon="grid" title="App control">
-            Disable any app, system apps included, or allow only the ones you pick.
+            Hide or disable any app, system apps included, or allow only the ones you pick.
           </Card>
           <Card icon="globe" title="DNS filtering">
             Blocks ads, malware, gambling, adult content and social media through Mullvad's DNS
@@ -179,33 +112,18 @@ export default function EGate() {
       </section>
 
       <section className="page-section">
-        <SectionHead eyebrow="SEE IT" title="What it looks like" />
-        <div className="egate-highlights">
-          <article className="egate-highlight">
-            <h3>Made for small screens</h3>
-            <p>The demo runs on a Qin F21 Pro, a keypad phone.</p>
-            <div className="egate-screen">
-              <DemoVideo label="eGate's settings on a Qin F21 Pro" style={{ transform: "scale(0.92)" }} />
-            </div>
-          </article>
-          <article className="egate-highlight">
-            <h3>Locked with your password</h3>
-            <p>Nothing changes without it.</p>
-            <PasswordBadge />
-          </article>
-          <article className="egate-highlight">
-            <h3>For resellers</h3>
-            <p>
-              People who set up phones for others get volume pricing and a web dashboard for their
-              licenses.
-            </p>
-            <img
-              className="egate-shot"
-              src={asset("/img/home/reseller.webp")}
-              alt="The eGate reseller dashboard"
-              loading="lazy"
-            />
-          </article>
+        <SectionHead eyebrow="SEE IT" title="Straight from eGate 1.47" />
+        <div className="egate-steps">
+          {STEPS.map((step, i) => (
+            <article className="egate-step" key={step.base}>
+              <span className="egate-step-number">{String(i + 1).padStart(2, "0")}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+              <div className="egate-step-screen">
+                <ThemedShot base={step.base} alt={step.alt} />
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -218,6 +136,21 @@ export default function EGate() {
               Setup help, compatibility and release notes are in the forum's eGate category. If you're
               not sure your phone will work, ask there first.
             </p>
+            <ul className="page-checklist">
+              <li>
+                <Icon name="check" size={18} />
+                Setting it up takes ADB and a factory reset.
+              </li>
+              <li>
+                <Icon name="check" size={18} />
+                Each license can be entered once. Reinstalling after a reset needs a new one.
+              </li>
+              <li>
+                <Icon name="check" size={18} />
+                Most Android phones work. There's a build for LG Classic phones, and an add-on for the
+                Qin F21 Pro.
+              </li>
+            </ul>
             <div className="page-actions">
               <a className="button" href={links.egateCategory}>
                 eGate on the forum <Icon name="arrow" size={18} />
@@ -227,20 +160,9 @@ export default function EGate() {
               </a>
             </div>
           </div>
-          <ul className="page-checklist">
-            <li>
-              <Icon name="check" size={18} />
-              Setting it up takes ADB and a factory reset.
-            </li>
-            <li>
-              <Icon name="check" size={18} />
-              Each license can be entered once. Reinstalling after a reset needs a new one.
-            </li>
-            <li>
-              <Icon name="check" size={18} />
-              Most Android phones work, keypad phones included.
-            </li>
-          </ul>
+          <a className="egate-forum-shot" href={links.egateCategory} aria-label="The forum's eGate category">
+            <ThemedShot base="/img/forum/egate" alt="The forum's eGate category, as it looks today" />
+          </a>
         </div>
       </section>
     </div>

@@ -81,6 +81,38 @@ export default css`
     font-size: 12px;
   }
 
+  .page-shot {
+    display: block;
+    max-width: 1100px;
+    margin: 56px auto 0;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--motion);
+  }
+  .page-shot:hover {
+    transform: translateY(-3px);
+  }
+  .page-shot-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-subtle);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .page-shot img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top left;
+  }
+
   .page-section {
     margin-top: 104px;
   }
@@ -322,129 +354,121 @@ export default css`
   .egate-phone-key {
     fill: var(--phone-key);
   }
-  .egate-highlights {
+  /* eGate's own screens */
+  .phone-screen {
+    position: relative;
+    overflow: hidden;
+    background: #000;
+  }
+  .phone-screen-fill {
+    width: 100%;
+    height: 100%;
+  }
+  .screen-frame {
+    position: absolute;
+    inset: 0;
+  }
+  .screen-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .screen-frame {
+      opacity: 0;
+      animation: screen-cycle 12s infinite backwards;
+      animation-delay: calc(var(--frame) * 4s - 0.5s);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .screen-frame:not(:first-child) {
+      display: none;
+    }
+  }
+  @keyframes screen-cycle {
+    0% {
+      opacity: 0;
+    }
+    4%,
+    33% {
+      opacity: 1;
+    }
+    38%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .egate-steps {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-auto-rows: auto;
     gap: 16px;
   }
-  .egate-highlight {
+  .egate-step {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 28px;
+    padding: 28px 28px 0;
+    overflow: hidden;
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     background: var(--surface);
   }
-  .egate-highlight h3 {
+  .egate-step-number {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.6px;
+    color: var(--ink-subtle);
+  }
+  .egate-step h3 {
     font-size: 20px;
     font-weight: 600;
     letter-spacing: -0.02em;
   }
-  .egate-highlight > p {
+  .egate-step > p {
     color: var(--ink-muted);
     font-size: 14.5px;
     line-height: 1.6;
   }
-  .egate-screen {
-    height: 22rem;
-    margin-top: auto;
-    padding: 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: #000;
-  }
-  .egate-shot {
-    width: 100%;
-    margin-top: auto;
-    object-fit: cover;
-    object-position: top left;
-    max-height: 22rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-  }
-  .password-badge {
-    margin-top: auto;
-    padding: 24px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: var(--fill);
-    text-align: center;
-  }
-  .password-badge-icon {
-    display: grid;
-    place-items: center;
-    width: 60px;
-    height: 60px;
-    margin: 0 auto;
+  .egate-step-screen {
+    width: min(100%, 260px);
+    margin: auto auto 0;
+    padding: 10px 10px 0;
     border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
+    border-bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--phone-body);
+    transform: translateY(14px);
   }
-  .password-badge-title {
-    margin-top: 14px;
-    font-size: 17px;
-    font-weight: 600;
-  }
-  .password-badge-kicker {
-    margin-top: 4px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--ink-subtle);
-  }
-  .password-badge ul {
-    display: grid;
-    gap: 6px;
-    margin: 16px 0 0;
-    padding: 0;
-    list-style: none;
-    color: var(--ink-muted);
-    font-size: 13px;
-  }
-  .password-badge li::before {
-    content: "";
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    margin-inline-end: 8px;
-    border-radius: 50%;
-    background: var(--ink);
-    vertical-align: middle;
-  }
-  .demo-video {
-    position: relative;
+  .egate-step-screen img {
     width: 100%;
-    height: 100%;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: top;
   }
-  .demo-video video {
+  .egate-forum-shot {
     display: block;
+    width: min(100%, 360px);
+    justify-self: center;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--motion);
+  }
+  .egate-forum-shot:hover {
+    transform: translateY(-3px);
+  }
+  .egate-forum-shot img {
     width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: var(--radius-md);
-    background: #000;
+    aspect-ratio: 478 / 700;
+    object-fit: cover;
+    object-position: top;
   }
-  .demo-video-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .demo-video-overlay button,
-  .demo-video-overlay a {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid rgb(255 255 255 / 25%);
-    border-radius: var(--radius-control);
-    background: rgb(0 0 0 / 70%);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 600;
+  .page-cta-split .page-checklist {
+    margin-top: 24px;
   }
 
   /* Contact */
@@ -597,7 +621,7 @@ export default css`
     .page-cta-split {
       grid-template-columns: 1fr;
     }
-    .egate-highlights {
+    .egate-steps {
       grid-template-columns: 1fr;
     }
   }

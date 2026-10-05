@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, PageHero, SectionHead, Stat, formatCount } from "../components/page/Page.tsx";
 import Icon from "../components/Icon.tsx";
+import ThemedShot from "../components/ThemedShot.tsx";
 import { forumPaths, usingSample, type AboutPayload } from "../lib/forum.ts";
 import { links } from "../lib/links.ts";
 import { useForum } from "../lib/useForum.ts";
@@ -26,6 +27,14 @@ export default function About() {
           <Stat value={formatCount(stats?.users_count)} label="Members" />
         </div>
         <p className="page-footnote">Live from the forum. Active means visited in the last 30 days.</p>
+        <a className="page-shot" href={links.latest}>
+          <span className="page-shot-bar" aria-hidden="true">
+            <span>● ● ●</span>
+            <span>jtechforums.org</span>
+            <Icon name="external" size={12} />
+          </span>
+          <ThemedShot base="/img/forum/latest" alt="The forum's front page: the latest topics, with the sidebar of categories" />
+        </a>
       </section>
 
       <section className="page-section">

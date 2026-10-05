@@ -69,11 +69,20 @@ export default css`
   }
 
   /* Pictures in black and white */
-  .rail-app-wall img,
-  .rail-phone video,
-  .demo-video video,
-  .egate-shot {
+  .rail-app-wall img {
     filter: var(--image-filter);
+  }
+
+  /* The rail's keypad phone shows eGate's own screens */
+  .rail-phone .phone-screen {
+    width: 100%;
+    height: 230px;
+    border-radius: 10px;
+  }
+  @media (max-width: 1099px) {
+    .rail-phone .phone-screen {
+      height: 164px;
+    }
   }
 
   /* Light / dark switch, shared with the forum */

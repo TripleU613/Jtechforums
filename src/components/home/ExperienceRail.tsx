@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import type { ScrollTrigger as Trigger } from "gsap/ScrollTrigger";
 import { asset } from "../../lib/asset.ts";
 import { links } from "../../lib/links.ts";
+import EgateScreens from "../EgateScreens.tsx";
 import Icon from "../Icon.tsx";
+import ThemedShot from "../ThemedShot.tsx";
 import { DESKTOP_MOTION, gsap, ScrollTrigger } from "./gsap.ts";
 
 type SlideType = "guides" | "apps" | "egate" | "installer";
@@ -95,12 +97,7 @@ const APP_ICONS = [
 
 /** The forum's Guides category as it looks now, in the page's own mode. */
 function GuidesShot({ alt }: { alt: string }) {
-  return (
-    <>
-      <img className="only-light" src={asset("/img/guides-light.webp")} alt={alt} loading="lazy" />
-      <img className="only-dark" src={asset("/img/guides-dark.webp")} alt={alt} loading="lazy" />
-    </>
-  );
+  return <ThemedShot base="/img/forum/guides" alt={alt} />;
 }
 
 function GuidePreview() {
@@ -182,16 +179,7 @@ function SlideVisual({ type }: { type: SlideType }) {
     return (
       <div className="rail-phone">
         <span className="phone-speaker" />
-        <video
-          src={asset("/img/qinf21.mp4")}
-          poster={asset("/img/home/egatesquare.webp")}
-          muted
-          loop
-          playsInline
-          controls
-          preload="metadata"
-          aria-label="eGate running on a Qin F21 Pro"
-        />
+        <EgateScreens />
         <div className="phone-dial">◉</div>
         <div className="phone-keys">
           {Array.from({ length: 12 }, (_, i) => (

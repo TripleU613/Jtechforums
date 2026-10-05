@@ -23,6 +23,10 @@ It follows the forum's JTech theme: JTech Light and JTech Dark (black and white,
 
 Light or dark follows the system, unless the visitor picked one on the forum: the page reads the forum's `forced_color_mode` cookie, and its own switch writes it, so the two stay in step.
 
+## Screenshots
+
+`public/img/egate/` holds eGate 1.47's own screens (setup, password, license), taken in an Android 14 emulator in light and dark. `public/img/forum/` holds captures of the forum itself in both modes. Each pair is named `<name>-light.webp` / `<name>-dark.webp`, and `ThemedShot` shows the one matching the page. Retake them when eGate or the forum's look changes.
+
 ## Forum data
 
 The page is served from the forum's own domain, so it reads the forum's public JSON directly: `/about.json`, `/latest.json`, `/categories.json` and `/leaderboard/6.json`. No key, no proxy. Anywhere else (a local dev server, a `pages.dev` preview) those requests fail and the sections fall back to links; set `VITE_FORUM_USE_MOCK=true` for a labelled sample snapshot instead.
