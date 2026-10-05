@@ -52,6 +52,7 @@ export interface Topic {
 }
 
 export interface LatestPayload {
+  users?: ForumUser[];
   topic_list?: { topics?: Topic[] };
 }
 

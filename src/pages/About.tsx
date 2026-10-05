@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, PageHero, SectionHead, Stat } from "../components/page/Page.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
+import Timeline from "../components/page/Timeline.tsx";
 import { forumPaths, usingSample, type AboutPayload } from "../lib/forum.ts";
 import { links } from "../lib/links.ts";
 import { useForum } from "../lib/useForum.ts";
@@ -65,6 +66,11 @@ export default function About() {
             <Stat value={stats?.posts_30_days} label="Posts this month" detail="in the last 30 days" />
           </div>
         </div>
+      </section>
+
+      <section className="page-section">
+        <SectionHead eyebrow="HOW IT GREW" title="Since 2023" />
+        <Timeline />
       </section>
 
       <section className="page-section">

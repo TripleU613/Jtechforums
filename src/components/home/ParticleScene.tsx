@@ -221,7 +221,32 @@ export default function ParticleScene() {
       x: Math.sin(i * 24.17) * 0.7,
       y: Math.cos(i * 13.57) * 0.6,
       seed: i * 1.618,
+      ox: 0,
+      oy: 0,
     }));
+
+    // The pointer pushes particles aside (they drift back), and a click on
+    // the hero skips to the next shape with a little burst.
+    const host = canvas.parentElement;
+    let pointer: { x: number; y: number } | null = null;
+    let burst = 0;
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      const box = canvas.getBoundingClientRect();
+      pointer = { x: event.clientX - box.left, y: event.clientY - box.top };
+    };
+    const onLeave = () => {
+      pointer = null;
+    };
+    const onClick = (event: MouseEvent) => {
+      if (motion.matches || (event.target as Element | null)?.closest("a, button, img, p, span, h1")) return;
+      const cycleMs = 3000;
+      elapsed = (Math.floor(elapsed / cycleMs) + 1) * cycleMs - 1;
+      burst = 1;
+    };
+    host?.addEventListener("pointermove", onMove);
+    host?.addEventListener("pointerleave", onLeave);
+    host?.addEventListener("click", onClick);
 
     function draw(delta: number) {
       if (!ctx || !canvas) return;
@@ -280,14 +305,37 @@ export default function ParticleScene() {
         const lerp = still ? 1 : Math.min(1, delta / (spelling ? 140 : 65));
         p.x += (targetX - p.x) * lerp;
         p.y += (targetY - p.y) * lerp;
-        const x = cx + (p.x * Math.cos(rotation) - p.y * Math.sin(rotation)) * size;
-        const y = cy + (p.x * Math.sin(rotation) + p.y * Math.cos(rotation)) * size * 0.91;
+        const baseX = cx + (p.x * Math.cos(rotation) - p.y * Math.sin(rotation)) * size;
+        const baseY = cy + (p.x * Math.sin(rotation) + p.y * Math.cos(rotation)) * size * 0.91;
+        let pushX = 0;
+        let pushY = 0;
+        if (pointer && !still) {
+          const dx = baseX - pointer.x;
+          const dy = baseY - pointer.y;
+          const d = Math.hypot(dx, dy);
+          if (d < 120 && d > 0.1) {
+            const force = (1 - d / 120) ** 2 * 46;
+            pushX = (dx / d) * force;
+            pushY = (dy / d) * force;
+          }
+        }
+        if (burst > 0) {
+          const angle = p.seed * 7.3;
+          pushX += Math.cos(angle) * 60 * burst;
+          pushY += Math.sin(angle) * 60 * burst;
+        }
+        const ease = Math.min(1, delta / 90);
+        p.ox += (pushX - p.ox) * ease;
+        p.oy += (pushY - p.oy) * ease;
+        const x = baseX + p.ox;
+        const y = baseY + p.oy;
         const shimmer = 0.58 + (Math.sin(t * 1.1 + p.seed) + 1) * 0.23;
         ctx.fillStyle = color(i % 8 === 0 ? shimmer : shimmer * 0.62);
         ctx.beginPath();
         ctx.arc(x, y, spelling ? 1.5 : i % 13 === 0 ? 1.75 : 1.05, 0, 7);
         ctx.fill();
       });
+      burst = Math.max(0, burst - delta / 220);
       // A few packets emerge from the device and flow towards the edge.
       for (let k = 0; k < 6; k++) {
         const progress = still ? k / 6 : (t * 0.11 + k / 6) % 1;
@@ -346,6 +394,9 @@ export default function ParticleScene() {
       visibility.disconnect();
       motion.removeEventListener("change", sync);
       window.removeEventListener(KONAMI_EVENT, showLogo);
+      host?.removeEventListener("pointermove", onMove);
+      host?.removeEventListener("pointerleave", onLeave);
+      host?.removeEventListener("click", onClick);
       stopScheme();
     };
   }, []);

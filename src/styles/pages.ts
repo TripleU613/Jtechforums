@@ -354,6 +354,97 @@ export default css`
   .egate-phone-key {
     fill: var(--phone-key);
   }
+  /* How it grew (components/page/Timeline.tsx) */
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    padding-inline-start: 0;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 120px;
+    width: 1px;
+    background: linear-gradient(transparent, var(--border-strong) 6%, var(--border-strong) 94%, transparent);
+  }
+  .timeline li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 28px;
+    padding: 14px 0;
+  }
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 116px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--bg);
+  }
+  .timeline time {
+    padding-top: 2px;
+    padding-inline-end: 26px;
+    color: var(--ink-subtle);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-align: end;
+    text-transform: uppercase;
+  }
+  .timeline h3 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .timeline p {
+    max-width: 620px;
+    margin-top: 6px;
+    color: var(--ink-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .timeline .page-link {
+    margin-top: 6px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline li {
+      opacity: 0;
+      transform: translateY(14px);
+      transition:
+        opacity 0.6s ease,
+        transform 0.6s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .timeline li.is-seen {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .timeline::before {
+      left: 5px;
+    }
+    .timeline li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding-inline-start: 26px;
+    }
+    .timeline li::before {
+      left: 1px;
+      top: 18px;
+    }
+    .timeline time {
+      text-align: start;
+      padding: 0;
+    }
+  }
+
   /* eGate's own screens */
   .phone-screen {
     position: relative;

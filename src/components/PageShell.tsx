@@ -1,9 +1,11 @@
 import { useEffect, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
+import BackToTop from "./BackToTop.tsx";
 import CommandPalette from "./CommandPalette.tsx";
 import DevOptions from "./DevOptions.tsx";
 import Footer from "./Footer.tsx";
 import Header from "./Header.tsx";
+import Shortcuts from "./Shortcuts.tsx";
 import Toaster from "./Toaster.tsx";
 import { startKonami } from "../lib/konami.ts";
 import { startSpotlight } from "../lib/spotlight.ts";
@@ -36,7 +38,9 @@ export default function PageShell({ children }: { children: ReactNode }) {
       <Footer />
       <CommandPalette />
       <DevOptions />
+      <Shortcuts />
       <Toaster />
+      <BackToTop />
     </div>
   );
 }

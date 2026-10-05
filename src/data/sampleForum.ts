@@ -54,6 +54,13 @@ const topic = (
 ): Topic => ({ id, slug, title, category_id, tags, views, reply_count, created_at, bumped_at });
 
 const latest: LatestPayload = {
+  users: [
+    { id: 43, username: "TripleU", avatar_template: avatar("tripleu", "488_2") },
+    { id: 941, username: "ars18", avatar_template: avatar("ars18", "11805_2") },
+    { id: 331, username: "Dev-in-the-BM_2.0", avatar_template: avatar("dev-in-the-bm_2.0", "969_2") },
+    { id: 741, username: "flipphoneguy", avatar_template: avatar("flipphoneguy", "11165_2") },
+    { id: 1247, username: "Shalom_Karr", avatar_template: avatar("shalom_karr", "8264_2") },
+  ],
   topic_list: {
     topics: [
       topic(5830, "unihertz-announces-planned-android-16-upgrades-for-titan-2-and-jelly-star", "Unihertz Announces Planned Android 16 Upgrades for Titan 2 and Jelly Star", 56, ["news", "bar-phone"], 2930, 172, "2026-02-07T19:05:33Z", "2026-10-05T06:10:50Z"),

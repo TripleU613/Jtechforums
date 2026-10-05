@@ -1,8 +1,9 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { forumPaths, type CategoriesPayload, type LatestPayload, type Topic } from "../../lib/forum.ts";
-import { FORUM, forumSearch, forumTopic, links } from "../../lib/links.ts";
+import { FORUM, avatarUrl, forumSearch, forumTopic, forumUser, links } from "../../lib/links.ts";
 import { useForumSearch } from "../../lib/search.ts";
 import { useForum } from "../../lib/useForum.ts";
+import Avatar from "../Avatar.tsx";
 import Icon, { type IconName } from "../Icon.tsx";
 
 const TABS = ["Latest", "Popular", "Most discussed"] as const;
@@ -33,6 +34,14 @@ export default function Conversation({ sample }: { sample: boolean }) {
   const [query, setQuery] = useState("");
   const live = useForumSearch(query);
   const names = useMemo(() => categoryNames(categories.data), [categories.data]);
+  // The people in the latest threads (bots and the system user aside)
+  const people = useMemo(
+    () =>
+      (latest.data?.users ?? [])
+        .filter((user) => user.id > 0 && !/bot$/i.test(user.username) && user.avatar_template)
+        .slice(0, 12),
+    [latest.data],
+  );
   const topics = useMemo(() => {
     const list = (latest.data?.topic_list?.topics ?? []).filter((t) => !t.pinned_globally);
     const order: Record<Tab, (a: Topic, b: Topic) => number> = {
@@ -181,6 +190,20 @@ export default function Conversation({ sample }: { sample: boolean }) {
         <a className="button" href={`${FORUM}/new-topic`}>
           Ask on the forum <Icon name="arrow" size={18} />
         </a>
+        {people.length > 0 && (
+          <div className="aside-people">
+            <span>In these threads</span>
+            <ul>
+              {people.map((user) => (
+                <li key={user.id}>
+                  <a href={forumUser(user.username)} title={user.username}>
+                    <Avatar name={user.username} image={avatarUrl(user.avatar_template, 64)} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <span className="aside-signoff">Beginner questions are welcome.</span>
       </aside>
     </section>

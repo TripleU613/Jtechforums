@@ -631,6 +631,116 @@ export default css`
   }
 
 
+  /* The people in the latest threads (components/home/Conversation.tsx) */
+  .aside-people {
+    display: grid;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .aside-people > span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--ink-subtle);
+  }
+  .aside-people ul {
+    display: flex;
+    flex-wrap: wrap;
+    padding-inline-start: 8px;
+  }
+  .aside-people li {
+    margin-inline-start: -8px;
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1.4);
+  }
+  .aside-people li:hover {
+    z-index: 1;
+    transform: translateY(-4px) scale(1.12);
+  }
+  .aside-people .avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    overflow: hidden;
+    border: 2px solid var(--surface);
+    border-radius: var(--radius-avatar);
+    background: var(--fill);
+    font-size: 10px;
+  }
+  .aside-people .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Keyboard shortcuts (components/Shortcuts.tsx) */
+  .palette.shortcuts {
+    width: min(440px, calc(100% - 32px));
+    padding: 0;
+  }
+  .shortcuts-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .shortcuts-head h2 {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .shortcuts-head button {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-control);
+    color: var(--ink-subtle);
+  }
+  .shortcuts-head button:hover {
+    background: var(--hover);
+    color: var(--ink);
+  }
+  .shortcuts-list {
+    margin: 0;
+    padding: 8px 18px;
+    max-height: 50vh;
+    overflow: auto;
+  }
+  .shortcuts-list div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .shortcuts-list div:last-child {
+    border-bottom: 0;
+  }
+  .shortcuts-list dt {
+    display: flex;
+    gap: 4px;
+  }
+  .shortcuts-list dd {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+  }
+  .shortcuts-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    color: var(--ink-subtle);
+    font-size: 12.5px;
+  }
+
   /* Live results under the forum search (components/home/Conversation.tsx) */
   .search-live {
     margin-top: 8px;

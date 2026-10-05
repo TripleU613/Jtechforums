@@ -259,6 +259,156 @@ export default css`
     20%, 40%, 60%, 80% { transform: translateX(3px) rotate(1deg); }
   }
 
+  /* Back to top (components/BackToTop.tsx) */
+  .back-to-top {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: var(--ink);
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    pointer-events: none;
+    transition:
+      opacity 0.25s,
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+  }
+  .back-to-top.is-shown {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .back-to-top:hover {
+    background: var(--hover);
+  }
+  .back-to-top svg {
+    position: absolute;
+    inset: 3px;
+    transform: rotate(-90deg);
+  }
+  .back-to-top circle {
+    fill: none;
+    stroke-width: 2;
+  }
+  .back-to-top-track {
+    stroke: var(--border);
+  }
+  .back-to-top-ring {
+    stroke: var(--ink);
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    stroke-linecap: round;
+  }
+  @media (max-width: 760px) {
+    .back-to-top {
+      right: 14px;
+      bottom: 14px;
+    }
+  }
+
+  /* Snake on the 404 page (components/Snake.tsx) */
+  .snake-section {
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+    margin: 8px auto 40px;
+  }
+  .snake {
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+    padding: 18px 18px 22px;
+    border: 1px solid var(--border-strong);
+    border-radius: 30px;
+    background: var(--phone-body);
+  }
+  .snake-screen {
+    position: relative;
+    padding: 8px;
+    border-radius: 10px;
+    outline: 5px solid #050505;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .snake-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .snake canvas {
+    display: block;
+    width: 210px;
+    height: 210px;
+    border: 1px solid var(--border-strong);
+    touch-action: none;
+    cursor: pointer;
+  }
+  .snake canvas:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .snake-message {
+    position: absolute;
+    inset: auto 8px 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--on-ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-align: center;
+    pointer-events: none;
+  }
+  .snake-pad {
+    display: grid;
+    grid-template: repeat(3, 34px) / repeat(3, 34px);
+    gap: 2px;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--phone-key);
+  }
+  .snake-pad button {
+    border-radius: 8px;
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .snake-pad button:active {
+    background: var(--active);
+  }
+  .snake-up { grid-area: 1 / 2; }
+  .snake-left { grid-area: 2 / 1; }
+  .snake-ok { grid-area: 2 / 2; border-radius: 50% !important; background: var(--phone-body) !important; }
+  .snake-right { grid-area: 2 / 3; }
+  .snake-down { grid-area: 3 / 2; }
+  .snake-up::before,
+  .snake-down::before,
+  .snake-left::before,
+  .snake-right::before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    margin: auto;
+    border: 5px solid transparent;
+  }
+  .snake-up::before { border-bottom-color: var(--ink-muted); margin-top: 6px; }
+  .snake-down::before { border-top-color: var(--ink-muted); margin-bottom: 6px; }
+  .snake-left::before { border-right-color: var(--ink-muted); margin-left: 6px; }
+  .snake-right::before { border-left-color: var(--ink-muted); margin-right: 6px; }
+
   /* The terminal that takes commands (components/home/TerminalToy.tsx) */
   .rail-terminal {
     position: relative;
