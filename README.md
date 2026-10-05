@@ -38,7 +38,7 @@ All of it respects reduced motion and stays out of the way while someone types.
 
 ## Screenshots
 
-`public/img/egate/` holds eGate 1.47's own screens (setup, password, license), taken in an Android 14 emulator in light and dark. `public/img/forum/` holds captures of the forum itself in both modes. Each pair is named `<name>-light.webp` / `<name>-dark.webp`, and `ThemedShot` shows the one matching the page. Retake them when eGate or the forum's look changes.
+`public/img/egate/` holds eGate 1.47's own screens (setup, password, license, and `settings-*`: each settings section open, the long ones stitched from two captures so the phone on the eGate page scrolls), taken in an Android 14 emulator in light and dark. Maintenance is left out because it shows the license key. `public/img/forum/` holds captures of the forum itself in both modes. Each pair is named `<name>-light.webp` / `<name>-dark.webp`, and `ThemedShot` shows the one matching the page. Retake them when eGate or the forum's look changes.
 
 ## Forum data
 

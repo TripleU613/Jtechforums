@@ -1,6 +1,7 @@
 import { Card, PageHero, SectionHead } from "../components/page/Page.tsx";
 import EgatePhoneCheck from "../components/EgatePhoneCheck.tsx";
 import EgateScreens from "../components/EgateScreens.tsx";
+import EgateSettings from "../components/EgateSettings.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
 import { links } from "../lib/links.ts";
@@ -126,6 +127,11 @@ export default function EGate() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="page-section">
+        <SectionHead eyebrow="INSIDE EGATE" title="Every setting, on the phone itself" />
+        <EgateSettings />
       </section>
 
       <section className="page-section page-section-last">
