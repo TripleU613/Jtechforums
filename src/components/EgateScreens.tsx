@@ -8,10 +8,21 @@ export const EGATE_SCREENS = [
   { base: "/img/egate/activate", alt: "eGate 1.47 asking for a license code" },
 ] as const;
 
-export default function EgateScreens({ className = "" }: { className?: string }) {
+interface Screen {
+  base: string;
+  alt: string;
+}
+
+export default function EgateScreens({
+  className = "",
+  screens = EGATE_SCREENS,
+}: {
+  className?: string;
+  screens?: readonly Screen[];
+}) {
   return (
     <div className={`phone-screen ${className}`}>
-      {EGATE_SCREENS.map((screen, i) => (
+      {screens.map((screen, i) => (
         <div className="screen-frame" key={screen.base} style={{ "--frame": i } as CSSProperties}>
           <ThemedShot base={screen.base} alt={screen.alt} eager={i === 0} />
         </div>

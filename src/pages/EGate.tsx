@@ -1,29 +1,38 @@
-import { Card, PageHero, SectionHead } from "../components/page/Page.tsx";
+import { useEffect, useRef, useState } from "react";
+import { SectionHead } from "../components/page/Page.tsx";
 import EgatePhoneCheck from "../components/EgatePhoneCheck.tsx";
 import EgateScreens from "../components/EgateScreens.tsx";
 import EgateSettings from "../components/EgateSettings.tsx";
+import EgateThreads from "../components/EgateThreads.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
+import { EGATE_SETTING_COUNT } from "../data/egate.ts";
 import { links } from "../lib/links.ts";
+
+const HERO_SCREENS = [
+  { base: "/img/egate/login", alt: "eGate 1.47 asking for its password" },
+  { base: "/img/egate/settings-overview", alt: "eGate 1.47's settings, every section closed" },
+  { base: "/img/egate/settings-categories", alt: "eGate 1.47 blocking apps by category" },
+] as const;
 
 /** A keypad phone, its screen cycling through eGate's own screens. */
 function PhoneMock() {
   return (
-    <svg viewBox="0 0 280 628" role="img" aria-label="eGate 1.47 on a keypad phone" className="egate-phone">
+    <svg viewBox="0 0 280 628" role="img" aria-label="eGate 1.47 on a keypad phone" className="eg-keypad">
       <defs>
-        <clipPath id="egate-phone-screen">
+        <clipPath id="eg-keypad-screen">
           <rect width="210" height="280" rx="10" x="35" y="57" />
         </clipPath>
       </defs>
-      <rect className="egate-phone-body" x="10" y="10" width="260" height="605" rx="35" />
-      <rect className="egate-phone-glass" x="25" y="40" width="230" height="315" rx="12" />
-      <foreignObject x="35" y="57" width="210" height="280" clipPath="url(#egate-phone-screen)">
-        <EgateScreens className="phone-screen-fill" />
+      <rect className="eg-keypad-body" x="10" y="10" width="260" height="605" rx="35" />
+      <rect className="eg-keypad-glass" x="25" y="40" width="230" height="315" rx="12" />
+      <foreignObject x="35" y="57" width="210" height="280" clipPath="url(#eg-keypad-screen)">
+        <EgateScreens className="phone-screen-fill" screens={HERO_SCREENS} />
       </foreignObject>
-      <rect className="egate-phone-key" x="120" y="25" width="40" height="6" rx="3" />
-      <g className="egate-phone-key">
+      <rect className="eg-keypad-key" x="120" y="25" width="40" height="6" rx="3" />
+      <g className="eg-keypad-key">
         <circle cx="140" cy="410" r="35" />
-        <circle className="egate-phone-body" cx="140" cy="410" r="30" />
+        <circle className="eg-keypad-body" cx="140" cy="410" r="30" />
         <circle cx="140" cy="410" r="28" />
         <rect x="35" y="375" width="60" height="30" rx="15" />
         <rect x="35" y="415" width="60" height="30" rx="15" />
@@ -37,141 +46,278 @@ function PhoneMock() {
   );
 }
 
+/** A command to run on the computer, with a Copy button. */
+function Command({ children }: { children: string }) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const copy = () =>
+    navigator.clipboard?.writeText(children).then(
+      () => {
+        setCopied(true);
+        window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setCopied(false), 1600);
+      },
+      () => undefined,
+    );
+  return (
+    <div className="eg-command">
+      <code>
+        <span aria-hidden="true">$ </span>
+        {children}
+      </code>
+      <button type="button" onClick={copy} aria-label={copied ? "Copied" : "Copy the command"}>
+        {copied ? <Icon name="check" size={16} /> : "Copy"}
+      </button>
+    </div>
+  );
+}
+
 const STEPS = [
   {
-    base: "/img/egate/setup",
-    title: "Set up from a computer",
-    text: "eGate becomes the phone's device owner over ADB, then asks for one more permission the same way.",
-    alt: "eGate 1.47 asking for secure settings access from a connected computer",
+    title: "Install the app",
+    text: "Download the APK from eGate's releases on GitHub, plug the phone in with USB debugging on, and install it.",
+    command: "adb install app-general-release.apk",
   },
   {
-    base: "/img/egate/login",
-    title: "Locked with your password",
-    text: "Nothing in eGate changes without it.",
-    alt: "eGate 1.47's password screen",
+    title: "Make eGate the device owner",
+    text: "This is what lets it lock things down, and why setup starts from a factory reset: Android only allows it on a phone with no accounts on it.",
+    command: "adb shell dpm set-device-owner com.oss.egate/.a",
+    note: (
+      <>
+        On an LG Classic, eGate's own build uses{" "}
+        <code>dpm set-device-owner com.android.cts.egate/com.oss.egate.a</code>.
+      </>
+    ),
   },
   {
-    base: "/img/egate/activate",
-    title: "One license, in the app",
-    text: "Enter a license code, or buy one right there. Resellers buy in bulk at volume pricing, with a web dashboard for their licenses.",
-    alt: "eGate 1.47 asking for a license code",
+    title: "Grant one more permission",
+    text: "It lets eGate reach into other apps' settings, for switches like WebView blocking.",
+    command: "adb shell pm grant com.oss.egate android.permission.WRITE_SECURE_SETTINGS",
+  },
+  {
+    title: "Open eGate",
+    text: "Choose your password, then enter a license key, or buy one right there in the app. Then work through the settings.",
+  },
+] as const;
+
+const SCREENS = [
+  { base: "/img/egate/setup", caption: "Missed step 3? eGate shows the command.", alt: "eGate 1.47 asking for secure settings access from a computer" },
+  { base: "/img/egate/login", caption: "Your password guards every setting.", alt: "eGate 1.47's password screen" },
+  { base: "/img/egate/activate", caption: "Enter a license, or buy one in the app.", alt: "eGate 1.47 asking for a license code" },
+] as const;
+
+const FAQ = [
+  {
+    q: "Is there a subscription?",
+    a: "No. A license is bought once, per phone, and updates stay free.",
+  },
+  {
+    q: "Do I have to factory reset the phone?",
+    a: "Yes. eGate has to become the phone's device owner, and Android only allows that on a phone with no accounts on it, so you set it up right after a reset.",
+  },
+  {
+    q: "What if I forget the password?",
+    a: "Give eGate a password reset email under Security when you set it up. That's the way back in.",
+  },
+  {
+    q: "Can I move a license to another phone?",
+    a: "No. Each license is entered once, on one phone. If that phone is reset and eGate goes on again, it needs a new license.",
+  },
+  {
+    q: "Does it work on flip phones?",
+    a: "Many. Most Android phones from 6.0 on work, keypad ones included. The LG Classic has its own build and the Qin F21 Pro has an add-on. Look your phone up above before you buy.",
+  },
+  {
+    q: "Can it block websites?",
+    a: "Through its DNS filter, which uses Mullvad's filters for ads, malware, gambling, adult content and social media. The accessibility filter can also block web pages inside apps (WebView) and video playback.",
+  },
+  {
+    q: "Who makes it?",
+    a: "Offline Software Solutions, the developer who founded JTech. Help, release notes and setup questions live in the forum's eGate category.",
   },
 ] as const;
 
 export default function EGate() {
   return (
-    <div className="page egate-page">
-      <section className="egate-hero">
-        <div className="egate-hero-copy">
-          <PageHero eyebrow="EGATE" title="An offline device manager for Android." align="start">
-            <p className="lede">
-              eGate locks down an Android phone with a password you choose: which apps run, what can
-              be changed, and which sites load. It's made by Offline Software Solutions, and it
-              doesn't need a subscription.
-            </p>
-          </PageHero>
+    <div className="page eg-page">
+      <section className="eg-hero">
+        <div className="eg-hero-copy">
+          <span className="eyebrow">EGATE 1.47 · OFFLINE SOFTWARE SOLUTIONS</span>
+          <h1 className="eg-title">
+            Lock down an Android phone. <span>Pay once.</span>
+          </h1>
+          <p className="lede">
+            eGate is a device manager that runs on the phone itself. You decide what stays, from apps and Wi-Fi to
+            texting, video inside apps and factory reset, then lock it all with a password only you know. No monthly
+            subscription.
+          </p>
           <div className="page-actions">
             <a className="button" href={links.egateDownload} target="_blank" rel="noreferrer">
               Download eGate <Icon name="download" size={18} />
             </a>
-            <a className="button button-ghost" href={links.egateInstall}>
-              How to install it <Icon name="arrow" size={18} />
+            <a className="button button-ghost" href="#setup">
+              How to set it up <Icon name="arrow" size={18} />
             </a>
           </div>
-          <p className="page-note">
-            Made and sold by Offline Software Solutions, the developer who founded JTech. Help and
-            release notes live in the forum's eGate category.
-          </p>
+          <dl className="eg-facts">
+            <div>
+              <dt>$40</dt>
+              <dd>per phone, once</dd>
+            </div>
+            <div>
+              <dt>{EGATE_SETTING_COUNT}</dt>
+              <dd>settings to lock</dd>
+            </div>
+            <div>
+              <dt>6.0+</dt>
+              <dd>Android version</dd>
+            </div>
+            <div>
+              <dt>Free</dt>
+              <dd>updates, for good</dd>
+            </div>
+          </dl>
         </div>
-        <div className="egate-hero-visual">
+        <div className="eg-hero-visual">
           <PhoneMock />
         </div>
       </section>
 
-      <section className="page-section">
-        <SectionHead eyebrow="WHAT IT DOES" title="What eGate can lock" />
-        <div className="page-grid">
-          <Card icon="lock" title="One-time license">
-            Bought once, in the app. No monthly subscription, and updates stay free.
-          </Card>
-          <Card icon="shield" title="Password protected">
-            You set a password during setup, and nothing changes without it.
-          </Card>
-          <Card icon="ban" title="Closes the back doors">
-            Blocks factory reset, extra user profiles, ADB, and installing APK files.
-          </Card>
-          <Card icon="grid" title="App control">
-            Hide or disable any app, system apps included, or allow only the ones you pick.
-          </Card>
-          <Card icon="globe" title="DNS filtering">
-            Blocks ads, malware, gambling, adult content and social media through Mullvad's DNS
-            filters.
-          </Card>
-          <Card icon="sliders" title="Finer controls">
-            Turns off WebView inside apps, video playback, Wi-Fi tethering and Wi-Fi settings.
-          </Card>
-        </div>
+      <section className="page-section" id="settings">
+        <SectionHead eyebrow="EVERY SETTING" title="Everything it can lock, on the phone itself" />
+        <p className="eg-intro">
+          This is eGate 1.47's own settings screen, section by section. Search it, or open a section to see it on the
+          phone.
+        </p>
+        <EgateSettings />
       </section>
 
-      <section className="page-section">
-        <SectionHead eyebrow="SEE IT" title="Straight from eGate 1.47" />
-        <div className="egate-steps">
-          {STEPS.map((step, i) => (
-            <article className="egate-step spotlight" key={step.base}>
-              <span className="egate-step-number">{String(i + 1).padStart(2, "0")}</span>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-              <div className="egate-step-screen">
-                <ThemedShot base={step.base} alt={step.alt} />
+      <section className="page-section" id="setup">
+        <SectionHead eyebrow="SETUP" title="Four steps, from a computer" />
+        <ul className="eg-needs">
+          <li>
+            <Icon name="phone" size={18} /> An Android 6.0+ phone you can factory reset
+          </li>
+          <li>
+            <Icon name="terminal" size={18} /> A computer with ADB, or a browser with WebADB
+          </li>
+          <li>
+            <Icon name="lock" size={18} /> A license: $40, bought in the app
+          </li>
+        </ul>
+        <div className="eg-setup">
+          <ol className="eg-steps">
+            {STEPS.map((step, i) => (
+              <li className="eg-step" key={step.title}>
+                <span className="eg-step-number">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                  {"command" in step && <Command>{step.command}</Command>}
+                  {"note" in step && <p className="eg-step-note">{step.note}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+          <aside className="eg-installer">
+            <Icon name="code" size={20} />
+            <h3>Rather not type commands?</h3>
+            <p>
+              The JTech MDM Installer installs eGate from your browser. It checks the phone and walks you through USB
+              debugging first.
+            </p>
+            <a className="page-link" href={links.installer}>
+              Open the installer <Icon />
+            </a>
+            <a className="page-link" href={links.egateInstall}>
+              The forum's full install guide <Icon />
+            </a>
+          </aside>
+        </div>
+        <div className="eg-screens">
+          {SCREENS.map((screen) => (
+            <figure key={screen.base}>
+              <div className="eg-screens-frame">
+                <ThemedShot base={screen.base} alt={screen.alt} />
               </div>
-            </article>
+              <figcaption>{screen.caption}</figcaption>
+            </figure>
           ))}
         </div>
       </section>
 
-      <section className="page-section">
-        <SectionHead eyebrow="INSIDE EGATE" title="Every setting, on the phone itself" />
-        <EgateSettings />
-      </section>
-
-      <section className="page-section page-section-last">
-        <div className="page-cta page-cta-split">
-          <div>
-            <span className="eyebrow">BEFORE YOU BUY</span>
-            <h2>Questions about eGate?</h2>
-            <p>
-              Setup help, compatibility and release notes are in the forum's eGate category. If you're
-              not sure your phone will work, ask there first, or look it up:
-            </p>
-            <EgatePhoneCheck />
-            <ul className="page-checklist">
-              <li>
-                <Icon name="check" size={18} />
-                Setting it up takes ADB and a factory reset.
-              </li>
-              <li>
-                <Icon name="check" size={18} />
-                Each license can be entered once. Reinstalling after a reset needs a new one.
-              </li>
-              <li>
-                <Icon name="check" size={18} />
-                Most Android phones work. There's a build for LG Classic phones, and an add-on for the
-                Qin F21 Pro.
-              </li>
-            </ul>
-            <div className="page-actions">
-              <a className="button" href={links.egateCategory}>
-                eGate on the forum <Icon name="arrow" size={18} />
-              </a>
-              <a className="button button-ghost" href={links.egateVendor} target="_blank" rel="noreferrer">
-                Offline Software Solutions <Icon name="external" size={18} />
-              </a>
-            </div>
-          </div>
-          <a className="egate-forum-shot" href={links.egateCategory} aria-label="The forum's eGate category">
-            <ThemedShot base="/img/forum/egate" alt="The forum's eGate category, as it looks today" />
+      <section className="page-section eg-split" id="phones">
+        <div>
+          <SectionHead eyebrow="WILL IT WORK" title="Check your phone first" />
+          <p className="eg-intro">
+            Most Android phones from 6.0 on work, keypad phones included. Type your model to see what the eGate category
+            says about it.
+          </p>
+          <EgatePhoneCheck />
+          <ul className="page-checklist">
+            <li>
+              <Icon name="check" size={18} />
+              The LG Classic has its own build of eGate.
+            </li>
+            <li>
+              <Icon name="check" size={18} />
+              The Qin F21 Pro has an add-on.
+            </li>
+            <li>
+              <Icon name="check" size={18} />
+              Setup starts from a factory reset, so back the phone up first.
+            </li>
+          </ul>
+        </div>
+        <div className="eg-price">
+          <span className="eyebrow">THE LICENSE</span>
+          <p className="eg-price-amount">
+            $40<span>per phone</span>
+          </p>
+          <p>Paid once, in the eGate app. Updates are free, for good.</p>
+          <ul>
+            <li>Each license is entered once, on one phone. After a reset, eGate needs a new one.</li>
+            <li>Resellers and volume buyers get discounts, and resellers manage their licenses from a web dashboard.</li>
+          </ul>
+          <a className="button button-ghost" href={links.egateVendor} target="_blank" rel="noreferrer">
+            Offline Software Solutions <Icon name="external" size={18} />
           </a>
         </div>
+      </section>
+
+      <section className="page-section">
+        <SectionHead eyebrow="QUESTIONS" title="Before you buy" />
+        <div className="eg-faq">
+          {FAQ.map((entry) => (
+            <details key={entry.q}>
+              <summary>
+                {entry.q}
+                <Icon name="plus" size={18} />
+              </summary>
+              <p>{entry.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="page-section page-section-last eg-split eg-forum">
+        <div>
+          <SectionHead eyebrow="ON THE FORUM" title="Latest in the eGate category" />
+          <p className="eg-intro">
+            Release notes, setup help and phone-by-phone answers, from the people using it and the developer who makes
+            it.
+          </p>
+          <div className="page-actions">
+            <a className="button" href={links.egateCategory}>
+              eGate on the forum <Icon name="arrow" size={18} />
+            </a>
+            <a className="button button-ghost" href={links.egateExplained}>
+              What is eGate? <Icon name="arrow" size={18} />
+            </a>
+          </div>
+        </div>
+        <EgateThreads />
       </section>
     </div>
   );

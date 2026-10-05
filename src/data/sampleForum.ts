@@ -149,7 +149,22 @@ const announcements: LatestPayload = {
   },
 };
 
+const egateThreads: LatestPayload = {
+  topic_list: {
+    topics: [
+      { ...topic(6272, "about-the-egate-category", "About the eGate category", 75, [], 25, 0, "2026-03-27T00:39:32Z", "2026-03-27T00:39:32Z"), pinned: true },
+      topic(235, "what-is-egate-software", "What is eGate software?", 75, [], 2308, 49, "2024-11-17T00:13:17Z", "2026-10-05T01:28:34Z"),
+      topic(9059, "filter-administrator-pin-lost-on-a-broken-phone", "Filter administrator PIN lost on a broken phone", 75, [], 9, 0, "2026-01-18T22:06:27Z", "2026-09-30T17:39:57Z"),
+      topic(8995, "finding-the-egate-reseller-portal-url", "Finding the eGate reseller portal URL", 75, [], 6, 0, "2025-11-20T09:07:04Z", "2026-09-30T17:28:57Z"),
+      topic(8813, "how-does-dns-filtering-work-with-egate", "How does DNS filtering work with eGate?", 75, [], 4, 0, "2025-04-24T22:35:37Z", "2026-09-30T16:50:30Z"),
+      topic(8746, "egate-android-mdm-version-1-47", "eGate - Android MDM - Version 1.47+", 75, [], 57, 0, "2026-09-28T13:15:45Z", "2026-09-28T13:15:45Z"),
+      topic(8708, "using-android-auto-with-egate-on-a-qin-f21-pro", "Using Android Auto with eGate on a Qin F21 Pro", 75, [], 135, 4, "2026-09-23T18:57:39Z", "2026-09-25T07:16:00Z"),
+    ],
+  },
+};
+
 export function sample(path: string): unknown {
+  if (path.startsWith("/c/filters-and-mdms/egate")) return egateThreads;
   if (path.startsWith("/c/updates-feedback")) return announcements;
   if (path.startsWith("/about.json")) return about;
   if (path.startsWith("/latest.json")) return latest;
