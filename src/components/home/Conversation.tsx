@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { forumPaths, type CategoriesPayload, type LatestPayload, type Topic } from "../../lib/forum.ts";
 import { FORUM, forumSearch, forumTopic, links } from "../../lib/links.ts";
+import { useForumSearch } from "../../lib/search.ts";
 import { useForum } from "../../lib/useForum.ts";
 import Icon, { type IconName } from "../Icon.tsx";
 
@@ -30,6 +31,7 @@ export default function Conversation({ sample }: { sample: boolean }) {
   const categories = useForum<CategoriesPayload>(forumPaths.categories);
   const [tab, setTab] = useState<Tab>("Latest");
   const [query, setQuery] = useState("");
+  const live = useForumSearch(query);
   const names = useMemo(() => categoryNames(categories.data), [categories.data]);
   const topics = useMemo(() => {
     const list = (latest.data?.topic_list?.topics ?? []).filter((t) => !t.pinned_globally);
@@ -131,6 +133,30 @@ export default function Conversation({ sample }: { sample: boolean }) {
             <Icon />
           </button>
         </form>
+        {query.trim().length >= 2 && (
+          <div className="search-live" aria-live="polite">
+            {live.hits.length > 0 ? (
+              <ul>
+                {live.hits.slice(0, 5).map((hit) => (
+                  <li key={hit.id}>
+                    <a href={hit.href}>
+                      <strong>{hit.title}</strong>
+                      {hit.blurb && <span>{hit.blurb}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                {live.status === "searching"
+                  ? "Searching…"
+                  : live.status === "error"
+                    ? "Live results didn't load. Press Enter for the full search."
+                    : "No topics match yet. Press Enter for the full search."}
+              </p>
+            )}
+          </div>
+        )}
         <div className="search-suggestions">
           <span>Try</span>
           {SUGGESTIONS.map((suggestion) => (
@@ -140,7 +166,7 @@ export default function Conversation({ sample }: { sample: boolean }) {
           ))}
         </div>
       </div>
-      <aside className="community-aside">
+      <aside className="community-aside spotlight">
         <div className="eyebrow">BEFORE YOU POST</div>
         <Icon name="search" size={36} />
         <h3>

@@ -2,8 +2,10 @@ import { useMemo } from "react";
 import Closing from "../components/home/Closing.tsx";
 import CommunityStrip from "../components/home/CommunityStrip.tsx";
 import Conversation from "../components/home/Conversation.tsx";
+import Corners from "../components/home/Corners.tsx";
 import ExperienceRail from "../components/home/ExperienceRail.tsx";
 import Faq from "../components/home/Faq.tsx";
+import FlipDemo from "../components/home/FlipDemo.tsx";
 import Hero from "../components/home/Hero.tsx";
 import Honors, { type Champion, type Moderator } from "../components/home/Honors.tsx";
 import MadeByMembers from "../components/home/MadeByMembers.tsx";
@@ -55,7 +57,9 @@ export default function Home() {
       <CommunityStrip stats={about.data?.about.stats} sample={usingSample} />
       <StoryBridge />
       <ExperienceRail />
+      <Corners />
       <Conversation sample={usingSample} />
+      <FlipDemo />
       <People />
       <Honors champions={champions} moderators={moderators} sample={usingSample} />
       <MadeByMembers />

@@ -10,7 +10,7 @@ export default function ServerError() {
       title="Something went sideways"
       actions={
         <>
-          <Link className="button" to="/">
+          <Link viewTransition className="button" to="/">
             Go home
           </Link>
           <a className="button button-ghost" href={links.siteFeedback}>

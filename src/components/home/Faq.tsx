@@ -37,7 +37,7 @@ export default function Faq() {
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
-        <Link to="/contact" className="text-link">
+        <Link viewTransition to="/contact" className="text-link">
           Still stuck? Contact us <Icon />
         </Link>
       </div>
@@ -54,7 +54,7 @@ export default function Faq() {
                 <>
                   {" "}
                   {entry.link.internal ? (
-                    <Link className="faq-link" to={entry.link.href}>
+                    <Link viewTransition className="faq-link" to={entry.link.href}>
                       {entry.link.label}
                     </Link>
                   ) : (

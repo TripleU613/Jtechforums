@@ -1,7 +1,9 @@
 import { useEffect, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
+import CommandPalette from "./CommandPalette.tsx";
 import Footer from "./Footer.tsx";
 import Header from "./Header.tsx";
+import { startSpotlight } from "../lib/spotlight.ts";
 
 const titles: Record<string, string> = {
   "/": "JTech Forums",
@@ -15,6 +17,7 @@ const titles: Record<string, string> = {
 
 export default function PageShell({ children }: { children: ReactNode }) {
   const { pathname, hash } = useLocation();
+  useEffect(() => startSpotlight(), []);
   useEffect(() => {
     document.title = titles[pathname] ?? "JTech Forums";
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
@@ -27,6 +30,7 @@ export default function PageShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <CommandPalette />
     </div>
   );
 }

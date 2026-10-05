@@ -1,10 +1,9 @@
 import type { AboutStats } from "../../lib/forum.ts";
+import CountUp from "../CountUp.tsx";
 import Icon from "../Icon.tsx";
 
-const compact = (n: number | undefined): string =>
-  typeof n === "number"
-    ? Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n)
-    : "—";
+const compact = (n: number): string =>
+  Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 
 /** Live numbers from the forum's /about.json. */
 export default function CommunityStrip({ stats, sample }: { stats?: AboutStats; sample: boolean }) {
@@ -20,15 +19,21 @@ export default function CommunityStrip({ stats, sample }: { stats?: AboutStats; 
           </span>
         </div>
         <div>
-          <strong>{compact(stats?.users_count)}</strong>
+          <strong>
+            <CountUp value={stats?.users_count} format={compact} />
+          </strong>
           <span>Members</span>
         </div>
         <div>
-          <strong>{compact(stats?.posts_count)}</strong>
+          <strong>
+            <CountUp value={stats?.posts_count} format={compact} />
+          </strong>
           <span>Posts</span>
         </div>
         <div>
-          <strong>{compact(stats?.active_users_30_days)}</strong>
+          <strong>
+            <CountUp value={stats?.active_users_30_days} format={compact} />
+          </strong>
           <span>Active this month</span>
         </div>
         <div className="strip-note">

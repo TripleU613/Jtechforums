@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { links } from "../lib/links.ts";
 import { toggleScheme, useScheme } from "../lib/scheme.ts";
 import Brand from "./Brand.tsx";
+import { openPalette } from "./CommandPalette.tsx";
 import Icon from "./Icon.tsx";
 
 const nav = [
@@ -12,9 +13,16 @@ const nav = [
   ["Contact", "/contact"],
 ] as const;
 
+/** Where a click happened, or the button's centre when it came from the keyboard. */
+function pointFrom(event: MouseEvent<HTMLElement>): { x: number; y: number } {
+  if (event.clientX || event.clientY) return { x: event.clientX, y: event.clientY };
+  const box = event.currentTarget.getBoundingClientRect();
+  return { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+}
+
 function NavLinks() {
   return nav.map(([label, to]) => (
-    <NavLink key={to} to={to} end={to === "/"}>
+    <NavLink viewTransition key={to} to={to} end={to === "/"}>
       {label}
     </NavLink>
   ));
@@ -44,10 +52,15 @@ export default function Header() {
           <NavLinks />
         </nav>
         <div className="header-actions">
+          <button type="button" className="palette-trigger" onClick={openPalette} aria-label="Jump to or search (Ctrl K)">
+            <Icon name="search" size={16} />
+            <span>Search</span>
+            <kbd>⌘K</kbd>
+          </button>
           <button
             type="button"
             className="scheme-toggle"
-            onClick={toggleScheme}
+            onClick={(event) => toggleScheme(pointFrom(event))}
             aria-label={`Switch to ${other} mode`}
             title="Switch light / dark (the forum follows)"
           >
@@ -73,7 +86,11 @@ export default function Header() {
       {open && (
         <nav id="mobile-menu" className="mobile-nav" aria-label="Mobile navigation">
           <NavLinks />
-          <button type="button" className="mobile-scheme" onClick={toggleScheme}>
+          <button type="button" className="mobile-scheme" onClick={openPalette}>
+            <Icon name="search" size={18} />
+            Search
+          </button>
+          <button type="button" className="mobile-scheme" onClick={(event) => toggleScheme(pointFrom(event))}>
             <Icon name={scheme === "dark" ? "sun" : "moon"} size={18} />
             {scheme === "dark" ? "Light mode" : "Dark mode"}
           </button>

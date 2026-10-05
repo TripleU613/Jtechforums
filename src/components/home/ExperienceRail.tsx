@@ -381,7 +381,7 @@ export default function ExperienceRail() {
                       <Icon name="arrow" />
                     </a>
                   ) : (
-                    <Link className="panel-link" to={slide.to}>
+                    <Link viewTransition className="panel-link" to={slide.to}>
                       {slide.action}
                       <Icon name="arrow" />
                     </Link>

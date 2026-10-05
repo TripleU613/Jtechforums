@@ -6,6 +6,8 @@ import scenes from "./layout/scenes.ts";
 import phones from "./layout/phones.ts";
 import theme from "./theme.ts";
 import pages from "./pages.ts";
+import motion from "./motion.ts";
+import areas from "./areas.ts";
 
 /**
  * The site's one stylesheet, in cascade order. Each module is a css``
@@ -19,7 +21,9 @@ import pages from "./pages.ts";
  *   refine earlier ones, so keep the order)
  * - theme: the forum's buttons, wordmark and pictures over the layout
  * - pages: About, eGate, Contact, the legal pages and notices
+ * - motion: page transitions, the light/dark sweep, the card spotlight
+ * - areas: the home page's categories, phones strip, flip-phone demo and palette
  */
 export default function stylesheet(): string {
-  return [tokens, reset, honors, base, scenes, phones, theme, pages].join("\n");
+  return [tokens, reset, honors, base, scenes, phones, theme, pages, areas, motion].join("\n");
 }

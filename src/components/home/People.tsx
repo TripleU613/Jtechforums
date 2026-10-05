@@ -18,7 +18,7 @@ export default function People() {
               <span>behind JTech.</span>
             </h2>
           </div>
-          <Link to="/about" className="text-link">
+          <Link viewTransition to="/about" className="text-link">
             About JTech <Icon />
           </Link>
         </div>

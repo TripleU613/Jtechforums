@@ -13,7 +13,7 @@ export default function Maintenance() {
           <a className="button" href={links.forum}>
             Go to the forum <Icon />
           </a>
-          <Link className="button button-ghost" to="/">
+          <Link viewTransition className="button button-ghost" to="/">
             Back to home
           </Link>
         </>

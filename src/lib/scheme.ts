@@ -44,13 +44,7 @@ export function useScheme(): Scheme {
   return useSyncExternalStore(subscribe, current, () => "dark");
 }
 
-/**
- * Flip light/dark, for this page and the forum alike. Like the forum's own
- * switch, a choice that matches the system is stored as "auto", so it keeps
- * following the system from then on.
- */
-export function toggleScheme(): void {
-  const next: Scheme = current() === "dark" ? "light" : "dark";
+function store(next: Scheme): void {
   const system: Scheme = darkQuery()?.matches ? "dark" : "light";
   const value = next === system ? "auto" : next;
   const year = 60 * 60 * 24 * 365;
@@ -58,6 +52,34 @@ export function toggleScheme(): void {
   if (value === "auto") delete document.documentElement.dataset.scheme;
   else document.documentElement.dataset.scheme = next;
   emit();
+}
+
+/**
+ * Flip light/dark, for this page and the forum alike. Like the forum's own
+ * switch, a choice that matches the system is stored as "auto", so it keeps
+ * following the system from then on. Given the point it came from (the
+ * switch), the new mode spreads out from there as a circle.
+ */
+export function toggleScheme(from?: { x: number; y: number }): void {
+  const next: Scheme = current() === "dark" ? "light" : "dark";
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!from || calm || typeof document.startViewTransition !== "function") {
+    store(next);
+    return;
+  }
+  const root = document.documentElement;
+  root.classList.add("scheme-transition");
+  const transition = document.startViewTransition(() => store(next));
+  const radius = Math.hypot(Math.max(from.x, innerWidth - from.x), Math.max(from.y, innerHeight - from.y));
+  transition.ready
+    .then(() =>
+      root.animate(
+        { clipPath: [`circle(0px at ${from.x}px ${from.y}px)`, `circle(${radius}px at ${from.x}px ${from.y}px)`] },
+        { duration: 560, easing: "cubic-bezier(0.2, 0, 0, 1)", pseudoElement: "::view-transition-new(root)" },
+      ),
+    )
+    .catch(() => {});
+  transition.finished.finally(() => root.classList.remove("scheme-transition"));
 }
 
 /** Subscribe outside React (the particle canvas). */

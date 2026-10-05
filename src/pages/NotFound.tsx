@@ -10,7 +10,7 @@ export default function NotFound() {
       title="Couldn’t find that page"
       actions={
         <>
-          <Link className="button" to="/">
+          <Link viewTransition className="button" to="/">
             Home
           </Link>
           <a className="button button-ghost" href={links.forum}>

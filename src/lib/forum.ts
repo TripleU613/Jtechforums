@@ -55,13 +55,16 @@ export interface LatestPayload {
   topic_list?: { topics?: Topic[] };
 }
 
+export interface CategorySummary {
+  id: number;
+  name: string;
+  topic_count?: number;
+  topics_week?: number;
+}
+
 export interface CategoriesPayload {
   category_list?: {
-    categories?: Array<{
-      id: number;
-      name: string;
-      subcategory_list?: Array<{ id: number; name: string }>;
-    }>;
+    categories?: Array<CategorySummary & { subcategory_list?: CategorySummary[] }>;
   };
 }
 
@@ -71,15 +74,27 @@ export interface LeaderboardPayload {
 
 export const usingSample = import.meta.env.VITE_FORUM_USE_MOCK === "true";
 
-export async function forumJson<T>(path: string, signal?: AbortSignal): Promise<T> {
-  if (usingSample) return sample(path) as T;
-  const response = await fetch(path, {
-    signal: signal ?? null,
-    headers: { Accept: "application/json" },
-    credentials: "same-origin",
-  });
-  if (!response.ok) throw new Error(`${path}: ${response.status}`);
-  return (await response.json()) as T;
+const cache = new Map<string, Promise<unknown>>();
+
+/**
+ * GET one of the forum's JSON documents. Each path is fetched once per page
+ * view and shared by every section that asks for it (a failure is
+ * forgotten, so a later caller tries again).
+ */
+export function forumJson<T>(path: string): Promise<T> {
+  if (usingSample) return Promise.resolve(sample(path) as T);
+  let request = cache.get(path);
+  if (!request) {
+    request = fetch(path, { headers: { Accept: "application/json" }, credentials: "same-origin" }).then(
+      async (response) => {
+        if (!response.ok) throw new Error(`${path}: ${response.status}`);
+        return (await response.json()) as unknown;
+      },
+    );
+    request.catch(() => cache.delete(path));
+    cache.set(path, request);
+  }
+  return request as Promise<T>;
 }
 
 export const forumPaths = {

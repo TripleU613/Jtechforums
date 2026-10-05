@@ -27,6 +27,7 @@ const light = css`
   --on-ink: #ffffff;
   --ink-hover: #383838;
   --glow: rgb(0 0 0 / 4%);
+  --spot: rgb(0 0 0 / 5%);
   --grid: rgb(0 0 0 / 5%);
   --glass: rgb(255 255 255 / 72%);
   --header-bg: rgb(255 255 255 / 80%);
@@ -60,6 +61,7 @@ const dark = css`
   --on-ink: #000000;
   --ink-hover: #d4d4d4;
   --glow: rgb(255 255 255 / 9%);
+  --spot: rgb(255 255 255 / 8%);
   --grid: rgb(255 255 255 / 5%);
   --glass: rgb(10 10 10 / 62%);
   --header-bg: rgb(0 0 0 / 75%);

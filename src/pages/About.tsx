@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Card, PageHero, SectionHead, Stat, formatCount } from "../components/page/Page.tsx";
+import { Card, PageHero, SectionHead, Stat } from "../components/page/Page.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
 import { forumPaths, usingSample, type AboutPayload } from "../lib/forum.ts";
@@ -22,9 +22,9 @@ export default function About() {
           </p>
         </PageHero>
         <div className="page-stats">
-          <Stat value={formatCount(stats?.active_users_30_days)} label="Active this month" />
-          <Stat value={formatCount(stats?.posts_count)} label="Posts" />
-          <Stat value={formatCount(stats?.users_count)} label="Members" />
+          <Stat value={stats?.active_users_30_days} label="Active this month" />
+          <Stat value={stats?.posts_count} label="Posts" />
+          <Stat value={stats?.users_count} label="Members" />
         </div>
         <p className="page-footnote">Live from the forum. Active means visited in the last 30 days.</p>
         <a className="page-shot" href={links.latest}>
@@ -56,13 +56,13 @@ export default function About() {
         <SectionHead eyebrow="THE LAST 30 DAYS" title="A month on the forum" />
         <div className="page-grid">
           <div className="page-card page-card-stat">
-            <Stat value={formatCount(stats?.users_30_days)} label="New members" detail="joined in the last 30 days" />
+            <Stat value={stats?.users_30_days} label="New members" detail="joined in the last 30 days" />
           </div>
           <div className="page-card page-card-stat">
-            <Stat value={formatCount(stats?.posts_last_day)} label="Posts today" detail="in the last 24 hours" />
+            <Stat value={stats?.posts_last_day} label="Posts today" detail="in the last 24 hours" />
           </div>
           <div className="page-card page-card-stat">
-            <Stat value={formatCount(stats?.posts_30_days)} label="Posts this month" detail="in the last 30 days" />
+            <Stat value={stats?.posts_30_days} label="Posts this month" detail="in the last 30 days" />
           </div>
         </div>
       </section>
@@ -148,8 +148,8 @@ export default function About() {
           </div>
           <p className="page-legal-line">
             JTech Forums is operated by JTech Forums LLC, a New Jersey limited liability company based
-            in Lakewood, NJ. See our <Link to="/terms">Terms of Service</Link> and{" "}
-            <Link to="/privacy-policy">Privacy Policy</Link>.
+            in Lakewood, NJ. See our <Link viewTransition to="/terms">Terms of Service</Link> and{" "}
+            <Link viewTransition to="/privacy-policy">Privacy Policy</Link>.
           </p>
         </div>
       </section>
@@ -163,7 +163,7 @@ export default function About() {
             <a className="button" href={links.signup}>
               Join the forum <Icon />
             </a>
-            <Link className="button button-ghost" to="/contact">
+            <Link viewTransition className="button button-ghost" to="/contact">
               Contact the team
             </Link>
           </div>

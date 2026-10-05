@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import CountUp from "../CountUp.tsx";
 import Icon, { type IconName } from "../Icon.tsx";
 
 /** The building blocks the inner pages share. */
@@ -44,7 +45,7 @@ export function Card({
   action?: ReactNode;
 }) {
   return (
-    <article className="page-card">
+    <article className="page-card spotlight">
       {icon && (
         <span className="page-card-icon">
           <Icon name={icon} size={22} />
@@ -57,15 +58,16 @@ export function Card({
   );
 }
 
-export function Stat({ value, label, detail }: { value: string; label: string; detail?: string }) {
+export function Stat({ value, label, detail }: { value: number | undefined; label: string; detail?: string }) {
   return (
     <div className="page-stat">
       <span className="page-stat-label">{label}</span>
-      <strong>{value}</strong>
+      <strong>
+        <CountUp value={value} format={formatCount} />
+      </strong>
       {detail && <span className="page-stat-detail">{detail}</span>}
     </div>
   );
 }
 
-export const formatCount = (value: number | undefined): string =>
-  typeof value === "number" ? value.toLocaleString("en-US") : "—";
+export const formatCount = (value: number): string => value.toLocaleString("en-US");

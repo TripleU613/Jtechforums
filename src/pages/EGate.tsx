@@ -115,7 +115,7 @@ export default function EGate() {
         <SectionHead eyebrow="SEE IT" title="Straight from eGate 1.47" />
         <div className="egate-steps">
           {STEPS.map((step, i) => (
-            <article className="egate-step" key={step.base}>
+            <article className="egate-step spotlight" key={step.base}>
               <span className="egate-step-number">{String(i + 1).padStart(2, "0")}</span>
               <h3>{step.title}</h3>
               <p>{step.text}</p>

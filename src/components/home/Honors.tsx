@@ -1,6 +1,7 @@
 import type { LoadState } from "../../lib/useForum.ts";
 import { links } from "../../lib/links.ts";
 import Avatar from "../Avatar.tsx";
+import CountUp from "../CountUp.tsx";
 import Icon from "../Icon.tsx";
 
 export interface Champion {
@@ -84,7 +85,9 @@ export default function Honors({
                     <h3>{member.username}</h3>
                   </div>
                   <div className="honors-score">
-                    <strong>{Intl.NumberFormat("en").format(member.points)}</strong>
+                    <strong>
+                      <CountUp value={member.points} format={(n) => Intl.NumberFormat("en").format(n)} />
+                    </strong>
                     <span>points</span>
                   </div>
                   <span className="honors-profile">

@@ -18,10 +18,10 @@ export default function Footer() {
       <div className="container footer-bottom">
         <p>&copy; {new Date().getFullYear()} JTech Forums LLC.</p>
         <nav aria-label="Footer navigation">
-          <Link to="/privacy-policy">Privacy</Link>
-          <Link to="/terms">Terms</Link>
-          <Link to="/about">About</Link>
-          <Link to="/contact">Contact</Link>
+          <Link viewTransition to="/privacy-policy">Privacy</Link>
+          <Link viewTransition to="/terms">Terms</Link>
+          <Link viewTransition to="/about">About</Link>
+          <Link viewTransition to="/contact">Contact</Link>
         </nav>
         <p className="footer-credit">
           <span>Landing page built by</span>{" "}

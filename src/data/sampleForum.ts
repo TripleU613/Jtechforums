@@ -66,13 +66,45 @@ const latest: LatestPayload = {
   },
 };
 
+const sub = (id: number, name: string, topic_count: number) => ({ id, name, topic_count });
+
 const categories: CategoriesPayload = {
   category_list: {
     categories: [
-      { id: 78, name: "Artificial Intelligence" },
-      { id: 5, name: "Filtering", subcategory_list: [{ id: 75, name: "eGate" }, { id: 76, name: "TripleUMDM" }] },
-      { id: 27, name: "Hardware" },
-      { id: 44, name: "Phones", subcategory_list: [{ id: 56, name: "Other Phones" }] },
+      { id: 78, name: "Artificial Intelligence", topic_count: 88, topics_week: 5 },
+      { id: 35, name: "Connectivity and Messaging", topic_count: 126, subcategory_list: [sub(86, "Cellular Service", 65)] },
+      { id: 5, name: "Filtering", topic_count: 158, subcategory_list: [sub(75, "eGate", 53), sub(76, "TripleUMDM", 7)] },
+      { id: 4, name: "General Technology", topic_count: 58, subcategory_list: [sub(83, "Ctrl, Shift, Esc", 9)] },
+      { id: 27, name: "Hardware", topic_count: 84 },
+      {
+        id: 47,
+        name: "Operating Systems",
+        topic_count: 10,
+        subcategory_list: [sub(24, "Android", 181), sub(7, "Android ROMs", 34), sub(62, "Linux", 41), sub(63, "Windows", 64)],
+      },
+      {
+        id: 44,
+        name: "Phones",
+        topic_count: 68,
+        subcategory_list: [
+          sub(32, "Qin Phones", 179),
+          sub(33, "TCL Phones", 151),
+          sub(56, "Other Phones", 171),
+          sub(87, "Sonim Phones", 49),
+          sub(101, "Kyocera Phones", 40),
+          sub(97, "TIQ Phones", 41),
+          sub(102, "LG Phones", 32),
+        ],
+      },
+      { id: 42, name: "Programming and Development", topic_count: 66, subcategory_list: [sub(71, "Web Development", 48)] },
+      { id: 73, name: "Servers and Networking", topic_count: 33 },
+      {
+        id: 46,
+        name: "Software and Tools",
+        topic_count: 125,
+        subcategory_list: [sub(6, "Android Apps", 271), sub(88, "Music Technology", 31)],
+      },
+      { id: 28, name: "Guides", topic_count: 11, subcategory_list: [sub(15, "Android Guides", 69)] },
     ],
   },
 };
