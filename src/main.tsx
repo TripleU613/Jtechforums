@@ -1,17 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import 'virtual:jt-styles.css';
-import './lib/firebase';
-import { AuthProvider } from './context/AuthContext';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import "virtual:jt-styles.css";
+import App from "./App.tsx";
+import { startAnalytics } from "./lib/analytics.ts";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+const root = document.getElementById("root");
+if (!root) throw new Error("#root is missing from the page shell");
+
+createRoot(root).render(
+  <StrictMode>
     <BrowserRouter basename="/home">
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </BrowserRouter>
-  </React.StrictMode>
+  </StrictMode>,
 );
+
+startAnalytics();

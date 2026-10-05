@@ -1,114 +1,63 @@
-# JTech Website
+# JTech Forums: home page
 
-Welcome to the **JTech Website** repository—the official open-source project for [JTech Forums](https://jtechforums.org).
-This site provides beginner guides, an app list, FAQs, and other resources for the Jewish tech and filtering community.
+The landing page at [jtechforums.org/home](https://jtechforums.org/home). The forum itself (Discourse) owns the rest of the domain.
 
----
+It's all TypeScript: React pages, the HTML shell and the stylesheet. There are no `.js`, `.css` or `.html` sources.
 
-## Environment Setup
+## What's where
 
-### Local Development
+| Path | What it is |
+| --- | --- |
+| `src/pages/` | One file per route: home, eGate, About, Contact, Terms, Privacy, and the notice pages. |
+| `src/components/home/` | The home page's sections: hero, story, the four-scene rail, the live forum feed, people, champions, member projects, FAQ. |
+| `src/data/` | The FAQ, the member projects, the team, and a sample snapshot of the forum for local previews. |
+| `src/lib/` | Forum reads, links, light/dark, analytics. |
+| `src/document.ts` | The HTML shell. There is no `index.html`; the build serves and emits this. |
+| `src/styles/` | The stylesheet, as `css` template literals, built into one CSS file. `index.ts` lists the modules in cascade order. |
+| `build/plugins.ts` | The two Vite plugins that turn `document.ts` and `src/styles` into the page and its stylesheet. |
+| `firebase-functions/` | The contact form's backend (Firebase Functions, TypeScript). |
 
-1. **Copy environment templates:**
-   ```bash
-   cp .env.example .env
-   cd firebase-functions && cp .env.example .env
-   ```
+## The look
 
-2. **Edit `.env` files with your Firebase credentials** (NEVER commit these files)
-   - Frontend `.env`: Add Firebase config from Firebase Console
-   - Backend `firebase-functions/.env`: Add SMTP settings and reCAPTCHA config
+It follows the forum's JTech theme: JTech Light and JTech Dark (black and white, translucent hairlines), squircle corners where the browser supports them, and Geist. `src/styles/tokens.ts` holds the palette. The original design's colours were converted by lightness onto the forum's grey ramps (`src/styles/tones.ts`).
 
-3. **Install dependencies:**
-   ```bash
-   npm install
-   cd firebase-functions && npm install
-   ```
+Light or dark follows the system, unless the visitor picked one on the forum: the page reads the forum's `forced_color_mode` cookie, and its own switch writes it, so the two stay in step.
 
-4. **Run locally:**
-   ```bash
-   npm run dev  # Frontend dev server (port 5173)
-   npm --prefix firebase-functions run serve  # Firebase Functions emulator (port 5001)
-   ```
+## Forum data
 
-### Deployment
+The page is served from the forum's own domain, so it reads the forum's public JSON directly: `/about.json`, `/latest.json`, `/categories.json` and `/leaderboard/6.json`. No key, no proxy. Anywhere else (a local dev server, a `pages.dev` preview) those requests fail and the sections fall back to links; set `VITE_FORUM_USE_MOCK=true` for a labelled sample snapshot instead.
 
-- **Frontend**: Auto-deploys to Cloudflare Pages on push to `main`
-- **Backend**: Auto-deploys Firebase Functions on changes to `firebase-functions/**`
-- **Manual Functions deploy**: `cd firebase-functions && npm run deploy`
+## Working on it
 
-### Security
+```bash
+npm ci
+VITE_FORUM_USE_MOCK=true npm run dev    # http://localhost:5173/home/
+npm run typecheck
+npm run build && npm run preview
+```
 
-**NEVER commit:**
-- `.env` files
-- Firebase service account keys
-- API keys or secrets
+## Deploying
 
-All secrets are managed via GitHub Secrets and Firebase Secret Manager.
+- **The page.** Pushing to `main` deploys it: the Cloudflare Pages project `jtechforums` builds it (`npm run build`, output `dist`), and the `jtechorg-home` Worker serves it at `/home` and sends `/api` to Firebase.
+- **The contact backend** does not deploy on push: `cd firebase-functions && npm ci && npm run deploy` (it compiles to `lib/` first).
 
----
+Build variables (Cloudflare Pages):
+
+| Variable | Used for |
+| --- | --- |
+| `VITE_RECAPTCHA_SITE_KEY` | The contact form's reCAPTCHA Enterprise key. |
+| `VITE_FIREBASE_*` | Firebase's web config, for Google Analytics only. |
+| `VITE_CONTACT_ENDPOINT` | Optional; defaults to `/api/contact`. |
+| `VITE_FORUM_USE_MOCK` | Local previews only. Never in a live build. |
+
+The backend reads `CONTACT_SMTP_HOST`, `CONTACT_SMTP_PORT`, `CONTACT_SMTP_USER`, `CONTACT_TO_EMAIL`, `RECAPTCHA_SITE_KEY`, `RECAPTCHA_PROJECT_ID` and `RECAPTCHA_MIN_SCORE` from `firebase-functions/.env`, and the secrets `CONTACT_SMTP_PASS` and `DISCOURSE_API_KEY` from Secret Manager. Never commit `.env` files or keys.
 
 ## Contributing
 
-We welcome contributions! Whether you're editing guides, improving formatting, or adding new sections, your help makes JTech better.
+Fork, change, open a pull request with a clear description. Be a mentch.
 
-1. Fork this repository.
-2. Make your changes (guides, sections, formatting, or improvements).
-3. Submit a pull request with a clear description of your edits.
-4. Wait for review—maintainers will provide feedback or merge your PR.
+This repository is open so the community can contribute to the site. You may not reuse it or its contents for personal or commercial projects.
 
----
+## Questions
 
-## Important Notes
-
-* The only purpose of this repository being open-source is to allow contributions to the JTech website.
-* You may not reuse this repository or its contents for personal or commercial projects.
-* Be a mentch—contribute respectfully and follow the rules.
-
----
-
-## Firebase Hosting & Forum API
-
-Forum data now flows through Firebase Functions (`firebase-functions/index.js`) and the React app is deployed via Firebase Hosting.
-
-1. Configure secrets: `firebase functions:secrets:set DISCOURSE_API_KEY`.
-2. (Optional) Override defaults by setting environment variables `DISCOURSE_API_BASE` / `DISCOURSE_API_USERNAME` before deploying Functions (or via the Cloud console).
-3. Deploy or emulate functions via `cd firebase-functions && npm run deploy` / `npm run serve`.
-4. Hosting configuration (`firebase.json`) serves the built `dist/` directory and rewrites `/api/**` requests to the `forumApi` function, so the SPA can simply call `/api/forum/...`.
-5. The web app defaults `VITE_FORUM_API_BASE_URL` to `/api`, but you can point it to any other endpoint (e.g. the emulator) when developing locally.
-
----
-
-## Contact Form Email
-
-`/contact` now posts to Firebase Functions, which relays the message via SMTP to the configured admin inbox (`CONTACT_TO_EMAIL`).
-
-1. Copy `firebase-functions/.env.example` to `firebase-functions/.env.production` (and optionally `.env.local`) and fill in your SMTP host, username, and `CONTACT_SMTP_PASS` (e.g. a Gmail App Password).
-2. Provide the reCAPTCHA Enterprise site key/project (the backend calls Google’s Assessment API using the default Firebase service account); set the matching public key in `.env` via `VITE_RECAPTCHA_SITE_KEY`.
-3. Deploy with `firebase deploy --only functions` (the CLI uploads `.env.*` values to Secret Manager automatically).
-4. The endpoint responds at both `/contact` and `/api/contact`; Hosting already rewrites `/api/contact` so the SPA can call it without additional configuration.
-
----
-
-## App Catalog & Submissions
-
-* `/apps` lists Firestore-backed cards for every approved submission and lets verified users upload APKs, icons, and forum links. 
-* Email/password auth (Firebase Auth) plus email verification is required before the submission form unlocks; only the configured admin account (see `firestore.rules`) sees the admin review queue.
-* Metadata lives in the Firestore `apps` collection and files in Storage buckets (`app-icons/` + `app-apks/`); security rules are defined in `firestore.rules` and `storage.rules`.
-* Deploy the new rules with `npx firebase deploy --only firestore:rules,storage:rules`, keep `CONTACT_SMTP_PASS` + `DISCOURSE_API_KEY` secrets set, and update `/apps` content by approving entries in the admin queue.
-
----
-
-## License
-
-This project is not available for personal or commercial use.
-Unauthorized use outside of contributing to JTech is strictly prohibited.
-
----
-
-## Questions or Suggestions?
-
-* Join the discussion on [JTech Forums](https://jtechforums.org).
-* Or open an issue here in the repository.
-
-Thank you for contributing and helping improve **JTech**!
+Ask on [the forum](https://jtechforums.org) or open an issue.

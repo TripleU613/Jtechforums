@@ -1,4 +1,12 @@
-const policySections = [
+import { PageHero } from "../components/page/Page.tsx";
+
+interface LegalSection {
+  title: string;
+  body?: string;
+  list?: string[];
+}
+
+const policySections: LegalSection[] = [
   {
     title: '1. Scope and who we are',
     body:
@@ -91,29 +99,24 @@ const policySections = [
 
 export default function Privacy() {
   return (
-    <div className="mx-auto max-w-5xl space-y-10 px-6 py-16">
-      <div className="text-center">
-        <p className="section-label text-xs uppercase text-sky-200">Policy</p>
-        <h1 className="text-5xl font-semibold text-white">Privacy Policy</h1>
-        <p className="mt-3 text-base text-slate-300">Last updated: July 22, 2026</p>
-      </div>
-
-      <div className="glass-panel rounded-3xl border border-white/10 p-8">
-        <div className="space-y-8">
-          {policySections.map((section) => (
-            <section key={section.title} className="border-b border-white/5 pb-6 last:border-none last:pb-0">
-              <h2 className="text-2xl font-semibold text-white">{section.title}</h2>
-              {section.body && <p className="mt-3 text-sm text-slate-300">{section.body}</p>}
-              {section.list && (
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
-                  {section.list.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))}
-        </div>
+    <div className="page legal-page">
+      <PageHero eyebrow="POLICY" title="Privacy Policy">
+        <p className="lede">Last updated: July 22, 2026</p>
+      </PageHero>
+      <div className="page-panel legal">
+        {policySections.map((section) => (
+          <section key={section.title}>
+            <h2>{section.title}</h2>
+            {section.body && <p>{section.body}</p>}
+            {section.list && (
+              <ul>
+                {section.list.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
       </div>
     </div>
   );

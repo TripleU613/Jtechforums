@@ -1,10 +1,25 @@
-import honors from "./legacy/honors.ts";
-import tailwind from "./legacy/tailwind.ts";
-import global from "./legacy/global.ts";
-import night from "./legacy/night.ts";
-import mobile from "./legacy/mobile.ts";
+import tokens from "./tokens.ts";
+import reset from "./reset.ts";
+import honors from "./layout/honors.ts";
+import base from "./layout/base.ts";
+import scenes from "./layout/scenes.ts";
+import phones from "./layout/phones.ts";
+import theme from "./theme.ts";
+import pages from "./pages.ts";
 
-/** Every stylesheet, in cascade order. */
+/**
+ * The site's one stylesheet, in cascade order. Each module is a css``
+ * template literal; build/plugins.ts hands the result to Vite as a single
+ * CSS file.
+ *
+ * - tokens: JTech Light / JTech Dark, radii, Geist (and tones.ts, the
+ *   layout's greys on both themes)
+ * - reset
+ * - layout/*: the home page, layered base -> scenes -> phones (later rules
+ *   refine earlier ones, so keep the order)
+ * - theme: the forum's buttons, wordmark and pictures over the layout
+ * - pages: About, eGate, Contact, the legal pages and notices
+ */
 export default function stylesheet(): string {
-  return [honors, tailwind, global, night, mobile].join("\n");
+  return [tokens, reset, honors, base, scenes, phones, theme, pages].join("\n");
 }

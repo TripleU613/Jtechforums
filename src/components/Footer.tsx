@@ -1,25 +1,18 @@
-import { forumLinks } from "../lib/forumLinks";
 import { Link } from "react-router-dom";
-import Icon from "./Icon";
-import { asset } from "../lib/asset";
+import { links } from "../lib/links.ts";
+import Brand from "./Brand.tsx";
+import Icon from "./Icon.tsx";
+
 export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="container footer-top">
         <div>
-          <Link to="/" className="brand">
-            <img src={asset("/img/whitelogo.webp")} alt="JTech" />
-            <span>FORUMS</span>
-          </Link>
-          <p>Community-run tech & filtering intelligence.</p>
+          <Brand />
+          <p>A community-run tech forum, since 2023.</p>
         </div>
-        <a
-          href="https://jtechforums.org"
-          target="_blank"
-          rel="noreferrer"
-          className="text-link"
-        >
-          See you on the forum <Icon name="external" />
+        <a href={links.forum} className="text-link">
+          See you on the forum <Icon name="arrow" />
         </a>
       </div>
       <div className="container footer-bottom">
@@ -33,16 +26,11 @@ export default function Footer() {
         <p className="footer-credit">
           <span>Landing page built by</span>{" "}
           <span className="footer-credit-partners">
-            <a href={forumLinks.creator} target="_blank" rel="noreferrer">
-              @samsclub
-            </a>
-            <span
-              className="footer-credit-cross"
-              aria-label="in collaboration with"
-            >
+            <a href={links.samsclub}>@samsclub</a>
+            <span className="footer-credit-cross" aria-label="in collaboration with">
               &times;
             </span>
-            <a href="https://condvar.com" target="_blank" rel="noreferrer">
+            <a href={links.condvar} target="_blank" rel="noreferrer">
               condvar.com
             </a>
           </span>

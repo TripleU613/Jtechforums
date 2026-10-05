@@ -40,3 +40,4 @@ pglite-debug.log
 # Local design review
 artifacts/
 vite-local*.log
+firebase-functions/lib/

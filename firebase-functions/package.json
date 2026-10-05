@@ -2,9 +2,10 @@
   "name": "functions",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "serve": "npx firebase emulators:start --only functions",
+    "build": "tsc",
+    "serve": "npm run build && npx firebase emulators:start --only functions",
     "deploy": "npx firebase deploy --only functions"
   },
   "keywords": [],
@@ -22,5 +23,11 @@
     "firebase-functions": "^7.4.0",
     "nodemailer": "^10.0.9",
     "express-rate-limit": "^8.2.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.19.0",
+    "typescript": "5.9.3"
   }
 }

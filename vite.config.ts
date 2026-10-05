@@ -8,4 +8,11 @@ export default defineConfig({
   // Mounted at /home on the apex; Discourse owns /.
   base: "/home/",
   plugins: [htmlDocument(documentHtml), stylesheet(styles), react()],
+  // Lightning CSS adds the vendor prefixes older phones still need
+  // (-webkit-backdrop-filter and the like) for these targets.
+  css: { transformer: "lightningcss" },
+  build: {
+    cssMinify: "lightningcss",
+    cssTarget: ["chrome90", "edge90", "firefox90", "safari14", "ios14"],
+  },
 });

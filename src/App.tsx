@@ -1,18 +1,18 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import PageShell from "./components/PageShell";
-import Home from "./pages/Home";
-const About = lazy(() => import("./pages/About"));
-const EGate = lazy(() => import("./pages/EGate"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Maintenance = lazy(() => import("./pages/Maintenance"));
-const ServerError = lazy(() => import("./pages/ServerError"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+import { Route, Routes } from "react-router-dom";
+import PageShell from "./components/PageShell.tsx";
+import Home from "./pages/Home.tsx";
+
+const About = lazy(() => import("./pages/About.tsx"));
+const EGate = lazy(() => import("./pages/EGate.tsx"));
+const Contact = lazy(() => import("./pages/Contact.tsx"));
+const Privacy = lazy(() => import("./pages/Privacy.tsx"));
+const Terms = lazy(() => import("./pages/Terms.tsx"));
+const Maintenance = lazy(() => import("./pages/Maintenance.tsx"));
+const ServerError = lazy(() => import("./pages/ServerError.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 export default function App() {
-  const location = useLocation();
   return (
     <PageShell>
       <Suspense
@@ -22,7 +22,7 @@ export default function App() {
           </div>
         }
       >
-        <Routes location={location}>
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/egate" element={<EGate />} />
           <Route path="/about" element={<About />} />
