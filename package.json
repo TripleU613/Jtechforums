@@ -12,7 +12,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "check": "tsc --noEmit && vite build"
+    "lint": "npm run lint:css && npm run lint:prettier",
+    "lint:css": "stylelint \"src/styles/**/*.scss\"",
+    "lint:prettier": "prettier --check \"src/styles/**/*.scss\" \"*.config.ts\"",
+    "format": "stylelint \"src/styles/**/*.scss\" --fix && prettier --write \"src/styles/**/*.scss\" \"*.config.ts\"",
+    "check": "tsc --noEmit && npm run lint && vite build"
   },
   "repository": {
     "type": "git",
@@ -32,6 +36,10 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.2.0",
     "lightningcss": "^1.33.0",
+    "prettier": "3.8.1",
+    "sass": "^1.105.1",
+    "stylelint": "^17.16.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "5.9.3",
     "vite": "^7.3.6"
   }

@@ -1,0 +1,27 @@
+// Phone-width rules shared by every section. They come after the sections so
+// they win over them.
+@media (max-width: 760px) {
+  .home-main .section-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .home-main .section-top h2 {
+    font-size: clamp(34px, 9vw, 42px);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .home-main .text-link {
+    font-size: 14px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .home-main input {
+    font-size: 16px;
+  }
+}

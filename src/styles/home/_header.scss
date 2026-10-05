@@ -1,0 +1,284 @@
+// The sticky header: the wordmark, navigation, actions and the phone menu.
+.site-header {
+  height: 89px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  max-width: 1340px;
+  margin: auto;
+  height: 100%;
+  padding: 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  flex-shrink: 0;
+}
+
+.brand img {
+  object-fit: contain;
+}
+
+.brand > span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  border-left: 1px solid var(--tone-72);
+  padding-left: 13px;
+  font-weight: 600;
+}
+
+.desktop-nav {
+  display: flex;
+  gap: 28px;
+  height: 100%;
+  align-items: center;
+  font-size: 13px;
+}
+
+.desktop-nav a {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.desktop-nav a.active {
+  font-weight: 700;
+}
+
+.desktop-nav a.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--green);
+}
+
+.desktop-nav a:hover {
+  color: var(--ink);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 13px;
+}
+
+.skip-link {
+  position: fixed;
+  left: 20px;
+  top: -70px;
+  background: var(--ink);
+  color: var(--tone-100);
+  padding: 15px;
+  z-index: 50;
+}
+
+.skip-link:focus {
+  top: 15px;
+}
+
+.menu-toggle {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .header-inner {
+    padding: 0 30px;
+    gap: 20px;
+  }
+
+  .desktop-nav {
+    gap: 20px;
+  }
+
+  .header-actions {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 850px) {
+  .desktop-nav {
+    display: none;
+  }
+
+  .header-actions {
+    margin-left: auto;
+  }
+
+  .menu-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+  }
+
+  .mobile-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 88px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--paper);
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--line);
+    gap: 0 20px;
+    box-shadow: 0 12px 20px var(--tone-96-a5);
+  }
+
+  .mobile-nav a {
+    font-size: 14px;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-nav a.active {
+    color: var(--green);
+    font-weight: 650;
+  }
+}
+
+@media (max-width: 580px) {
+  .site-header {
+    height: 73px;
+  }
+
+  .header-inner {
+    padding: 0 20px;
+    gap: 10px;
+  }
+
+  .brand {
+    gap: 9px;
+  }
+
+  .brand > span {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    padding-left: 9px;
+  }
+
+  .header-actions .button-small {
+    font-size: 10px;
+    padding: 10px 11px;
+    gap: 8px;
+    min-height: 36px;
+  }
+
+  .menu-toggle {
+    width: 35px;
+    height: 36px;
+  }
+
+  .mobile-nav {
+    top: 72px;
+    padding-inline: 20px;
+  }
+}
+
+.brand img {
+  width: 96px;
+  height: 38px;
+}
+
+@media (max-width: 580px) {
+  .brand img {
+    width: 72px;
+    height: 29px;
+  }
+}
+
+.site-header {
+  background: var(--tone-0-a86);
+  border-color: var(--border);
+}
+
+.brand > span {
+  color: var(--tone-66);
+  border-color: var(--border);
+}
+
+.desktop-nav a {
+  color: var(--tone-68);
+}
+
+.desktop-nav a.active {
+  color: var(--tone-92);
+}
+
+@media (max-width: 760px) {
+  .mobile-nav {
+    background: var(--tone-10);
+    border-color: var(--border);
+  }
+
+  .mobile-nav a {
+    border-color: var(--border);
+  }
+
+  .mobile-nav a.active {
+    color: var(--tone-90);
+  }
+
+  .menu-toggle {
+    border-color: var(--border-strong);
+  }
+
+  .site-header .header-inner {
+    min-height: 72px;
+    padding: 12px 20px;
+    gap: 12px;
+  }
+
+  .site-header .brand img {
+    width: 94px;
+  }
+
+  .site-header .brand > span {
+    display: none;
+  }
+
+  .site-header .header-actions {
+    margin-left: auto;
+  }
+
+  .site-header .button-small {
+    min-height: 42px;
+    padding: 10px 12px;
+    font-size: 11px;
+    gap: 8px;
+    border-radius: var(--radius-control);
+  }
+
+  .site-header .menu-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-control);
+  }
+
+  .mobile-nav {
+    padding: 8px 20px 20px;
+  }
+
+  .mobile-nav a {
+    padding: 17px 8px;
+    font-size: 17px;
+  }
+}

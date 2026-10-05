@@ -50,22 +50,3 @@ export function htmlDocument(render: () => string): Plugin {
     },
   };
 }
-
-/**
- * The site's stylesheet, written as TypeScript modules (src/styles) and
- * handed to Vite as one CSS file, so it is prefixed, minified and emitted
- * like any other stylesheet. Imported once as "virtual:jt-styles.css".
- */
-export function stylesheet(render: () => string): Plugin {
-  const request = "virtual:jt-styles.css";
-  const id = "/__jt-styles.css";
-  return {
-    name: "jt:stylesheet",
-    resolveId(source) {
-      return source === request ? id : null;
-    },
-    load(source) {
-      return source === id ? render() : null;
-    },
-  };
-}

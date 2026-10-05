@@ -1,0 +1,32 @@
+// The site's one stylesheet, in cascade order.
+//
+// - tokens: JTech Light / JTech Dark, radii, Geist (and tones, the layout's
+//   greys on both themes)
+// - reset
+// - home/*: the home page, one partial per section, top to bottom
+// - theme: the forum's buttons, wordmark and pictures over the layout
+// - pages: About, eGate, Contact, the legal pages and notices
+// - areas: the home page's categories, phones strip, flip-phone demo and palette
+// - quirks: toasts, developer options and the other hidden things
+// - motion: page transitions, the light/dark sweep, the card spotlight
+
+@use "tokens";
+@use "reset";
+@use "home/base";
+@use "home/header";
+@use "home/hero";
+@use "home/strip";
+@use "home/story";
+@use "home/rail";
+@use "home/conversation";
+@use "home/people";
+@use "home/honors";
+@use "home/faq";
+@use "home/closing";
+@use "home/footer";
+@use "home/small-screens";
+@use "theme";
+@use "pages";
+@use "areas";
+@use "quirks";
+@use "motion";

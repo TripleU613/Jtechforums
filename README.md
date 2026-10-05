@@ -2,7 +2,7 @@
 
 The landing page at [jtechforums.org/home](https://jtechforums.org/home). The forum itself (Discourse) owns the rest of the domain.
 
-It's all TypeScript: React pages, the HTML shell and the stylesheet. There are no `.js`, `.css` or `.html` sources.
+Two languages: TypeScript for the pages, the HTML shell and the tooling, and SCSS for the styles. There are no `.js`, `.css` or `.html` sources.
 
 ## What's where
 
@@ -14,13 +14,13 @@ It's all TypeScript: React pages, the HTML shell and the stylesheet. There are n
 | `src/data/` | The FAQ, the member projects, the team, and a sample snapshot of the forum for local previews. |
 | `src/lib/` | Forum reads, links, light/dark, analytics. |
 | `src/document.ts` | The HTML shell. There is no `index.html`; the build serves and emits this. |
-| `src/styles/` | The stylesheet, as `css` template literals, built into one CSS file. `index.ts` lists the modules in cascade order. |
-| `build/plugins.ts` | The two Vite plugins that turn `document.ts` and `src/styles` into the page and its stylesheet. |
+| `src/styles/` | The stylesheet (SCSS), built into one CSS file. `main.scss` lists the partials in cascade order; `home/` has one partial per home page section, top to bottom. |
+| `build/plugins.ts` | The Vite plugin that turns `document.ts` into the page. |
 | `firebase-functions/` | The contact form's backend (Firebase Functions, TypeScript). |
 
 ## The look
 
-It follows the forum's JTech theme: JTech Light and JTech Dark (black and white, translucent hairlines), squircle corners where the browser supports them, and Geist. `src/styles/tokens.ts` holds the palette. The original design's colours were converted by lightness onto the forum's grey ramps (`src/styles/tones.ts`).
+It follows the forum's JTech theme: JTech Light and JTech Dark (black and white, translucent hairlines), squircle corners where the browser supports them, and Geist. `src/styles/_tokens.scss` holds the palette. The original design's colours were converted by lightness onto the forum's grey ramps (`src/styles/_tones.scss`).
 
 Light or dark follows the system, unless the visitor picked one on the forum: the page reads the forum's `forced_color_mode` cookie, and its own switch writes it, so the two stay in step.
 
@@ -50,6 +50,7 @@ The page is served from the forum's own domain, so it reads the forum's public J
 npm ci
 VITE_FORUM_USE_MOCK=true npm run dev    # http://localhost:5173/home/
 npm run typecheck
+npm run lint                           # stylelint + prettier on src/styles; `npm run format` fixes
 npm run build && npm run preview
 ```
 

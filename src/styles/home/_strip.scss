@@ -1,0 +1,185 @@
+// The strip of live numbers under the hero.
+.community-strip {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.strip-inner {
+  display: grid;
+  grid-template-columns: 1.1fr repeat(3, 1fr) 1.1fr;
+  padding-block: 24px;
+  align-items: center;
+}
+
+.strip-inner > div {
+  padding-left: 34px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.strip-inner > .strip-intro {
+  padding-left: 0;
+  border: 0;
+  flex-direction: row;
+  gap: 13px;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.strip-inner > div > strong {
+  font-size: 27px;
+  font-family: var(--font-sans);
+  letter-spacing: -1px;
+  font-weight: 550;
+}
+
+.strip-inner > div > span {
+  font-size: 10px;
+}
+
+.strip-inner > .strip-note {
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.strip-note small {
+  font-size: 8px;
+  opacity: 0.8;
+}
+
+@media (max-width: 850px) {
+  .strip-inner {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .strip-inner > .strip-intro,
+  .strip-inner > .strip-note {
+    display: none;
+  }
+
+  .strip-inner > div {
+    padding-left: 28px;
+  }
+
+  .strip-inner > div:nth-child(2) {
+    border: 0;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 580px) {
+  .strip-inner {
+    padding-block: 20px;
+  }
+
+  .strip-inner > div {
+    padding-left: 20px;
+  }
+
+  .strip-inner > div > strong {
+    font-size: 25px;
+  }
+
+  .strip-inner > div > span {
+    font-size: 8px;
+  }
+}
+
+.community-strip {
+  background: var(--tone-8);
+  border-color: var(--border);
+}
+
+.strip-inner > div {
+  border-color: var(--border);
+}
+
+.strip-inner > div > span,
+.strip-inner > .strip-note,
+.strip-note small {
+  color: var(--tone-64);
+}
+
+.strip-inner > div > strong {
+  color: var(--tone-96);
+}
+
+.strip-intro svg {
+  color: var(--tone-88);
+}
+
+@media (max-width: 760px) {
+  .community-strip {
+    padding: 0;
+  }
+
+  .community-strip .strip-inner {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    padding: 26px 0;
+    text-align: center;
+  }
+
+  .strip-inner .strip-intro {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: center;
+    border: 0;
+    padding: 0 0 25px;
+    margin: 0;
+  }
+
+  .strip-intro span {
+    font-size: 14px;
+  }
+
+  .strip-intro br {
+    display: none;
+  }
+
+  .strip-intro strong::before {
+    content: " ";
+  }
+
+  .strip-inner > div:not(.strip-intro):not(.strip-note) {
+    padding: 0 8px;
+    border-left: 1px solid var(--border);
+  }
+
+  .strip-inner > div:nth-child(2) {
+    border-left: 0 !important;
+  }
+
+  .strip-inner > div > strong {
+    font-size: 25px;
+    letter-spacing: -0.04em;
+  }
+
+  .strip-inner > div > span {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .strip-inner .strip-note {
+    display: block;
+    grid-column: 1 / -1;
+    border: 0;
+    padding: 20px 0 0;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .strip-note br {
+    display: block;
+  }
+
+  .strip-note small {
+    display: block;
+    margin-top: 8px;
+    font-size: 10px;
+  }
+}

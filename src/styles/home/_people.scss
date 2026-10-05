@@ -1,0 +1,366 @@
+// The people behind JTech.
+.people-section {
+  border-block: 1px solid var(--line);
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin: 39px 0;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.person h3 {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+}
+
+.person div > span {
+  font-size: 10px;
+  color: var(--tone-64);
+}
+
+.person p {
+  font-size: 10px;
+  margin-top: 6px;
+}
+
+.person > svg {
+  margin-left: auto;
+  color: var(--tone-68);
+}
+
+@media (max-width: 1100px) {
+  .person {
+    gap: 10px;
+  }
+
+  .person h3 {
+    font-size: 11px;
+  }
+
+  .person p {
+    font-size: 9px;
+  }
+
+  .person > svg {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .people-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .person h3 {
+    font-size: 14px;
+  }
+
+  .person p {
+    font-size: 11px;
+  }
+
+  .person > svg {
+    display: block;
+  }
+}
+
+@media (max-width: 580px) {
+  .people-section .section-top {
+    display: block;
+  }
+
+  .people-section .section-top > .text-link {
+    margin-top: 16px;
+  }
+
+  .people-grid {
+    margin: 28px 0;
+  }
+}
+
+.people-section {
+  border-color: var(--border);
+}
+
+.person:nth-child(2) .avatar {
+  background: var(--tone-20);
+  color: var(--tone-82);
+}
+
+.person:nth-child(3) .avatar {
+  background: var(--tone-22);
+  color: var(--tone-82);
+}
+
+.person h3 {
+  color: var(--tone-92);
+}
+
+.person p {
+  color: var(--tone-64);
+}
+
+.people-section {
+  position: relative;
+  overflow: hidden;
+  padding: 95px 0 45px;
+  background:
+    radial-gradient(ellipse at 5% 30%, var(--tone-28-a18), transparent 60%),
+    var(--tone-8);
+}
+
+.people-section .section-top {
+  margin-bottom: 46px;
+  align-items: flex-end;
+}
+
+.people-section h2 {
+  font-size: 64px;
+  line-height: 1.02;
+  letter-spacing: -3px;
+  font-weight: 550;
+}
+
+.people-section h2 > span {
+  color: var(--tone-74);
+}
+
+.people-section .section-top > .text-link {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.people-grid.team-roster {
+  display: block;
+  margin: 0 0 40px;
+  border-top: 1px solid var(--border);
+}
+
+.team-roster .person {
+  display: grid;
+  grid-template-columns: 80px 1fr 44px;
+  gap: 30px;
+  padding: 31px 5px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  transition:
+    padding 0.35s,
+    background 0.35s;
+}
+
+.team-roster .person:hover {
+  padding-left: 22px;
+  background: linear-gradient(90deg, var(--tone-38-a16), transparent);
+}
+
+.team-roster .person .avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: var(--radius-avatar);
+  background: var(--tone-26);
+  border: 1px solid var(--border-strong);
+  font-size: 27px;
+  filter: saturate(0.7);
+  transition:
+    filter 0.3s,
+    transform 0.3s;
+}
+
+.team-roster .person:hover .avatar {
+  filter: saturate(1);
+  transform: rotate(-4deg);
+}
+
+.team-roster .person > div {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  align-items: center;
+  column-gap: 25px;
+}
+
+.team-roster .person h3 {
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  font-weight: 500;
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--tone-96);
+}
+
+.team-roster .person .person-handle {
+  font-size: 15px;
+  color: var(--tone-66);
+  margin-top: 9px;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.team-roster .person p {
+  font-size: 14px;
+  line-height: 1.6;
+  grid-column: 2;
+  grid-row: 1/3;
+  color: var(--tone-74);
+  margin: 0;
+}
+
+.team-roster .person > svg {
+  width: 27px;
+  height: 27px;
+  display: block;
+  color: var(--tone-80);
+}
+
+@media (max-width: 1099px) {
+  .people-section h2 {
+    font-size: 54px;
+  }
+
+  .team-roster .person h3 {
+    font-size: 26px;
+  }
+
+  .team-roster .person p {
+    font-size: 12px;
+  }
+
+  .team-roster .person {
+    gap: 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  .people-section .section-top {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .people-section h2 {
+    font-size: 42px;
+    letter-spacing: -2px;
+  }
+
+  .people-section .section-top > .text-link {
+    gap: 7px;
+  }
+
+  .team-roster .person {
+    padding-block: 26px;
+  }
+
+  .team-roster .person .avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: var(--radius-avatar);
+  }
+
+  .team-roster .person > div {
+    display: block;
+  }
+
+  .team-roster .person .person-handle {
+    display: block;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .team-roster .person p {
+    margin-top: 9px;
+  }
+
+  .team-roster .person > svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .team-roster .person:hover {
+    padding-left: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-roster .person:hover .avatar {
+    transform: none;
+  }
+}
+
+.people-section {
+  isolation: isolate;
+}
+
+.people-section::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset: -25%;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 24% 45%, var(--tone-76-a7), transparent 48%),
+    radial-gradient(ellipse at 80% 65%, var(--tone-84-a5), transparent 45%);
+  animation: ambient-tide 16s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes ambient-tide {
+  from {
+    transform: translate3d(-4%, -2%, 0);
+    opacity: 0.45;
+  }
+
+  to {
+    transform: translate3d(7%, 5%, 0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .people-section::before {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .people-section {
+    padding: 12px 0 54px;
+  }
+
+  .people-section .section-top > .text-link {
+    max-width: none;
+    font-size: 14px;
+  }
+
+  .team-roster .person {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 18px;
+    padding: 26px 0;
+  }
+
+  .team-roster .person > svg {
+    display: none;
+  }
+
+  .team-roster .person h3 {
+    font-size: 22px;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+  }
+
+  .team-roster .person p {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}

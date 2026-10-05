@@ -3,18 +3,19 @@
 // greys, its light value on JTech Light's. --shade-* stay dark in both modes
 // (shadows). Converted by software from the old colours (OKLab lightness,
 // chroma dropped), then mapped ramp to ramp.
-export const darkTones = `
+
+@mixin dark {
   --tone-0-a1: rgb(0 0 0 / 1%);
   --tone-0-a7: rgb(0 0 0 / 7%);
   --tone-0-a26: rgb(0 0 0 / 26%);
   --tone-0-a66: rgb(0 0 0 / 66%);
   --tone-0-a86: rgb(0 0 0 / 86%);
   --tone-0-a92: rgb(0 0 0 / 92%);
-  --tone-0: #000000;
-  --tone-2: #000000;
+  --tone-0: #000;
+  --tone-2: #000;
   --tone-4-a12: rgb(0 0 0 / 12%);
   --tone-4-a86: rgb(0 0 0 / 86%);
-  --tone-4: #000000;
+  --tone-4: #000;
   --tone-6: #010101;
   --tone-8: #020202;
   --tone-10: #030303;
@@ -33,7 +34,7 @@ export const darkTones = `
   --tone-30-a44: rgb(46 46 46 / 44%);
   --tone-30: #2e2e2e;
   --tone-32-a50: rgb(51 51 51 / 50%);
-  --tone-32: #333333;
+  --tone-32: #333;
   --tone-34-a22: rgb(56 56 56 / 22%);
   --tone-34-a26: rgb(56 56 56 / 26%);
   --tone-34: #383838;
@@ -106,23 +107,23 @@ export const darkTones = `
   --tone-96: #f2f2f2;
   --tone-98: #f8f8f8;
   --tone-100-a96: rgb(255 255 255 / 96%);
-  --tone-100: #ffffff;
+  --tone-100: #fff;
   --shade-a34: rgb(0 0 0 / 34%);
   --shade-a40: rgb(0 0 0 / 40%);
   --shade-a54: rgb(0 0 0 / 54%);
   --shade-a60: rgb(0 0 0 / 60%);
   --shade-a80: rgb(0 0 0 / 80%);
-  --shade-a100: #000000;
-`;
+  --shade-a100: #000;
+}
 
-export const lightTones = `
+@mixin light {
   --tone-0-a1: rgb(255 255 255 / 1%);
   --tone-0-a7: rgb(255 255 255 / 7%);
   --tone-0-a26: rgb(255 255 255 / 26%);
   --tone-0-a66: rgb(255 255 255 / 66%);
   --tone-0-a86: rgb(255 255 255 / 86%);
   --tone-0-a92: rgb(255 255 255 / 92%);
-  --tone-0: #ffffff;
+  --tone-0: #fff;
   --tone-2: #fefefe;
   --tone-4-a12: rgb(254 254 254 / 12%);
   --tone-4-a86: rgb(254 254 254 / 86%);
@@ -136,14 +137,14 @@ export const lightTones = `
   --tone-16: #f8f8f8;
   --tone-18: #f4f4f4;
   --tone-20: #f1f1f1;
-  --tone-22: #eeeeee;
+  --tone-22: #eee;
   --tone-24: #ebebeb;
   --tone-26: #e6e6e6;
   --tone-28-a18: rgb(226 226 226 / 18%);
   --tone-28: #e2e2e2;
   --tone-30-a22: rgb(221 221 221 / 22%);
   --tone-30-a44: rgb(221 221 221 / 44%);
-  --tone-30: #dddddd;
+  --tone-30: #ddd;
   --tone-32-a50: rgb(217 217 217 / 50%);
   --tone-32: #d9d9d9;
   --tone-34-a22: rgb(212 212 212 / 22%);
@@ -161,7 +162,7 @@ export const lightTones = `
   --tone-44-a18: rgb(184 184 184 / 18%);
   --tone-44: #b8b8b8;
   --tone-46: #b1b1b1;
-  --tone-48: #aaaaaa;
+  --tone-48: #aaa;
   --tone-50: #a4a4a4;
   --tone-52-a34: rgb(157 157 157 / 27.2%);
   --tone-52: #9d9d9d;
@@ -218,11 +219,11 @@ export const lightTones = `
   --tone-96: #0b0b0b;
   --tone-98: #010101;
   --tone-100-a96: rgb(0 0 0 / 76.8%);
-  --tone-100: #000000;
+  --tone-100: #000;
   --shade-a34: rgb(0 0 0 / 11.9%);
   --shade-a40: rgb(0 0 0 / 14%);
   --shade-a54: rgb(0 0 0 / 18.9%);
   --shade-a60: rgb(0 0 0 / 21%);
   --shade-a80: rgb(0 0 0 / 28%);
   --shade-a100: rgb(0 0 0 / 35%);
-`;
+}

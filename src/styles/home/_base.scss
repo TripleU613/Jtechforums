@@ -1,0 +1,409 @@
+// The home page's groundwork: page defaults, the container, buttons, links,
+// eyebrows and section headings, shared by every section.
+:root {
+  font-family: var(--font-sans);
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+input,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button,
+a {
+  transition:
+    background-color 0.18s,
+    color 0.18s,
+    transform 0.18s,
+    border-color 0.18s;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-sans);
+}
+
+h2 {
+  font-size: 36px;
+  letter-spacing: -1.7px;
+  line-height: 1.25;
+  font-weight: 650;
+}
+
+.container {
+  width: min(1240px, calc(100% - 96px));
+  margin-inline: auto;
+}
+
+.site-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-shell main {
+  flex: 1;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 17px 24px;
+  border: 1px solid var(--green);
+  font-size: 14px;
+  line-height: 1.2;
+  min-height: 48px;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button-small {
+  font-size: 12px;
+  padding: 12px 16px;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 550;
+  font-size: 13px;
+}
+
+.text-link:hover svg {
+  transform: translateX(3px);
+}
+
+.text-link svg {
+  transition: transform 0.18s;
+}
+
+.eyebrow {
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 1.9px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.section-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 25px;
+  margin-bottom: 34px;
+}
+
+.section-top .eyebrow {
+  margin-bottom: 13px;
+}
+
+.section-top > p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.empty-state {
+  padding: 30px 0;
+  color: var(--ink-subtle);
+  font-size: 13px;
+}
+
+.inner-page {
+  padding: 48px 0 70px;
+  color: var(--ink);
+}
+
+.local-notice {
+  padding: 13px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1100px) {
+  .container {
+    width: calc(100% - 64px);
+  }
+}
+
+@media (max-width: 850px) {
+  .section-top {
+    align-items: flex-start;
+  }
+
+  .section-top > p {
+    display: none;
+  }
+}
+
+@media (max-width: 580px) {
+  .container {
+    width: calc(100% - 40px);
+  }
+
+  .section-top {
+    margin-bottom: 26px;
+    gap: 15px;
+  }
+
+  .section-top .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+
+  .section-top > .text-link {
+    font-size: 10px;
+    gap: 6px;
+    align-self: flex-end;
+    flex-shrink: 0;
+  }
+
+  .inner-page {
+    padding-top: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .button:hover {
+    transform: none;
+  }
+}
+
+.section-top > p {
+  color: var(--ink-subtle);
+}
+
+:root {
+  --paper: var(--tone-0);
+  --ink: var(--tone-100);
+  --muted: var(--tone-66);
+  --green: var(--tone-88);
+  --line: var(--tone-24);
+  --soft: var(--tone-14);
+  background: var(--tone-0);
+  color: var(--tone-100);
+}
+
+body {
+  background: var(--tone-0);
+}
+
+em {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 600;
+  color: var(--tone-88);
+}
+
+.button {
+  border-radius: var(--radius-control);
+}
+
+.button-small {
+  border-color: var(--border-strong);
+}
+
+.eyebrow {
+  color: var(--tone-72);
+  font-family: var(--font-mono);
+}
+
+.site-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--tone-90);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 50;
+  box-shadow: 0 0 10px var(--tone-84);
+}
+
+.section-top h2 {
+  font-size: 42px;
+  letter-spacing: -2px;
+}
+
+.avatar {
+  background: var(--tone-26);
+  color: var(--tone-92);
+  border: 1px solid var(--border-strong);
+}
+
+.inner-page {
+  background: var(--tone-0);
+}
+
+.local-notice {
+  background: var(--tone-20);
+  border-color: var(--border-strong);
+  color: var(--tone-74);
+}
+
+@keyframes orbit-rotation-one {
+  from {
+    transform: rotateX(65deg) rotateY(-25deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(65deg) rotateY(-25deg) rotateZ(360deg);
+  }
+}
+
+@keyframes orbit-rotation-two {
+  from {
+    transform: rotateX(35deg) rotateY(65deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(35deg) rotateY(65deg) rotateZ(-360deg);
+  }
+}
+
+@keyframes orbit-rotation-three {
+  from {
+    transform: rotateX(-40deg) rotateY(45deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(-40deg) rotateY(45deg) rotateZ(360deg);
+  }
+}
+
+@keyframes star-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .section-top h2 {
+    font-size: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-scroll-progress {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.home-main .eyebrow {
+  display: none;
+}
+
+.section-top .eyebrow + h2 {
+  margin-top: 0;
+}
+
+@media (max-width: 1099px) {
+  .home-main {
+    font-kerning: normal;
+  }
+}
+
+@media (max-width: 760px) {
+  .container {
+    width: calc(100% - 40px);
+  }
+
+  .inner-page {
+    padding-top: 28px;
+  }
+}
