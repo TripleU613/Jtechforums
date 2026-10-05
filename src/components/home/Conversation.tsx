@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { forumPaths, type CategoriesPayload, type LatestPayload, type Topic } from "../../lib/forum.ts";
+import { forumPaths, type CategoriesPayload, type ForumUser, type LatestPayload, type Topic } from "../../lib/forum.ts";
 import { FORUM, avatarUrl, forumSearch, forumTopic, forumUser, links } from "../../lib/links.ts";
 import { useForumSearch } from "../../lib/search.ts";
 import { useForum } from "../../lib/useForum.ts";
@@ -50,6 +50,10 @@ export default function Conversation({ sample }: { sample: boolean }) {
   const [query, setQuery] = useState("");
   const live = useForumSearch(query);
   const names = useMemo(() => categoryNames(categories.data), [categories.data]);
+  const usersById = useMemo(
+    () => new Map((latest.data?.users ?? []).map((user) => [user.id, user])),
+    [latest.data],
+  );
   // The people in the latest threads (bots and the system user aside)
   const people = useMemo(
     () =>
@@ -139,6 +143,15 @@ export default function Conversation({ sample }: { sample: boolean }) {
                   </time>
                 </p>
               </div>
+              <span className="topic-posters" aria-hidden="true">
+                {(topic.posters ?? [])
+                  .map((poster) => usersById.get(poster.user_id))
+                  .filter((user): user is ForumUser => user !== undefined && user.id > 0)
+                  .slice(0, 3)
+                  .map((user) => (
+                    <Avatar key={user.id} name={user.username} image={avatarUrl(user.avatar_template, 48)} />
+                  ))}
+              </span>
               <span className="topic-replies" aria-label={`${topic.reply_count ?? 0} replies`}>
                 <Icon name="chat" size={16} />
                 {topic.reply_count ?? 0}

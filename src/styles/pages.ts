@@ -219,6 +219,42 @@ export default css`
     font-size: 15px;
     line-height: 1.65;
   }
+  .about-staff {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .about-staff a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px 4px 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--ink-muted);
+    font-size: 12.5px;
+    transition: border-color var(--motion), color var(--motion);
+  }
+  .about-staff a:hover {
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+  .about-staff .avatar {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    overflow: hidden;
+    border-radius: var(--radius-avatar);
+    background: var(--fill);
+    font-size: 9px;
+  }
+  .about-staff .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .page-legal-line {
     margin-top: 32px;
     padding-top: 18px;
@@ -669,9 +705,51 @@ export default css`
   }
 
   /* Legal */
-  .legal-page .legal {
-    max-width: 960px;
+  .legal-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+    max-width: 1160px;
     margin: 48px auto 0;
+  }
+  .legal-toc {
+    position: sticky;
+    top: 112px;
+  }
+  .legal-toc p {
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--ink-subtle);
+  }
+  .legal-toc ol {
+    display: grid;
+    gap: 2px;
+    border-inline-start: 1px solid var(--border);
+  }
+  .legal-toc a {
+    display: block;
+    margin-inline-start: -1px;
+    padding: 5px 12px;
+    border-inline-start: 1px solid transparent;
+    color: var(--ink-subtle);
+    font-size: 13px;
+    line-height: 1.4;
+    transition: color var(--motion), border-color var(--motion);
+  }
+  .legal-toc a:hover {
+    color: var(--ink);
+  }
+  .legal-toc a[aria-current="true"] {
+    border-color: var(--ink);
+    color: var(--ink);
+    font-weight: 550;
+  }
+  .legal section {
+    scroll-margin-top: 110px;
   }
   .legal section + section {
     margin-top: 28px;
@@ -708,6 +786,12 @@ export default css`
   }
 
   @media (max-width: 1000px) {
+    .legal-layout {
+      grid-template-columns: 1fr;
+    }
+    .legal-toc {
+      display: none;
+    }
     .egate-hero,
     .page-cta-split {
       grid-template-columns: 1fr;

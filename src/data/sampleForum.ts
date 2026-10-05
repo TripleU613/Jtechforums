@@ -55,7 +55,18 @@ const topic = (
   reply_count: number,
   created_at: string,
   bumped_at: string,
-): Topic => ({ id, slug, title, category_id, tags, views, reply_count, created_at, bumped_at });
+): Topic => ({
+  id,
+  slug,
+  title,
+  category_id,
+  tags,
+  views,
+  reply_count,
+  created_at,
+  bumped_at,
+  posters: [43, 941, 331, 741, 1247].slice(id % 3, (id % 3) + 3).map((user_id) => ({ user_id })),
+});
 
 const latest: LatestPayload = {
   users: [

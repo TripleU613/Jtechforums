@@ -1,10 +1,4 @@
-import { PageHero } from "../components/page/Page.tsx";
-
-interface LegalSection {
-  title: string;
-  body?: string;
-  list?: string[];
-}
+import LegalPage, { type LegalSection } from "../components/page/LegalPage.tsx";
 
 const policySections: LegalSection[] = [
   {
@@ -98,26 +92,5 @@ const policySections: LegalSection[] = [
 ];
 
 export default function Privacy() {
-  return (
-    <div className="page legal-page">
-      <PageHero eyebrow="POLICY" title="Privacy Policy">
-        <p className="lede">Last updated: July 22, 2026</p>
-      </PageHero>
-      <div className="page-panel legal">
-        {policySections.map((section) => (
-          <section key={section.title}>
-            <h2>{section.title}</h2>
-            {section.body && <p>{section.body}</p>}
-            {section.list && (
-              <ul>
-                {section.list.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-      </div>
-    </div>
-  );
+  return <LegalPage eyebrow="POLICY" title="Privacy Policy" updated="July 22, 2026" sections={policySections} />;
 }

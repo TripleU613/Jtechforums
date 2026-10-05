@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode }
 import { Link } from "react-router-dom";
 import type { ScrollTrigger as Trigger } from "gsap/ScrollTrigger";
 import { asset } from "../../lib/asset.ts";
-import { links } from "../../lib/links.ts";
+import { forumSearch, links } from "../../lib/links.ts";
 import EgateScreens from "../EgateScreens.tsx";
 import Icon from "../Icon.tsx";
 import ThemedShot from "../ThemedShot.tsx";
@@ -171,7 +171,9 @@ function SlideVisual({ type }: { type: SlideType }) {
       <div className="rail-app-wall">
         {APP_ICONS.map(([name, file], i) => (
           <div key={name} style={{ "--tile": i } as CSSProperties}>
-            <img src={asset(`/img/apps/${file}`)} alt={name} loading="lazy" />
+            <a href={forumSearch(name)} title={`${name} on the forum`}>
+              <img src={asset(`/img/apps/${file}`)} alt={`${name}: search the forum`} loading="lazy" />
+            </a>
           </div>
         ))}
       </div>

@@ -53,6 +53,7 @@ export interface Topic {
   tags?: Array<string | { name: string }>;
   pinned?: boolean;
   pinned_globally?: boolean;
+  posters?: Array<{ user_id: number; description?: string }>;
 }
 
 export interface LatestPayload {

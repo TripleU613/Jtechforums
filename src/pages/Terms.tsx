@@ -1,10 +1,4 @@
-import { PageHero } from "../components/page/Page.tsx";
-
-interface LegalSection {
-  title: string;
-  body?: string;
-  list?: string[];
-}
+import LegalPage, { type LegalSection } from "../components/page/LegalPage.tsx";
 
 const termsSections: LegalSection[] = [
   {
@@ -88,26 +82,5 @@ const termsSections: LegalSection[] = [
 ];
 
 export default function Terms() {
-  return (
-    <div className="page legal-page">
-      <PageHero eyebrow="LEGAL" title="Terms of Service">
-        <p className="lede">Last updated: July 22, 2026</p>
-      </PageHero>
-      <div className="page-panel legal">
-        {termsSections.map((section) => (
-          <section key={section.title}>
-            <h2>{section.title}</h2>
-            {section.body && <p>{section.body}</p>}
-            {section.list && (
-              <ul>
-                {section.list.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-      </div>
-    </div>
-  );
+  return <LegalPage eyebrow="LEGAL" title="Terms of Service" updated="July 22, 2026" sections={termsSections} />;
 }

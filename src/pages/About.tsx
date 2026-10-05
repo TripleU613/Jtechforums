@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
 import { Card, PageHero, SectionHead, Stat } from "../components/page/Page.tsx";
+import Avatar from "../components/Avatar.tsx";
 import Icon from "../components/Icon.tsx";
 import ThemedShot from "../components/ThemedShot.tsx";
 import Timeline from "../components/page/Timeline.tsx";
 import { forumPaths, usingSample, type AboutPayload } from "../lib/forum.ts";
-import { links } from "../lib/links.ts";
+import { avatarUrl, forumUser, links } from "../lib/links.ts";
 import { useForum } from "../lib/useForum.ts";
 
 export default function About() {
   const about = useForum<AboutPayload>(forumPaths.about);
   const stats = about.data?.about.stats;
+  const staffIds = new Set([...(about.data?.about.moderator_ids ?? []), ...(about.data?.about.admin_ids ?? [])]);
+  const staff = (about.data?.users ?? []).filter((user) => staffIds.has(user.id) && user.id > 0);
   return (
     <div className="page">
       {usingSample && <p className="container local-notice">Local preview · the numbers below are sample data.</p>}
@@ -143,6 +146,18 @@ export default function About() {
                 A small team runs the servers and the software, keeps threads in the right place, and
                 reviews guides before they go up.
               </p>
+              {staff.length > 0 && (
+                <ul className="about-staff">
+                  {staff.map((user) => (
+                    <li key={user.id}>
+                      <a href={forumUser(user.username)} title={user.username}>
+                        <Avatar name={user.username} image={avatarUrl(user.avatar_template, 72)} />
+                        <span>{user.username}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div>
               <h3>Members</h3>

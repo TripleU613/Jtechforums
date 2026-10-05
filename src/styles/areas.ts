@@ -735,6 +735,35 @@ export default css`
     object-fit: cover;
   }
 
+  /* Who's in each thread, on the topic rows */
+  .topic-posters {
+    display: flex;
+    flex-shrink: 0;
+    padding-inline-start: 6px;
+  }
+  .topic-posters .avatar {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-inline-start: -6px;
+    overflow: hidden;
+    border: 2px solid var(--bg);
+    border-radius: var(--radius-avatar);
+    background: var(--fill);
+    font-size: 8px;
+  }
+  .topic-posters .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (max-width: 760px) {
+    .topic-posters {
+      display: none;
+    }
+  }
+
   /* Keyboard shortcuts (components/Shortcuts.tsx) */
   .palette.shortcuts {
     width: min(440px, calc(100% - 32px));

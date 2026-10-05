@@ -257,6 +257,33 @@ export default css`
     }
   }
 
+  /* The app wall wiggles like a phone's edit mode; each icon searches the forum */
+  .rail-app-wall a {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .rail-app-wall:hover > div {
+      animation: jiggle 0.32s ease-in-out infinite alternate;
+      animation-delay: calc(var(--tile) * -0.07s);
+    }
+    .rail-app-wall > div:hover {
+      animation-play-state: paused;
+      scale: 1.08;
+    }
+  }
+  @keyframes jiggle {
+    from {
+      rotate: -2.2deg;
+    }
+    to {
+      rotate: 2.2deg;
+    }
+  }
+
   /* The flip phone buzzes once if it's left alone */
   .flip-device.is-buzzing {
     animation: buzz 0.9s linear;
