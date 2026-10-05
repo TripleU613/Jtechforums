@@ -1,7 +1,7 @@
-﻿@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// Base layout (was global.css).
+import { css } from "../css.ts";
 
+export default css`
 :root {
   font-family: "DM Sans", sans-serif;
   color: #e0ebf2;
@@ -2084,3 +2084,4 @@ em {
     padding-inline: 14px;
   }
 }
+`;

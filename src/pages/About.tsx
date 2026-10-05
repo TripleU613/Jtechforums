@@ -1,5 +1,5 @@
 import { forumLinks } from "../lib/forumLinks";
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SectionHeading from '../components/SectionHeading';
 import GlassCard from '../components/GlassCard';
 import Reveal from '../components/Reveal';

@@ -1,4 +1,4 @@
-﻿import Reveal from './Reveal';
+import Reveal from './Reveal';
 
 export default function GlassCard({ title, eyebrow, description, children, className = '' }) {
   return (

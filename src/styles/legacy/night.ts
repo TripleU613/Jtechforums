@@ -1,4 +1,8 @@
-﻿:root {
+// Night palette and redesign (was night.css).
+import { css } from "../css.ts";
+
+export default css`
+:root {
   --paper: #090c10;
   --ink: #edf3f7;
   --muted: #87939f;
@@ -2331,3 +2335,4 @@ em {
     will-change: auto;
   }
 }
+`;

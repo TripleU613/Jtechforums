@@ -1,4 +1,9 @@
-﻿<!doctype html>
+/**
+ * The page's HTML shell. There is no index.html in the repository: the build
+ * (build/plugins.ts) serves and emits this instead.
+ */
+export default function documentHtml(): string {
+  return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -20,20 +25,12 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      />
-    </noscript>
     <meta name="description" content="The leading Jewish tech &amp; filtering community. Guides, trusted apps, and community support. Built by the community, for the community." />
-
   </head>
-  <body >
+  <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+`;
+}

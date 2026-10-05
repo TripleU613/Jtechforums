@@ -1,4 +1,4 @@
-﻿export const guideArticles = [
+export const guideArticles = [
   {
     slug: 'install-apps-flip-phones',
     title: 'How to Install, Uninstall, and Launch Apps on Flip Phones',

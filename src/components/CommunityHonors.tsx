@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Icon from "./Icon";
 import { getForumWebBase } from "../lib/forumApi";
-import "../styles/community-honors.css";
 
 function MemberPortrait({ member }) {
   const [failed, setFailed] = useState(false);

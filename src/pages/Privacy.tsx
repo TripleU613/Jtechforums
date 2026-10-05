@@ -1,4 +1,4 @@
-﻿const policySections = [
+const policySections = [
   {
     title: '1. Scope and who we are',
     body:

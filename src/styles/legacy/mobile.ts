@@ -1,3 +1,7 @@
+// Phones and tablets (was mobile.css).
+import { css } from "../css.ts";
+
+export default css`
 /* A vertical composition for phones and tablets. Desktop retains its pinned story. */
 @media (max-width: 1099px) {
   .home-main {
@@ -726,3 +730,4 @@
     line-height: 1.75;
   }
 }
+`;

@@ -1,39 +1,38 @@
 {
-  "name": "jtech-forums.github.io",
-  "version": "1.0.0",
-  "description": "Welcome to the **JTech Website** repository — the official open-source project for [JTech Forums](https://jtechforums.org).\r This site provides **beginner guides, an app list, FAQs, and other valuable resources** for the Jewish tech and filtering community.",
-  "main": "index.js",
+  "name": "jtechforums-home",
+  "private": true,
+  "version": "2.0.0",
+  "description": "The JTech Forums landing page, served at jtechforums.org/home.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && vite build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JTech-Forums/jtech-forums.github.io.git"
+    "url": "git+https://github.com/JTech-Forums/Jtechforums.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/JTech-Forums/jtech-forums.github.io/issues"
-  },
-  "homepage": "https://github.com/JTech-Forums/jtech-forums.github.io#readme",
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@dataconnect/generated": "file:src/dataconnect-generated",
     "firebase": "^12.5.0",
-    "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.18.3"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.1.0",
-    "autoprefixer": "^10.4.22",
-    "postcss": "^8.5.28",
-    "tailwindcss": "^3.4.13",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "lightningcss": "^1.33.0",
+    "typescript": "5.9.3",
     "vite": "^7.3.6"
   }
 }

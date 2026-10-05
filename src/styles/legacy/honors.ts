@@ -1,3 +1,7 @@
+// Community champions and moderators (was community-honors.css).
+import { css } from "../css.ts";
+
+export default css`
 .community-honors {
   position: relative;
   isolation: isolate;
@@ -432,3 +436,4 @@
     right: 0;
   }
 }
+`;
