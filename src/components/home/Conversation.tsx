@@ -173,7 +173,7 @@ export default function Conversation({ sample }: { sample: boolean }) {
             <Icon />
           </button>
         </form>
-        {query.trim().length >= 2 && (
+        {query.trim().length >= 3 && (
           <div className="search-live" aria-live="polite">
             {live.hits.length > 0 ? (
               <ul>

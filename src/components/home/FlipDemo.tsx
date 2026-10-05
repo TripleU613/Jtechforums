@@ -278,7 +278,6 @@ export default function FlipDemo() {
       Enter: "ok",
       Backspace: "soft-right",
       Escape: "soft-right",
-      F1: "soft-left",
     };
     if (map[event.key]) return map[event.key] ?? null;
     if (/^[0-9*#]$/.test(event.key)) return event.key;

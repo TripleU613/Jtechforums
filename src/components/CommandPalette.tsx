@@ -87,6 +87,9 @@ export default function CommandPalette() {
 
   useEffect(() => {
     const onKey = (event: globalThis.KeyboardEvent) => {
+      // Another sheet (keyboard shortcuts) is open: leave it be.
+      const other = document.querySelector("dialog[open]");
+      if (other && other !== dialog.current) return;
       const typing = event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable='true'], [role='application']");
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -129,8 +132,8 @@ export default function CommandPalette() {
       }));
     return [...found, ...answers];
   }, [query]);
-  const hits = query.trim().length >= 2 ? search.hits : [];
-  const searchAll = query.trim().length >= 2;
+  const hits = query.trim().length >= 3 ? search.hits : [];
+  const searchAll = query.trim().length >= 3;
   const total = actions.length + hits.length + (searchAll ? 1 : 0);
   useEffect(() => setActive(0), [query]);
 

@@ -47,12 +47,16 @@ export type SearchState =
   | { status: "done"; hits: SearchHit[] }
   | { status: "error"; hits: [] };
 
-/** Search as someone types: waits for a pause, needs two characters, keeps the last results while it looks. */
-export function useForumSearch(term: string, wait = 320): SearchState {
+/**
+ * Search as someone types: waits for a pause and three characters (every
+ * request reaches the forum's search log and its rate limits), and keeps
+ * the last results while it looks.
+ */
+export function useForumSearch(term: string, wait = 600): SearchState {
   const [state, setState] = useState<SearchState>({ status: "idle", hits: [] });
   const query = term.trim();
   useEffect(() => {
-    if (query.length < 2) {
+    if (query.length < 3) {
       setState({ status: "idle", hits: [] });
       return;
     }

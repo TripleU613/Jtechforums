@@ -58,7 +58,7 @@ export function startScramble(): () => void {
     for (const record of records)
       for (const node of record.addedNodes) if (node instanceof HTMLElement) watch(node.parentElement ?? node);
   });
-  added.observe(document.body, { childList: true, subtree: true });
+  added.observe(document.getElementById("main") ?? document.body, { childList: true, subtree: true });
   return () => {
     view.disconnect();
     added.disconnect();
