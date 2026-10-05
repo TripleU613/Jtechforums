@@ -107,7 +107,7 @@ export default function Hero() {
           ROMs and code.
         </p>
         <span>{lateNight() ? "Still up? So is the forum." : "Asked about, answered and built by the people who use them."}</span>
-        <a className="button" href={links.signup}>
+        <a className="button magnetic" href={links.signup}>
           Join the forum <Icon name="arrow" />
         </a>
       </div>

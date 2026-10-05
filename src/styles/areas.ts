@@ -90,13 +90,13 @@ export default css`
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: var(--surface);
-    transition: border-color var(--motion), transform var(--motion);
+    transition: border-color var(--motion), scale var(--motion);
   }
   .corner:hover {
     border-color: var(--border-strong);
   }
   .corner:active {
-    transform: scale(0.99);
+    scale: 0.99;
   }
   .corner-top {
     display: flex;

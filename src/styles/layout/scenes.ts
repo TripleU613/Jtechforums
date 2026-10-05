@@ -118,7 +118,7 @@ em {
   font-family: var(--font-mono);
   letter-spacing: 1.2px;
   font-size: 9px;
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 .hero-caption {
   position: relative;
@@ -137,7 +137,7 @@ em {
 .hero-caption > span {
   font-size: 12px;
   line-height: 1.7;
-  color: var(--tone-58);
+  color: var(--ink-subtle);
   border-left: 1px solid var(--border);
   padding-left: 35px;
 }
@@ -224,7 +224,7 @@ em {
 }
 .rail-heading h2 > span {
   margin-left: 12px;
-  color: var(--tone-58);
+  color: var(--ink-subtle);
 }
 .rail-heading-right {
   text-align: right;
@@ -236,7 +236,7 @@ em {
 }
 .rail-heading-right p {
   font-size: 11px;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   margin-top: 10px;
 }
 .rail-heading-right p > span {
@@ -351,7 +351,7 @@ em {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--tone-50);
+  color: var(--ink-subtle);
   font: 9px var(--font-mono);
   padding: 6px 0;
 }
@@ -374,7 +374,7 @@ em {
   gap: 18px;
   font: 8px var(--font-mono);
   letter-spacing: 1.5px;
-  color: var(--tone-54);
+  color: var(--ink-subtle);
 }
 .rail-guide-stack {
   position: relative;
@@ -446,7 +446,7 @@ em {
 .phone-dial {
   font-size: 45px;
   text-align: center;
-  color: var(--tone-54);
+  color: var(--ink-subtle);
   margin: 5px;
 }
 .phone-keys {
@@ -487,7 +487,7 @@ em {
   gap: 60px;
 }
 .terminal-top > span {
-  color: var(--tone-56);
+  color: var(--ink-subtle);
   font-size: 7px;
   letter-spacing: 4px;
 }
@@ -497,7 +497,7 @@ em {
 }
 .terminal-muted {
   display: block;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   margin-bottom: 28px;
 }
 .terminal-content p {
@@ -617,7 +617,7 @@ em {
   letter-spacing: -2px;
 }
 .faq-section h2 em {
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .closing-section {
   border-radius: var(--radius-xl);
@@ -656,7 +656,7 @@ em {
   border-color: var(--border);
 }
 .footer-bottom {
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 .inner-page {
   background: var(--tone-0);
@@ -1175,7 +1175,7 @@ em {
   bottom: 35px;
   font: 8px var(--font-mono);
   letter-spacing: 2px;
-  color: var(--tone-58);
+  color: var(--ink-subtle);
 }
 @media (max-height: 780px) and (min-width: 1100px) {
   .rail-guide-stack {
@@ -1456,7 +1456,7 @@ em {
   font-family: var(--font-sans);
   font-size: 12px;
   letter-spacing: 0;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .branded-hero .scroll-cue {
   font-size: 12px;

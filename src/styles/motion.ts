@@ -65,6 +65,25 @@ export default css`
     }
   }
 
+  /* Cards that lean towards the pointer, buttons that drift to it (lib/spotlight.ts) */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .tilt {
+      transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+      transition:
+        transform 0.35s cubic-bezier(0.2, 0, 0, 1),
+        border-color var(--motion),
+        background-color var(--motion);
+      will-change: transform;
+    }
+    .magnetic {
+      translate: var(--mag-x, 0px) var(--mag-y, 0px);
+      transition:
+        translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        background-color var(--motion),
+        border-color var(--motion);
+    }
+  }
+
   .count-up {
     font-variant-numeric: tabular-nums;
   }

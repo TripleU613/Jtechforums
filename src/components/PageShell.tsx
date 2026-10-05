@@ -8,6 +8,7 @@ import Header from "./Header.tsx";
 import Shortcuts from "./Shortcuts.tsx";
 import Toaster from "./Toaster.tsx";
 import { startKonami } from "../lib/konami.ts";
+import { startScramble } from "../lib/scramble.ts";
 import { startSpotlight } from "../lib/spotlight.ts";
 
 const titles: Record<string, string> = {
@@ -24,6 +25,7 @@ export default function PageShell({ children }: { children: ReactNode }) {
   const { pathname, hash } = useLocation();
   useEffect(() => startSpotlight(), []);
   useEffect(() => startKonami(), []);
+  useEffect(() => startScramble(), []);
   useEffect(() => {
     document.title = titles[pathname] ?? "JTech Forums";
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();

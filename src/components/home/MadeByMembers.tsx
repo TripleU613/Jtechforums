@@ -18,7 +18,7 @@ export default function MadeByMembers() {
       <ul className="project-grid">
         {projects.map((project) => (
           <li key={project.name}>
-            <a className="project spotlight" href={`${FORUM}${project.topic}`}>
+            <a className="project spotlight tilt" href={`${FORUM}${project.topic}`}>
               <span className="project-kind">{project.kind}</span>
               <h3>{project.name}</h3>
               <p>{project.description}</p>

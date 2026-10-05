@@ -29,7 +29,7 @@ export default function Corners() {
           const subs = (live?.subs.length ? live.subs : category.subcategories).slice(0, 4);
           return (
             <li key={category.id}>
-              <a className="corner spotlight" href={`${FORUM}${category.path}`}>
+              <a className="corner spotlight tilt" href={`${FORUM}${category.path}`}>
                 <span className="corner-top">
                   <span className="corner-icon">
                     <Icon name={category.icon} size={20} />

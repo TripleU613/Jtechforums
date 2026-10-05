@@ -233,6 +233,14 @@ export default css`
     60% { transform: rotate(-9deg); }
   }
 
+  .closing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px 28px;
+  }
+
   /* The closing watermark's letters jump when the pointer finds them */
   .closing-watermark span {
     display: inline-block;

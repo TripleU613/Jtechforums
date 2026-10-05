@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent }
 import { useNavigate } from "react-router-dom";
 import faq, { faqId } from "../data/faq.ts";
 import { FORUM, forumSearch, links } from "../lib/links.ts";
+import { openRandomThread } from "../lib/random.ts";
 import { toggleScheme } from "../lib/scheme.ts";
 import { useForumSearch } from "../lib/search.ts";
 import Icon, { type IconName } from "./Icon.tsx";
@@ -37,6 +38,13 @@ const ACTIONS: Action[] = [
   { label: "Contact the team", hint: "This site", icon: "mail", keywords: "contact email help", run: page("/contact") },
   { label: "Home", hint: "This site", icon: "arrow", keywords: "home start", run: page("/") },
   { label: "Sign up", hint: "Forum", icon: "users", keywords: "join register account", run: away(links.signup) },
+  {
+    label: "Open a random thread",
+    hint: "Feeling curious?",
+    icon: "sparkle",
+    keywords: "random surprise lucky shuffle",
+    run: () => void openRandomThread(),
+  },
   {
     label: "Switch light / dark",
     hint: "Also on the forum",

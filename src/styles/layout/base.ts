@@ -156,7 +156,7 @@ em {
   display: flex;
   align-items: center;
   position: relative;
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 .desktop-nav a.active {
   color: var(--green);
@@ -244,7 +244,7 @@ em {
   line-height: 1.5;
   letter-spacing: 1.9px;
   font-weight: 600;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   display: flex;
   align-items: center;
   gap: 9px;
@@ -287,12 +287,12 @@ em {
 }
 .strip-inner > div > span {
   font-size: 10px;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .strip-inner > .strip-note {
   font-size: 11px;
   line-height: 1.7;
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 .strip-note small {
   font-size: 8px;
@@ -360,14 +360,14 @@ em {
   flex-shrink: 0;
   border: 1px solid var(--border);
   background: var(--tone-6);
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   border-radius: var(--radius-md);
   display: grid;
   place-items: center;
 }
 .symbol-1 {
   background: var(--tone-6);
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   border-color: var(--border);
 }
 .symbol-2 {
@@ -451,7 +451,7 @@ em {
   color: var(--tone-66);
 }
 .search-suggestions button {
-  color: var(--tone-60);
+  color: var(--ink-subtle);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -525,7 +525,7 @@ em {
   font-size: 18px;
   border-radius: 50%;
   background: var(--tone-14);
-  color: var(--tone-60);
+  color: var(--ink-subtle);
   overflow: hidden;
 }
 .avatar img {
@@ -535,11 +535,11 @@ em {
 }
 .person:nth-child(2) .avatar {
   background: var(--tone-14);
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .person:nth-child(3) .avatar {
   background: var(--tone-12);
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .person h3 {
   font-size: 13px;
@@ -643,7 +643,7 @@ em {
 }
 .closing-section p {
   font-size: 12px;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   line-height: 1.9;
   margin-bottom: 26px;
 }
@@ -690,7 +690,7 @@ em {
 }
 .empty-state {
   padding: 30px 0;
-  color: var(--tone-62);
+  color: var(--ink-subtle);
   font-size: 13px;
 }
 /* Shared styling for the existing account, guide, app, and information pages. */
@@ -704,7 +704,7 @@ em {
   background: var(--tone-6);
   border-radius: var(--radius-md);
   font-size: 12px;
-  color: var(--tone-60);
+  color: var(--ink-subtle);
   margin-bottom: 24px;
 }
 @media (max-width: 1100px) {
@@ -1058,25 +1058,25 @@ em {
   }
 }
 .section-top > p {
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .person p {
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .footer-bottom {
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .topic-tabs > span,
 .topic-date {
-  color: var(--tone-62);
+  color: var(--ink-subtle);
 }
 .faq-list details p {
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 .closing-section p {
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 .community-aside p {
-  color: var(--tone-60);
+  color: var(--ink-subtle);
 }
 `;
