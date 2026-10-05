@@ -179,7 +179,22 @@ const app = express();
 // Requests arrive through Cloudflare and Firebase Hosting; without this,
 // every visitor shares one address and one rate limit.
 app.set("trust proxy", true);
-app.use(cors({ origin: true }));
+// The form posts from the homepage (jtechforums.org/home, through /api); a
+// browser on any other site gets no CORS headers, so it can't send it.
+// Requests without an Origin (curl, server-side) still meet the captcha and
+// the rate limit below.
+const ALLOWED_ORIGINS = new Set([
+  "https://jtechforums.org",
+  "https://www.jtechforums.org",
+  "https://jtechsite-2ebc8.web.app",
+  "https://jtechsite-2ebc8.firebaseapp.com",
+]);
+const LOCAL_DEV = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+app.use(
+  cors({
+    origin: (origin, done) => done(null, !origin || ALLOWED_ORIGINS.has(origin) || LOCAL_DEV.test(origin)),
+  }),
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use((req, _res, next) => {
