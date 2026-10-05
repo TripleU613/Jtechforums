@@ -44,12 +44,19 @@ export function useScheme(): Scheme {
   return useSyncExternalStore(subscribe, current, () => "dark");
 }
 
-/** Flip light/dark, for this page and the forum alike. */
+/**
+ * Flip light/dark, for this page and the forum alike. Like the forum's own
+ * switch, a choice that matches the system is stored as "auto", so it keeps
+ * following the system from then on.
+ */
 export function toggleScheme(): void {
   const next: Scheme = current() === "dark" ? "light" : "dark";
+  const system: Scheme = darkQuery()?.matches ? "dark" : "light";
+  const value = next === system ? "auto" : next;
   const year = 60 * 60 * 24 * 365;
-  document.cookie = `${COOKIE}=${next}; path=/; max-age=${year}; SameSite=Lax; Secure`;
-  document.documentElement.dataset.scheme = next;
+  document.cookie = `${COOKIE}=${value}; path=/; max-age=${year}; SameSite=Lax; Secure`;
+  if (value === "auto") delete document.documentElement.dataset.scheme;
+  else document.documentElement.dataset.scheme = next;
   emit();
 }
 
