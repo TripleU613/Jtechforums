@@ -27,6 +27,7 @@
 
 .footer-bottom nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 23px;
 }
 
@@ -159,6 +160,7 @@
 
   .footer-bottom nav {
     display: flex;
+    justify-content: center;
     gap: 22px;
   }
 

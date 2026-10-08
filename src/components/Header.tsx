@@ -21,11 +21,23 @@ function pointFrom(event: MouseEvent<HTMLElement>): { x: number; y: number } {
 }
 
 function NavLinks() {
-  return nav.map(([label, to]) => (
-    <NavLink viewTransition key={to} to={to} end={to === "/"}>
-      {label}
-    </NavLink>
-  ));
+  return (
+    <>
+      {nav.map(([label, to]) => (
+        <NavLink viewTransition key={to} to={to} end={to === "/"}>
+          {label}
+        </NavLink>
+      ))}
+      <a className="market-link" href={links.market} aria-label="JTech Market — buy and sell tech">
+        <Icon name="grid" size={16} />
+        <span className="market-link-copy">
+          <span>Market</span>
+          <span className="market-link-description">Buy &amp; sell tech on JTech Market</span>
+        </span>
+        <Icon name="external" size={14} className="market-link-arrow" />
+      </a>
+    </>
+  );
 }
 
 export default function Header() {

@@ -3,6 +3,7 @@ export const FORUM = "https://jtechforums.org";
 
 export const links = {
   forum: FORUM,
+  market: "https://market.jtechforums.org/",
   latest: `${FORUM}/latest`,
   guides: `${FORUM}/c/guides/28`,
   androidApps: `${FORUM}/c/new-software-tools/android-apps/6`,
