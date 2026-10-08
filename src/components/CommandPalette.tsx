@@ -26,7 +26,7 @@ const away = (href: string) => () => window.location.assign(href);
 
 const ACTIONS: Action[] = [
   { label: "The forum", hint: "jtechforums.org", icon: "chat", keywords: "forum home discourse", run: away(links.forum) },
-  { label: "JTech Market", hint: "Buy & sell tech", icon: "grid", keywords: "market marketplace buy sell shop devices software", run: away(links.market) },
+  { label: "JTech Market", hint: "Buy & sell tech", icon: "grid", keywords: "market marketplace buy sell shop devices software", run: page("/market") },
   { label: "Latest topics", hint: "Forum", icon: "chat", keywords: "new recent latest", run: away(links.latest) },
   { label: "Guides", hint: "Forum", icon: "book", keywords: "how to tutorial guide", run: away(links.guides) },
   { label: "Android Apps", hint: "Forum", icon: "grid", keywords: "apk apps download", run: away(links.androidApps) },

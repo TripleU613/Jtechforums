@@ -14,6 +14,7 @@ import { startSpotlight } from "../lib/spotlight.ts";
 const titles: Record<string, string> = {
   "/": "JTech Forums",
   "/egate": "eGate · JTech Forums",
+  "/market": "JTech Market · JTech Forums",
   "/about": "About · JTech Forums",
   "/contact": "Contact · JTech Forums",
   "/privacy-policy": "Privacy Policy · JTech Forums",

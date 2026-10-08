@@ -5,6 +5,7 @@ import Home from "./pages/Home.tsx";
 
 const About = lazy(() => import("./pages/About.tsx"));
 const EGate = lazy(() => import("./pages/EGate.tsx"));
+const Market = lazy(() => import("./pages/Market.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const Privacy = lazy(() => import("./pages/Privacy.tsx"));
 const Terms = lazy(() => import("./pages/Terms.tsx"));
@@ -25,6 +26,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/egate" element={<EGate />} />
+          <Route path="/market" element={<Market />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy-policy" element={<Privacy />} />

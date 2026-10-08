@@ -9,6 +9,7 @@ import Icon from "./Icon.tsx";
 const nav = [
   ["Home", "/"],
   ["eGate", "/egate"],
+  ["Market", "/market"],
   ["About", "/about"],
   ["Contact", "/contact"],
 ] as const;
@@ -28,14 +29,6 @@ function NavLinks() {
           {label}
         </NavLink>
       ))}
-      <a className="market-link" href={links.market} aria-label="JTech Market — buy and sell tech">
-        <Icon name="grid" size={16} />
-        <span className="market-link-copy">
-          <span>Market</span>
-          <span className="market-link-description">Buy &amp; sell tech on JTech Market</span>
-        </span>
-        <Icon name="external" size={14} className="market-link-arrow" />
-      </a>
     </>
   );
 }
