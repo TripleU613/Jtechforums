@@ -81,8 +81,14 @@ h2 {
   font-weight: 650;
 }
 
+// The page column. 1240px on laptop and desktop screens, growing to 1440px on
+// very wide ones so the page doesn't sit in a narrow strip.
+:root {
+  --page-max: clamp(1240px, 72vw, 1440px);
+}
+
 .container {
-  width: min(1240px, calc(100% - 96px));
+  width: min(var(--page-max), calc(100% - 96px));
   margin-inline: auto;
 }
 

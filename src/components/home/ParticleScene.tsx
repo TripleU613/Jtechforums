@@ -177,6 +177,8 @@ export default function ParticleScene() {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let width = 0;
     let height = 0;
+    let columnLeft = 0;
+    let columnRight = 0;
     let frame = 0;
     let visible = true;
     let lastFrame = 0;
@@ -256,7 +258,10 @@ export default function ParticleScene() {
       ctx.clearRect(0, 0, width, height);
       const small = width < 760;
       const size = small ? 330 : Math.min(600, width * 0.46);
-      const cx = small ? width * 0.66 : width * 0.78;
+      // stays inside the page column on wide screens instead of drifting to the window's edge
+      const cx = small
+        ? width * 0.66
+        : Math.min(width * 0.78, columnRight - (columnRight - columnLeft) * 0.18);
       const cy = small ? height * 0.68 : height * 0.44;
       const cycle = 3;
       const step = still ? 0 : Math.floor(t / cycle) % shapes.length;
@@ -349,6 +354,9 @@ export default function ParticleScene() {
       if (!canvas || !ctx) return;
       width = canvas.clientWidth;
       height = canvas.clientHeight;
+      const padding = host ? getComputedStyle(host) : null;
+      columnLeft = padding ? parseFloat(padding.paddingLeft) : 0;
+      columnRight = width - (padding ? parseFloat(padding.paddingRight) : 0);
       const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = width * ratio;
       canvas.height = height * ratio;

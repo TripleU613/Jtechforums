@@ -832,7 +832,7 @@
 }
 
 // Wide screens: the heading, each scene and the pagination line up with the
-// rest of the page (.container: 1240px wide, at least 48px from the edge)
+// rest of the page (.container: --page-max wide, at least 48px from the edge)
 // instead of a share of the window, which drifted further out the wider it got.
 @media (min-width: 1100px) {
   .experience-rail {
@@ -841,7 +841,7 @@
 
   .rail-heading,
   .rail-footer {
-    padding-inline: max(48px, calc((100% - 1240px) / 2));
+    padding-inline: max(48px, calc((100% - var(--page-max)) / 2));
   }
 
   .rail-heading h2 > span {
@@ -850,12 +850,12 @@
 
   .experience-panel {
     width: 100vw;
-    padding-inline: max(48px, calc((100vw - 1240px) / 2));
+    padding-inline: max(48px, calc((100vw - var(--page-max)) / 2));
     gap: clamp(32px, 4vw, 72px);
   }
 
   .panel-number {
-    right: max(48px, calc((100vw - 1240px) / 2));
+    right: max(48px, calc((100vw - var(--page-max)) / 2));
   }
 
   // room for "Step-by-step" on one line at the title's full size
@@ -871,11 +871,11 @@
 
     .experience-panel {
       width: 100cqw;
-      padding-inline: max(48px, calc((100cqw - 1240px) / 2));
+      padding-inline: max(48px, calc((100cqw - var(--page-max)) / 2));
     }
 
     .panel-number {
-      right: max(48px, calc((100cqw - 1240px) / 2));
+      right: max(48px, calc((100cqw - var(--page-max)) / 2));
     }
   }
 }

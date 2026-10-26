@@ -39,7 +39,7 @@
 }
 
 .story-content {
-  width: min(1240px, calc(100% - 96px));
+  width: min(var(--page-max), calc(100% - 96px));
   margin: auto;
 }
 
@@ -66,6 +66,7 @@
 }
 
 .story-content p {
+  max-width: 560px;
   font-size: 16px;
   line-height: 1.8;
   color: var(--tone-72);

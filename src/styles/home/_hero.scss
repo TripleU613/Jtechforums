@@ -4,7 +4,7 @@
   height: 760px;
   position: relative;
   isolation: isolate;
-  padding: 30px max(48px, calc((100vw - 1240px) / 2));
+  padding: 30px max(48px, calc((100vw - var(--page-max)) / 2));
   overflow: hidden;
   background: var(--tone-0);
 }
@@ -76,8 +76,8 @@
 
 .hero-bottom {
   position: absolute;
-  left: max(48px, calc((100vw - 1240px) / 2));
-  right: max(48px, calc((100vw - 1240px) / 2));
+  left: max(48px, calc((100vw - var(--page-max)) / 2));
+  right: max(48px, calc((100vw - var(--page-max)) / 2));
   bottom: 28px;
   align-items: center;
   font-size: 8px;
@@ -243,7 +243,7 @@
     transparent 63%
   );
   width: 1000px;
-  right: -180px;
+  right: max(-180px, calc(max(48px, (100vw - var(--page-max)) / 2) - 280px));
 }
 
 .hero-brand {

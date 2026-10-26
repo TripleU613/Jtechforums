@@ -1,6 +1,6 @@
 // The inner pages: About, eGate, Contact, the legal pages and the notices.
 .page {
-  width: min(1240px, calc(100% - 96px));
+  width: min(var(--page-max), calc(100% - 96px));
   margin-inline: auto;
 }
 

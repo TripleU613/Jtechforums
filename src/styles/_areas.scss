@@ -334,7 +334,7 @@
   --lid-h: 384px;
   position: relative;
   width: 268px;
-  margin-inline: auto;
+  margin-inline: auto 0;
   perspective: 1400px;
   filter: drop-shadow(0 30px 50px var(--shade-a40, rgb(0 0 0 / 40%)));
 }
@@ -836,6 +836,10 @@
   .flip-section {
     grid-template-columns: 1fr;
     gap: 48px;
+  }
+
+  .flip-device {
+    margin-inline: auto;
   }
 }
 
