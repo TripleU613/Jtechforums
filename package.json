@@ -17,7 +17,7 @@
     "lint:prettier": "prettier --check \"src/styles/**/*.scss\" \"*.config.ts\"",
     "format": "stylelint \"src/styles/**/*.scss\" --fix && prettier --write \"src/styles/**/*.scss\" \"*.config.ts\"",
     "check": "tsc --noEmit && npm test && npm run lint && vite build",
-    "test": "node --test --experimental-strip-types test/"
+    "test": "node --test --experimental-strip-types \"test/*.test.ts\""
   },
   "repository": {
     "type": "git",
