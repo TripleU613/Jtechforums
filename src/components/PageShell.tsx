@@ -15,6 +15,7 @@ const titles: Record<string, string> = {
   "/": "JTech Forums",
   "/egate": "eGate · JTech Forums",
   "/market": "JTech Market · JTech Forums",
+  "/server": "JTech server · JTech Forums",
   "/about": "About · JTech Forums",
   "/contact": "Contact · JTech Forums",
   "/privacy-policy": "Privacy Policy · JTech Forums",

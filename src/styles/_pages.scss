@@ -927,3 +927,45 @@
     flex: 1 1 auto;
   }
 }
+
+// The server link's landing: a check, then a countdown.
+.server-count {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: clamp(72px, 14vw, 144px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.server-checking::after {
+  content: "";
+  display: inline-block;
+  width: 3ch;
+  text-align: left;
+  animation: server-dots 1.2s steps(4) infinite;
+}
+
+@keyframes server-dots {
+  0% {
+    content: "";
+  }
+
+  25% {
+    content: ".";
+  }
+
+  50% {
+    content: "..";
+  }
+
+  75% {
+    content: "...";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .server-checking::after {
+    animation: none;
+  }
+}
