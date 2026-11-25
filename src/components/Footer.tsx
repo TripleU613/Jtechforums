@@ -22,6 +22,7 @@ export default function Footer() {
           <Link viewTransition to="/privacy-policy">Privacy</Link>
           <Link viewTransition to="/terms">Terms</Link>
           <Link viewTransition to="/about">About</Link>
+          <a href={links.server}>Server</a>
           <Link viewTransition to="/contact">Contact</Link>
           <a href={links.source} target="_blank" rel="noreferrer" title="This page is open source; pull requests welcome">
             Source
