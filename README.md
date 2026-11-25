@@ -16,6 +16,7 @@ Two languages: TypeScript for the pages, the HTML shell and the tooling, and SCS
 | `src/document.ts` | The HTML shell. There is no `index.html`; the build serves and emits this. |
 | `src/styles/` | The stylesheet (SCSS), built into one CSS file. `main.scss` lists the partials in cascade order; `home/` has one partial per home page section, top to bottom. |
 | `build/plugins.ts` | The Vite plugin that turns `document.ts` into the page. |
+| `landing/` | The page on the other JTech domains (mitmachim.com, apps4flip.org, jtechforums.com and the rest): the logo, a line that changes every few seconds, and a link here. Built by `vite.landing.config.ts` into `dist-landing/`, served by its own Pages project. The lines are in `landing/taglines.ts`; they ship sealed so the list can't be read in one go. |
 | `firebase-functions/` | The contact form's backend (Firebase Functions, TypeScript). |
 
 ## The look
@@ -59,6 +60,7 @@ npm run build && npm run preview
 ## Deploying
 
 - **The page.** Pushing to `main` deploys it: the Cloudflare Pages project `jtechforums` builds it (`npm run build`, output `dist`), and the `jtechorg-home` Worker serves it at `/home` and sends `/api` to Firebase.
+- **The landing page.** Pushing to `main` also deploys it: the Cloudflare Pages project `jtech-landing` builds `npm run build:landing` (output `dist-landing`) and serves it on the other JTech domains.
 - **The contact backend** does not deploy on push: `cd firebase-functions && npm ci && npm run deploy` (it compiles to `lib/` first).
 
 Build variables (Cloudflare Pages):

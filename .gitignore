@@ -41,3 +41,4 @@ pglite-debug.log
 artifacts/
 vite-local*.log
 firebase-functions/lib/
+dist-landing

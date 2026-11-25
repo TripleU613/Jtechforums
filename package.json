@@ -13,11 +13,13 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "npm run lint:css && npm run lint:prettier",
-    "lint:css": "stylelint \"src/styles/**/*.scss\"",
-    "lint:prettier": "prettier --check \"src/styles/**/*.scss\" \"*.config.ts\"",
+    "lint:css": "stylelint \"src/styles/**/*.scss\" \"landing/**/*.scss\"",
+    "lint:prettier": "prettier --check \"src/styles/**/*.scss\" \"landing/**/*.scss\" \"*.config.ts\"",
     "format": "stylelint \"src/styles/**/*.scss\" --fix && prettier --write \"src/styles/**/*.scss\" \"*.config.ts\"",
-    "check": "tsc --noEmit && npm test && npm run lint && vite build",
-    "test": "node --test --experimental-strip-types \"test/*.test.ts\""
+    "check": "tsc --noEmit && npm test && npm run lint && vite build && npm run build:landing",
+    "test": "node --test --experimental-strip-types \"test/*.test.ts\"",
+    "build:landing": "vite build -c vite.landing.config.ts",
+    "dev:landing": "vite -c vite.landing.config.ts"
   },
   "repository": {
     "type": "git",
