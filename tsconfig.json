@@ -19,5 +19,5 @@
     "resolveJsonModule": true,
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "test", "vite.config.ts", "stylelint.config.ts", "prettier.config.ts", "build"]
+  "include": ["src", "test", "landing", "vite.landing.config.ts", "vite.config.ts", "stylelint.config.ts", "prettier.config.ts", "build"]
 }

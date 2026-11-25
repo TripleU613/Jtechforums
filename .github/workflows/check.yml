@@ -22,6 +22,7 @@ jobs:
       - run: npm test
       - run: npm run lint
       - run: npm run build
+      - run: npm run build:landing
 
   contact-backend:
     runs-on: ubuntu-latest
